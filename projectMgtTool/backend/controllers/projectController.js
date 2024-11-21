@@ -15,11 +15,53 @@ const createProject = async (req, res) => {
       description,
       user: req.user._id,
     });
-    res.status(201).json(project);
+    res.status(201).json({ message: "Project created successfully", project });
   } catch (error) {
     res
       .status(500)
       .json({ message: "Error creating project", error: error.message });
+  }
+};
+
+const editProject = async (req, res) => {
+  const { id } = req.params;
+  const { name, description } = req.body;
+
+  try {
+    const project = await Project.findOneAndUpdate(
+      { _id: id, user: req.user._id },
+      { name, description },
+      { new: true, runValidators: true }
+    );
+
+    if (!project) {
+      return res.status(404).json({ message: "Project not found." });
+    }
+    res.status(200).json({ message: "Project updated successfully!", project });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error updating project", error: error.message });
+  }
+};
+
+const deleteProject = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const project = await Project.findOneAndDelete({
+      _id: id,
+      user: req.user._id, //Making sure it belongs to the user
+    });
+
+    if (!project) {
+      return res.status(404).json({ message: "Project not found." });
+    }
+    res.status(200).json({ message: "Project deleted successfully." });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error deleteing project", error: error.message });
   }
 };
 
@@ -29,10 +71,10 @@ const getProjects = async (req, res) => {
       "tasks"
     );
 
-    if (!projects || projects.length === 0) {
+    if (projects.length === 0) {
       return res
-        .status(404)
-        .json({ message: "No project found for this user" });
+        .status(200)
+        .json({ message: "No project found for this user", projects: [] });
     }
     res
       .status(200)
@@ -48,8 +90,6 @@ const createTask = async (req, res) => {
   try {
     const { title, description, deadline, status } = req.body;
     const { projectId } = req.params;
-    console.log("Request body:", req.body);
-    console.log("Received projectId:", projectId);
 
     if (!mongoose.Types.ObjectId.isValid(projectId)) {
       return res.status(400).json({ message: "Invalid projectId" });
@@ -59,6 +99,13 @@ const createTask = async (req, res) => {
 
     if (!project) {
       return res.status(404).json({ message: "Project not found" });
+    }
+
+    const validStatuses = ["Pending", "In Progress", "Completed"];
+    const sanitizedStatuus = status.trim().replace(/\.$/, "");
+
+    if (!validStatuses.includes(sanitizedStatuus)) {
+      return res.status(400).json({ message: "Invalid status value" });
     }
 
     const task = await Task.create({
@@ -84,14 +131,18 @@ const getProjectTasks = async (req, res) => {
   try {
     const { projectId } = req.params;
 
-    const tasks = await Task.find({ project: projectId });
-
-    if (!tasks || tasks.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No tasks found for this project" });
+    if (!mongoose.Types.ObjectId.isValid(projectId)) {
+      return res.status(400).json({ message: "Invalid Project" });
     }
-    res.status(200).json({ message: "Task fetched successfully", tasks });
+
+    const project = await Project.findById(projectId).populate("tasks");
+
+    if (!project) {
+      return res.status(404).json({ message: "Project not found" });
+    }
+    res
+      .status(200)
+      .json({ message: "Project created successfully.", tasks: project.tasks });
   } catch (error) {
     res
       .status(500)
@@ -147,6 +198,8 @@ const deleteTask = async (req, res) => {
 
 module.exports = {
   createProject,
+  editProject,
+  deleteProject,
   getProjects,
   createTask,
   getProjectTasks,

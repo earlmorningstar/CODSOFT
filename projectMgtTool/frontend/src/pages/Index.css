@@ -1,0 +1,233 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/*  font-family: "Poppins", sans-serif; */
+
+/* SignUp Page/Login Page Section */
+
+.signup-login-mainContainer {
+  font-family: "Poppins", sans-serif;
+  background-color: #f0f4f8;
+  padding-top: 4rem;
+  height: 100vh;
+}
+
+.signup-login-typography-holder {
+  padding-top: 2.5rem;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.signup-login-switchLink {
+  text-decoration: none;
+  text-align: center;
+}
+
+.signup-login-navlink {
+  text-decoration: none;
+  color: #1976d2;
+}
+
+/* Splashscreen Section */
+
+.splashscreen-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 15em 3rem 3rem 3rem;
+  text-align: center;
+  height: 100vh;
+  background-color: #f0f4f8;
+  color: #333;
+  font-family: "Manrope", sans-serif;
+}
+
+.splashscreen-container h1 {
+  font-size: 3em;
+  margin-bottom: 1em;
+}
+
+.splashscreen-container h2 {
+  font-size: 1.5em;
+  color: #666;
+}
+
+/* Dashboard Section--- */
+
+.dash-main-container {
+  background-color: #f0f4f8;
+  padding: 3rem 5rem;
+  height: 100vh;
+}
+
+.dash-main-container h2 {
+  font-family: "Open Sans", sans-serif;
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+}
+
+.table-container {
+  font-family: "Poppins", sans-serif;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.table-header {
+  background-color: #e0dede;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.table-body {
+  background-color: #fff;
+}
+
+.table-row-header {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.project-link {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  text-decoration: none;
+  color: #000000;
+}
+
+#table-cell {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+#table-text-s {
+  font-size: 17px;
+}
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+.table-cell {
+  padding: 5px;
+  text-align: left;
+  overflow-wrap: break-word;
+  max-width: 20rem;
+  overflow: hidden;
+  white-space: normal;
+}
+
+#table-cell-btn {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 6rem;
+}
+
+#table-cell-btn button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.btn-edit {
+  background-color: #07b673;
+  color: #fff;
+}
+
+.btn-edit:hover {
+  background-color: #067a4e;
+}
+
+.btn-delete {
+  background-color: #e74c3c;
+  color: #fff;
+}
+
+.btn-delete:hover {
+  background-color: #c0392b;
+}
+
+.proj-btn {
+  cursor: pointer;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  background-color: #e0dede;
+  color: #000000;
+  font-size: 18px;
+  font-weight: 400;
+  margin-top: 2rem;
+}
+
+/* ---------- */
+
+@media screen and (max-width: 850px) {
+  .dash-main-container {
+    padding: 3rem 3rem;
+  }
+  .table-cell {
+    max-width: 15rem;
+  }
+
+  .table-row {
+    grid-template-columns: 1fr 1.5fr 1fr;
+  }
+  #table-text-s {
+    font-size: 15px;
+    font-weight: 400;
+  }
+}
+
+@media screen and (max-width: 715px) {
+  .dash-main-container {
+    padding: 3rem 2rem;
+  }
+  .table-row {
+    grid-template-columns: 1fr 1fr 0.5fr;
+  }
+  #table-cell {
+    font-size: 15px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .splashscreen-container {
+    padding: 15em 1rem 0 1rem;
+  }
+
+  .splashscreen-container h1 {
+    font-size: 2.5em;
+    margin-bottom: 1em;
+  }
+
+  .splashscreen-container h2 {
+    font-size: 1rem;
+    color: #666;
+  }
+  .dash-main-container {
+    padding: 3rem 1rem;
+  }
+  #table-text-s {
+    font-size: 12px;
+    font-weight: 400;
+  }
+  #table-cell {
+    font-size: 13px;
+  }
+}

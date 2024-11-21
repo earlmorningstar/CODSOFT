@@ -2,6 +2,8 @@ const express = require("express");
 const { protect } = require("../middleware/authMiddleware");
 const {
   createProject,
+  editProject,
+  deleteProject,
   getProjects,
   createTask,
   getProjectTasks,
@@ -16,6 +18,8 @@ router
   .route("/:projectId/tasks")
   .post(protect, createTask)
   .get(protect, getProjectTasks);
+
+router.route("/:id").put(protect, editProject).delete(protect, deleteProject);
 
 router
   .route("/:projectId/tasks/:taskId")

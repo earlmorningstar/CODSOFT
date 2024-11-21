@@ -7,8 +7,11 @@ const generateToken = (id) => {
 };
 
 const registerUser = async (req, res) => {
-  console.log("Request Body:", req.body);
-  const { name, email, password } = req.body;
+  const { name, email, password, confirmPassword } = req.body;
+
+  if (password !== confirmPassword) {
+    return res.status(400).json({ message: "Passwords do not match" });
+  }
   try {
     const userExists = await User.findOne({ email });
     if (userExists) {
@@ -56,15 +59,17 @@ const loginUser = async (req, res) => {
 };
 
 const getUserProfile = async (req, res) => {
-    try {
-        const user = await User.findById(req.user._id).select('-password');
-        if(!user) {
-            return res.status(404).json({message: 'User not found'});
-        }
-        res.json(user)
-    } catch(error) {
-        res.status(500).json({message: 'Error fetching user profile', error: error.message})
+  try {
+    const user = await User.findById(req.user._id).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
+    res.json(user);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error fetching user profile", error: error.message });
+  }
 };
 
 const updateUserProfile = async (req, res) => {
@@ -87,7 +92,9 @@ const updateUserProfile = async (req, res) => {
       email: updatedUser.email,
     });
   } catch (error) {
-    res.status(500).json({ message: "Error updating profile", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error updating profile", error: error.message });
   }
 };
 
