@@ -174,7 +174,7 @@ const ProjectDetails = ({ projectId }) => {
   };
 
   const handlePrevPage = () => {
-    navigate("/dashboard");
+    navigate("/dashboard", { replace: true });
   };
 
   return (
@@ -294,7 +294,7 @@ const ProjectDetails = ({ projectId }) => {
               onChange={(e) => setTaskStatus(e.target.value)}
             >
               <MenuItem value="Pending">Pending</MenuItem>
-              <MenuItem value="In progress">In Progress</MenuItem>
+              <MenuItem value="In Progress">In Progress</MenuItem>
               <MenuItem value="Completed">Completed</MenuItem>
             </Select>
             <FormHelperText>Required</FormHelperText>

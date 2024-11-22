@@ -44,7 +44,7 @@ const Login = () => {
       setSuccess("Login Successful!");
       setTimeout(() => {
         setSuccess("");
-        navigate("/dashboard");
+        navigate("/dashboard", {replace: true});
       }, 3000);
     } catch (err) {
       setError(

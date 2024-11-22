@@ -83,6 +83,13 @@
   margin-bottom: 2rem;
 }
 
+.dash-main-container h4 {
+  font-family: "Raleway", sans-serif;
+  font-weight: 500;
+  font-size: 1rem;
+  margin-bottom: 20px;
+}
+
 .dash-main-container form {
   width: 30rem;
 }
@@ -209,6 +216,13 @@
   margin: 2rem 0;
 }
 
+#proj-btn-id {
+  width: fit-content;
+}
+.btn-progress {
+  width: 8rem;
+}
+
 #logoutBtn {
   margin: 0;
 }
@@ -228,7 +242,7 @@
 
 .profile-flex span {
   display: flex;
-  align-items: center;
+  /* align-items: center; */
   gap: 5px;
   font-size: 20px;
   font-weight: 600;

@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "2h" });
 };
 
 const registerUser = async (req, res) => {

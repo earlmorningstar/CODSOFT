@@ -34,6 +34,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState(null);
+  const [logoutModalOpen, setLogoutModalOpen] = useState(false);
 
   const fetchProjects = async () => {
     try {
@@ -44,6 +45,16 @@ const Dashboard = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleLogout = async () => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        localStorage.removeItem("user");
+        navigate("/login", { replace: true });
+        resolve();
+      }, 1000);
+    });
   };
 
   const handleOpenDeleteModal = (projectId) => {
@@ -74,30 +85,31 @@ const Dashboard = () => {
     }
   };
 
+  const handlePopState = () => {
+    setLogoutModalOpen(true);
+  };
+
+  const handleCloseLogoutModal = () => {
+    setLogoutModalOpen(false);
+    window.history.pushState(null, "", window.location.pathname);
+  };
+
   useEffect(() => {
     fetchProjects();
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
   }, []);
-
-  const handleProfile = () => {
-    navigate("/profile");
-  };
-
-  const handleLogout = async () => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        localStorage.removeItem("user");
-        navigate("/login");
-        resolve();
-      }, 1000);
-    });
-  };
 
   return (
     <div className="dash-main-container">
       <section>
         <h2>Project Dashboard</h2>
         <div className="profile-logoutBtn-flex">
-          <span onClick={handleProfile} className="icon-pointer">
+          <span onClick={() => navigate("/profile")} className="icon-pointer">
             <CgProfile size={28} />
           </span>
           <span>
@@ -105,6 +117,7 @@ const Dashboard = () => {
           </span>
         </div>
       </section>
+      <h4>Click on project to assign a task to it</h4>
       {deleteError && (
         <Alert className="alert-message-holder" severity="error">
           {deleteError}
@@ -173,9 +186,36 @@ const Dashboard = () => {
           </div>
         </div>
       )}
-      <NavLink to="/create-project">
+      <NavLink id="proj-btn-id" to="/create-project">
         <button className="proj-btn">Create Project</button>
       </NavLink>
+      <Modal
+        open={logoutModalOpen}
+        onClose={handleCloseLogoutModal}
+        aria-labelledby="logout-modal-title"
+        aria-describedby="logout-modal-description"
+      >
+        <Box sx={style}>
+          <Typography id="logout-modal-title" variant="h6" component="h2">
+            Logout Confirmation
+          </Typography>
+          <Typography id="logout-modal-description" sx={{ mt: 2 }}>
+            Do you want to log out?
+          </Typography>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
+            <Button
+              onClick={handleCloseLogoutModal}
+              variant="outlined"
+              sx={{ mr: 2 }}
+            >
+              Cancel
+            </Button>
+            <Button onClick={handleLogout} variant="contained" color="error">
+              Logout
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
       <Modal
         open={deleteModalOpen}
         onClose={handleCloseDeleteModal}

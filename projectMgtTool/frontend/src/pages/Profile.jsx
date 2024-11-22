@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { TextField, Button, Alert, CircularProgress } from "@mui/material";
+import { TextField, Alert, CircularProgress } from "@mui/material";
 import api from "../utils/api";
 import { IoIosArrowRoundBack } from "react-icons/io";
 import { BsDot } from "react-icons/bs";
@@ -74,15 +74,24 @@ const Profile = () => {
           Account Created: <h4>{new Date(createdAt).toLocaleDateString()}</h4>{" "}
         </span>
         <span>
-          Status: <BsDot size={28} color="rgb(0, 255, 0)" /><h4>Active</h4>
+          Status: <BsDot size={28} color="rgb(0, 255, 0)" />
+          <h4>Active</h4>
         </span>
       </div>
 
       <section>
         <h2>Update Profile</h2>
       </section>
-      {error && <Alert className="alert-message-holder" severity="error">{error}</Alert>}
-      {success && <Alert className="alert-message-holder" severity="success">{success}</Alert>}
+      {error && (
+        <Alert className="alert-message-holder" severity="error">
+          {error}
+        </Alert>
+      )}
+      {success && (
+        <Alert className="alert-message-holder" severity="success">
+          {success}
+        </Alert>
+      )}
       <form onSubmit={handleUpdate}>
         <TextField
           fullWidth
@@ -107,15 +116,13 @@ const Profile = () => {
           margin="normal"
           helperText="Leave 'New Password' blank to keep your current password"
         />
-        <Button
-          type="submit"
-          variant="contained"
-          color="primary"
-          disabled={loading}
-          sx={{ mt: 2 }}
-        >
-          {loading ? <CircularProgress size={24} /> : "Update Profile"}
-        </Button>
+        <button disabled={loading} type="submit" className="proj-btn">
+          {loading ? (
+            <CircularProgress className="btn-progress" size={24} />
+          ) : (
+            "Update Profile"
+          )}
+        </button>
       </form>
     </div>
   );

@@ -6,7 +6,7 @@ function Splashscreen() {
 
   useEffect(() => {
     const switchPageTimer = setTimeout(() => {
-      navigate("/login");
+      navigate("/login", { replace: true });
     }, 5000);
     return () => clearTimeout(switchPageTimer);
   }, [navigate]);
