@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import CreateProject from "./pages/CreateProject";
 import EditProject from "./pages/EditProject";
 import ProjectDetailsPage from "./pages/ProjectDetailsPage";
+import Profile from "./pages/Profile";
 
 const router = createBrowserRouter(
   [
@@ -36,6 +37,10 @@ const router = createBrowserRouter(
     {
       path: "/projects/:projectId",
       element: <ProjectDetailsPage />,
+    },
+    {
+      path: "/profile",
+      element: <Profile />,
     },
   ],
   {

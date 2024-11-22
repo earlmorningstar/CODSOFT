@@ -1,15 +1,14 @@
 import { useState } from "react";
 import {
-  Box,
   TextField,
   Button,
-  Typography,
   Alert,
   CircularProgress,
   Stack,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import api from "../utils/api";
+import { IoIosArrowRoundBack } from "react-icons/io";
 
 const CreateProject = () => {
   const [name, setName] = useState("");
@@ -38,18 +37,33 @@ const CreateProject = () => {
     }
   };
 
+  const handlePrevPage = () => {
+    navigate("/dashboard");
+  };
+
   return (
-    <Box sx={{ maxWidth: "500px", margin: "0 auto", padding: "1rem" }}>
-      <Typography variant="h4" gutterBottom>
-        Create a New Project
-      </Typography>
+    <div className="dash-main-container">
+      <section>
+        <h2>Create a New Project</h2>
+        <span className="icon-pointer" onClick={handlePrevPage}>
+          <IoIosArrowRoundBack size={40} />
+        </span>
+      </section>
       {message && (
-        <Alert severity="success" sx={{ marginBottom: 2 }}>
+        <Alert
+          className="alert-message-holder"
+          severity="success"
+          sx={{ marginBottom: 2 }}
+        >
           {message}
         </Alert>
       )}
       {error && (
-        <Alert severity="error" sx={{ marginBottom: 2 }}>
+        <Alert
+          className="alert-message-holder"
+          severity="error"
+          sx={{ marginBottom: 2 }}
+        >
           {error}
         </Alert>
       )}
@@ -86,7 +100,7 @@ const CreateProject = () => {
           </Button>
         </Stack>
       </form>
-    </Box>
+    </div>
   );
 };
 

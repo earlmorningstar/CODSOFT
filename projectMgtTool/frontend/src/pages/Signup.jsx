@@ -86,6 +86,7 @@ const Signup = () => {
         password,
         confirmPassword,
       });
+      console.log("Response", data);
       setSuccess("Registration successful. Please login.");
       setTimeout(() => {
         setSuccess("");

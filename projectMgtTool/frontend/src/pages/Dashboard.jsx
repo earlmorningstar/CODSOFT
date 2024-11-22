@@ -1,13 +1,29 @@
 import { useEffect, useState } from "react";
+import { useNavigate, NavLink } from "react-router-dom";
+import api from "../utils/api";
+import LogoutModal from "./LogoutModal";
 import {
   Box,
   Typography,
   CircularProgress,
   Alert,
+  Modal,
+  Button,
 } from "@mui/material";
-import { useNavigate, NavLink } from "react-router-dom";
-import api from "../utils/api";
+import { CgProfile } from "react-icons/cg";
 import "./Index.css";
+
+const style = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 350,
+  bgcolor: "background.paper",
+  border: "1px solid #fff",
+  boxShadow: 24,
+  p: 2,
+};
 
 const Dashboard = () => {
   const [projects, setProjects] = useState([]);
@@ -16,6 +32,8 @@ const Dashboard = () => {
   const [deleteError, setDeleteError] = useState("");
   const [deleteSuccess, setDeleteSuccess] = useState("");
   const navigate = useNavigate();
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState(null);
 
   const fetchProjects = async () => {
     try {
@@ -28,11 +46,25 @@ const Dashboard = () => {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleOpenDeleteModal = (projectId) => {
+    setProjectToDelete(projectId);
+    setDeleteModalOpen(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setProjectToDelete(null);
+    setDeleteModalOpen(false);
+  };
+
+  const handleConfirmDeleteProject = async () => {
+    if (!projectToDelete) return;
     try {
-      await api.delete(`/projects/${id}`);
+      await api.delete(`/projects/${projectToDelete}`);
       setDeleteSuccess("Project deleted successfully!");
-      setProjects((prev) => prev.filter((project) => project._id !== id));
+      setProjects((prev) =>
+        prev.filter((project) => project._id !== projectToDelete)
+      );
+      handleCloseDeleteModal();
       setTimeout(() => setDeleteSuccess(""), 3000);
     } catch (err) {
       setDeleteError(
@@ -46,11 +78,43 @@ const Dashboard = () => {
     fetchProjects();
   }, []);
 
+  const handleProfile = () => {
+    navigate("/profile");
+  };
+
+  const handleLogout = async () => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        localStorage.removeItem("user");
+        navigate("/login");
+        resolve();
+      }, 1000);
+    });
+  };
+
   return (
     <div className="dash-main-container">
-      <h2>Project Dashboard</h2>
-      {deleteError && <Alert severity="error">{deleteError}</Alert>}
-      {deleteSuccess && <Alert severity="success">{deleteSuccess}</Alert>}
+      <section>
+        <h2>Project Dashboard</h2>
+        <div className="profile-logoutBtn-flex">
+          <span onClick={handleProfile} className="icon-pointer">
+            <CgProfile size={28} />
+          </span>
+          <span>
+            <LogoutModal onLogout={handleLogout} />
+          </span>
+        </div>
+      </section>
+      {deleteError && (
+        <Alert className="alert-message-holder" severity="error">
+          {deleteError}
+        </Alert>
+      )}
+      {deleteSuccess && (
+        <Alert className="alert-message-holder" severity="success">
+          {deleteSuccess}
+        </Alert>
+      )}
       {loading ? (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
           <CircularProgress />
@@ -62,49 +126,10 @@ const Dashboard = () => {
           No projects found. Start by adding a new project!
         </Typography>
       ) : (
-        // <TableContainer component={Paper}>
-        //   <Table>
-        //     <TableHead>
-        //       <TableRow>
-        //         <TableCell>Project Name</TableCell>
-        //         <TableCell>Description</TableCell>
-        //         <TableCell>Actions</TableCell>
-        //       </TableRow>
-        //     </TableHead>
-        //     <TableBody>
-        //       {projects.map((project) => (
-        //         <TableRow key={project._id}>
-        //           <TableCell><NavLink to={`/projects/${project._id}`}>{project.name}</NavLink></TableCell>
-        //           <TableCell>{project.description}</TableCell>
-        //           <TableCell>
-        //             <Button
-        //               variant="contained"
-        //               color="primary"
-        //               size="small"
-        //               onClick={() => navigate(`/edit-project/${project._id}`)}
-        //             >
-        //               Edit
-        //             </Button>
-        //             <Button
-        //               variant="contained"
-        //               color="error"
-        //               size="small"
-        //               sx={{ ml: 1 }}
-        //               onClick={() => handleDelete(project._id)}
-        //             >
-        //               Delete
-        //             </Button>
-        //           </TableCell>
-        //         </TableRow>
-        //       ))}
-        //     </TableBody>
-        //   </Table>
-        // </TableContainer>
-
         <div className="table-container">
           <div className="table-header">
             <div className="table-row-header">
-              <h3 id="table-cell">Project Name</h3>
+              <h3 id="table-cell">Name</h3>
               <h3 id="table-cell">Description</h3>
               <h3 id="table-cell">Actions</h3>
             </div>
@@ -119,32 +144,69 @@ const Dashboard = () => {
                   <div className="table-cell" id="table-text-s">
                     {project.name}
                   </div>
+                </NavLink>
+                <NavLink
+                  to={`/projects/${project._id}`}
+                  className="project-link"
+                >
                   <div className="table-cell" id="table-text-s">
                     {project.description}
                   </div>
-                  <div className="table-cell" id="table-cell-btn">
-                    <button
-                      className="btn btn-edit"
-                      onClick={() => navigate(`/edit-project/${project._id}`)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="btn btn-delete"
-                      onClick={() => handleDelete(project._id)}
-                    >
-                      Delete
-                    </button>
-                  </div>
                 </NavLink>
+
+                <div className="table-cell" id="table-cell-btn">
+                  <button
+                    className="btn btn-edit"
+                    onClick={() => navigate(`/edit-project/${project._id}`)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="btn btn-delete"
+                    onClick={() => handleOpenDeleteModal(project._id)}
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
             ))}
           </div>
         </div>
       )}
       <NavLink to="/create-project">
-        <button className="proj-btn">Create project</button>
+        <button className="proj-btn">Create Project</button>
       </NavLink>
+      <Modal
+        open={deleteModalOpen}
+        onClose={handleCloseDeleteModal}
+        aria-labelledby="delete-modal-title"
+        aria-describedby="delete-modal-description"
+      >
+        <Box sx={style}>
+          <Typography id="delete-modal-title" variant="h6" component="h2">
+            Are you sure you want to permanently delete this project?
+          </Typography>
+          <Typography id="delete-modal-description" sx={{ mt: 2 }}>
+            Projects cannot be recovered after this action.
+          </Typography>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
+            <Button
+              onClick={handleCloseDeleteModal}
+              variant="outlined"
+              sx={{ mr: 2 }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleConfirmDeleteProject}
+              variant="contained"
+              color="error"
+            >
+              Delete
+            </Button>
+          </Box>
+        </Box>
+      </Modal>
     </div>
   );
 };

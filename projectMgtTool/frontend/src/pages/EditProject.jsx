@@ -3,13 +3,13 @@ import {
   Box,
   TextField,
   Button,
-  Typography,
   Alert,
   CircularProgress,
   Stack,
 } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../utils/api";
+import { IoIosArrowRoundBack } from "react-icons/io";
 
 const EditProject = () => {
   const { id } = useParams();
@@ -60,18 +60,34 @@ const EditProject = () => {
       </Box>
     );
   }
+
+  const handlePrevPage = () => {
+    navigate("/dashboard");
+  };
+
   return (
-    <Box sx={{ maxWidth: "500px", margin: "0 auto", padding: "1rem" }}>
-      <Typography variant="h4" gutterBottom>
-        Edit Project
-      </Typography>
+    <div className="dash-main-container">
+      <section>
+        <h2>Edit Project</h2>
+        <span className="icon-pointer" onClick={handlePrevPage}>
+          <IoIosArrowRoundBack size={40} />
+        </span>
+      </section>
       {message && (
-        <Alert severity="success" sx={{ marginBottom: 2 }}>
+        <Alert
+          className="alert-message-holder"
+          severity="success"
+          sx={{ marginBottom: 2 }}
+        >
           {message}
         </Alert>
       )}
       {error && (
-        <Alert severity="error" sx={{ marginBottom: 2 }}>
+        <Alert
+          className="alert-message-holder"
+          severity="error"
+          sx={{ marginBottom: 2 }}
+        >
           {error}
         </Alert>
       )}
@@ -108,7 +124,7 @@ const EditProject = () => {
           </Button>
         </Stack>
       </form>
-    </Box>
+    </div>
   );
 };
 
