@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { TextField, Alert, CircularProgress } from "@mui/material";
 import api from "../utils/api";
 import { IoIosArrowRoundBack } from "react-icons/io";
-import { BsDot } from "react-icons/bs";
 
 const Profile = () => {
   const [name, setName] = useState("");
@@ -74,7 +73,7 @@ const Profile = () => {
           Account Created: <h4>{new Date(createdAt).toLocaleDateString()}</h4>{" "}
         </span>
         <span>
-          Status: <BsDot size={28} color="rgb(0, 255, 0)" />
+          Status:
           <h4>Active</h4>
         </span>
       </div>

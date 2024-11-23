@@ -117,7 +117,7 @@ const Dashboard = () => {
           </span>
         </div>
       </section>
-      <h4>Click on project to assign a task to it</h4>
+      {projects.length > 0 && <h4>Click on project to assign a task to it</h4>}
       {deleteError && (
         <Alert className="alert-message-holder" severity="error">
           {deleteError}
@@ -133,7 +133,9 @@ const Dashboard = () => {
           <CircularProgress />
         </Box>
       ) : error ? (
-        <Alert severity="error">{error}</Alert>
+        <Alert className="alert-message-holder" severity="error">
+          {error}
+        </Alert>
       ) : projects.length === 0 ? (
         <Typography>
           No projects found. Start by adding a new project!

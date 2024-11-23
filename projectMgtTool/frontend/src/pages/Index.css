@@ -242,7 +242,6 @@
 
 .profile-flex span {
   display: flex;
-  /* align-items: center; */
   gap: 5px;
   font-size: 20px;
   font-weight: 600;
@@ -251,6 +250,16 @@
 .profile-flex span h4 {
   font-size: 20px;
   font-weight: 400;
+}
+
+.error-main-container {
+  font-family: "Open Sans", sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding-top: 2rem;
+
 }
 /* ---------- */
 

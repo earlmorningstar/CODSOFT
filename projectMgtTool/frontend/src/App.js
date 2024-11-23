@@ -7,40 +7,50 @@ import CreateProject from "./pages/CreateProject";
 import EditProject from "./pages/EditProject";
 import ProjectDetailsPage from "./pages/ProjectDetailsPage";
 import Profile from "./pages/Profile";
+import ScrollPosition from "./hooks/ScrollPosition";
+import ErrorPage from "./pages/ErrorPage";
 
 const router = createBrowserRouter(
   [
     {
       path: "/",
       element: <Splashscreen />,
+      errorElement: <ErrorPage />,
     },
     {
       path: "/signup",
       element: <Signup />,
+      errorElement: <ErrorPage />,
     },
     {
       path: "/login",
       element: <Login />,
+      errorElement: <ErrorPage />,
     },
     {
       path: "/dashboard",
       element: <Dashboard />,
+      errorElement: <ErrorPage />,
     },
     {
       path: "/create-project",
       element: <CreateProject />,
+      errorElement: <ErrorPage />,
     },
     {
       path: "/edit-project/:id",
       element: <EditProject />,
+      errorElement: <ErrorPage />,
     },
     {
       path: "/projects/:projectId",
       element: <ProjectDetailsPage />,
+      errorElement: <ErrorPage />,
     },
     {
       path: "/profile",
       element: <Profile />,
+      errorElement: <ErrorPage />,
     },
   ],
   {
@@ -51,7 +61,11 @@ const router = createBrowserRouter(
 );
 
 const App = () => {
-  return <RouterProvider router={router} />;
+  return (
+    <RouterProvider router={router}>
+      <ScrollPosition />
+    </RouterProvider>
+  );
 };
 
 export default App;
