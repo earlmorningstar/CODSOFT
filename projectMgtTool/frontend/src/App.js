@@ -1,14 +1,17 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
+import { Suspense, lazy } from "react";
 import Splashscreen from "./pages/Splashscreen";
-import Dashboard from "./pages/Dashboard";
-import CreateProject from "./pages/CreateProject";
-import EditProject from "./pages/EditProject";
-import ProjectDetailsPage from "./pages/ProjectDetailsPage";
-import Profile from "./pages/Profile";
-import ScrollPosition from "./hooks/ScrollPosition";
-import ErrorPage from "./pages/ErrorPage";
+
+const Login = lazy(() => import("./pages/Login"));
+const Signup = lazy(() => import("./pages/Signup"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const CreateProject = lazy(() => import("./pages/CreateProject"));
+const EditProject = lazy(() => import("./pages/EditProject"));
+const ProjectDetailsPage = lazy(() => import("./pages/ProjectDetailsPage"));
+const Profile = lazy(() => import("./pages/Profile"));
+const ScrollPosition = lazy(() => import("./hooks/ScrollPosition"));
+const ErrorPage = lazy(() => import("./pages/ErrorPage"));
+const Fallback = lazy(() => import("./components/Fallback"));
 
 const router = createBrowserRouter(
   [
@@ -19,38 +22,94 @@ const router = createBrowserRouter(
     },
     {
       path: "/signup",
-      element: <Signup />,
-      errorElement: <ErrorPage />,
+      element: (
+        <Suspense fallback={<Fallback />}>
+          <Signup />
+        </Suspense>
+      ),
+      errorElement: (
+        <Suspense fallback={<Fallback />}>
+          <ErrorPage />
+        </Suspense>
+      ),
     },
     {
       path: "/login",
-      element: <Login />,
-      errorElement: <ErrorPage />,
+      element: (
+        <Suspense fallback={<Fallback />}>
+          <Login />
+        </Suspense>
+      ),
+      errorElement: (
+        <Suspense fallback={<Fallback />}>
+          <ErrorPage />
+        </Suspense>
+      ),
     },
     {
       path: "/dashboard",
-      element: <Dashboard />,
-      errorElement: <ErrorPage />,
+      element: (
+        <Suspense fallback={<Fallback />}>
+          <Dashboard />
+        </Suspense>
+      ),
+      errorElement: (
+        <Suspense fallback={<Fallback />}>
+          <ErrorPage />
+        </Suspense>
+      ),
     },
     {
       path: "/create-project",
-      element: <CreateProject />,
-      errorElement: <ErrorPage />,
+      element: (
+        <Suspense fallback={<Fallback />}>
+          <CreateProject />
+        </Suspense>
+      ),
+      errorElement: (
+        <Suspense fallback={<Fallback />}>
+          <ErrorPage />
+        </Suspense>
+      ),
     },
     {
       path: "/edit-project/:id",
-      element: <EditProject />,
-      errorElement: <ErrorPage />,
+      element: (
+        <Suspense fallback={<Fallback />}>
+          <EditProject />
+        </Suspense>
+      ),
+      errorElement: (
+        <Suspense fallback={<Fallback />}>
+          <ErrorPage />
+        </Suspense>
+      ),
     },
     {
       path: "/projects/:projectId",
-      element: <ProjectDetailsPage />,
-      errorElement: <ErrorPage />,
+      element: (
+        <Suspense fallback={<Fallback />}>
+          <ProjectDetailsPage />
+        </Suspense>
+      ),
+      errorElement: (
+        <Suspense fallback={<Fallback />}>
+          <ErrorPage />
+        </Suspense>
+      ),
     },
     {
       path: "/profile",
-      element: <Profile />,
-      errorElement: <ErrorPage />,
+      element: (
+        <Suspense fallback={<Fallback />}>
+          <Profile />
+        </Suspense>
+      ),
+      errorElement: (
+        <Suspense fallback={<Fallback />}>
+          <ErrorPage />
+        </Suspense>
+      ),
     },
   ],
   {
@@ -62,9 +121,13 @@ const router = createBrowserRouter(
 
 const App = () => {
   return (
-    <RouterProvider router={router}>
-      <ScrollPosition />
-    </RouterProvider>
+    <>
+      <Suspense fallback={<Fallback />}>
+        <RouterProvider router={router}>
+          <ScrollPosition />
+        </RouterProvider>
+      </Suspense>
+    </>
   );
 };
 

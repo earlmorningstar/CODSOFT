@@ -12,7 +12,20 @@ function Splashscreen() {
   }, [navigate]);
 
   return (
-    <div className="splashscreen-container">
+    <div
+      className="splashscreen-container"
+      style={{
+        backgroundColor: "#f0f4f8",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        padding: "15em 3rem 3rem 3rem",
+        textAlign: "center",
+        height: "100vh",
+        color: "#333",
+        fontFamily: "'Manrope', sans-serif",
+      }}
+    >
       <h1>Project Management App</h1>
       <h2>Streamline Projects. Boost Productivity.</h2>
     </div>
