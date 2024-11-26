@@ -123,7 +123,10 @@ const createTask = async (req, res) => {
   } catch (error) {
     res
       .status(500)
-      .json({ message: "Error creating task", error: error.message });
+      .json({
+        message: "Error creating task: All fields are required",
+        error: error.message,
+      });
   }
 };
 

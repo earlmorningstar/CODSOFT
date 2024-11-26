@@ -20,6 +20,8 @@ import {
 import api from "../utils/api";
 import { useNavigate } from "react-router-dom";
 import { IoIosArrowRoundBack } from "react-icons/io";
+import { RiCheckboxBlankFill } from "react-icons/ri";
+import { TbRectangleFilled } from "react-icons/tb";
 
 const style = {
   position: "absolute",
@@ -81,6 +83,14 @@ const ProjectDetails = ({ projectId }) => {
     setOpenDialog(true);
   };
 
+  const resetForm = () => {
+    setTaskName("");
+    setTaskDescription("");
+    setTaskDeadline("");
+    setTaskStatus("Pending");
+    setCurrentTask(null);
+  };
+
   const handleCloseDialog = () => {
     setOpenDialog(false);
     resetForm();
@@ -94,14 +104,6 @@ const ProjectDetails = ({ projectId }) => {
   const handleCloseDeleteModal = () => {
     setTaskToDelete(null);
     setDeleteModalOpen(false);
-  };
-
-  const resetForm = () => {
-    setTaskName("");
-    setTaskDescription("");
-    setTaskDeadline("");
-    setTaskStatus("Pending");
-    setCurrentTask(null);
   };
 
   const handleCreateTask = async () => {
@@ -120,6 +122,7 @@ const ProjectDetails = ({ projectId }) => {
       setError(
         err.response?.data?.message || "Failed to create task. Try again."
       );
+      handleCloseDialog();
     } finally {
       setLoading(false);
       setTimeout(() => {
@@ -185,6 +188,17 @@ const ProjectDetails = ({ projectId }) => {
           <IoIosArrowRoundBack size={40} />
         </span>
       </section>
+      <main>
+        <p>
+          Pending <RiCheckboxBlankFill size={15} color="#BDBDBD" />
+        </p>
+        <p>
+          In-Progress <RiCheckboxBlankFill size={15} color="#AB47BC" />
+        </p>
+        <p>
+          Completed <RiCheckboxBlankFill size={15} color="#4CAF50" />
+        </p>
+      </main>
       {loading ? (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
           <CircularProgress />
@@ -227,7 +241,24 @@ const ProjectDetails = ({ projectId }) => {
                       {task.deadline.slice(0, 10)}
                     </div>
                     <div className="table-cell" id="table-text-s">
-                      {task.status}
+                      {task.status === "Pending" && (
+                        <TbRectangleFilled
+                          className="task-status-icon"
+                          color="#BDBDBD"
+                        />
+                      )}
+                      {task.status === "In Progress" && (
+                        <TbRectangleFilled
+                          className="task-status-icon"
+                          color="#AB47BC"
+                        />
+                      )}
+                      {task.status === "Completed" && (
+                        <TbRectangleFilled
+                          className="task-status-icon"
+                          color="#4CAF50"
+                        />
+                      )}
                     </div>
                     <div className="table-cell" id="table-cell-btn">
                       <button
@@ -283,6 +314,7 @@ const ProjectDetails = ({ projectId }) => {
             type="date"
             value={taskDeadline}
             onChange={(e) => setTaskDeadline(e.target.value)}
+            helperText="Deadline is required"
           />
           <FormControl required sx={{ m: 1, Width: "100%" }}>
             <InputLabel id="task-status-label">Status</InputLabel>

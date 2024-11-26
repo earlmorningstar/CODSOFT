@@ -15,7 +15,7 @@
   font-family: "Poppins", sans-serif;
   background-color: #f0f4f8;
   padding-top: 4rem;
-  height: 100vh;
+  height: 100vh;  
 }
 
 .signup-login-typography-holder {
@@ -81,6 +81,25 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 2rem;
+}
+
+.dash-main-container main{
+  font-family: "Raleway", sans-serif;
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.dash-main-container main p {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 13px;
+}
+
+.task-status-icon {
+  width: 3rem;
+  height: 2rem;
 }
 
 .dash-main-container h4 {
