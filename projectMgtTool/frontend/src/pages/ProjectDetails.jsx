@@ -50,7 +50,7 @@ const ProjectDetails = ({ projectId }) => {
 
   const fetchTasks = async () => {
     try {
-      const { data } = await api.get(`/projects/${projectId}/tasks`);
+      const { data } = await api.get(`/api/projects/${projectId}/tasks`);
       setTasks(data.tasks);
     } catch (err) {
       setError(err.response?.data?.message || "Failed to fetch tasks.");
@@ -107,7 +107,7 @@ const ProjectDetails = ({ projectId }) => {
   const handleCreateTask = async () => {
     try {
       setLoading(true);
-      await api.post(`/projects/${projectId}/tasks`, {
+      await api.post(`/api/projects/${projectId}/tasks`, {
         title: taskName,
         description: taskDescription,
         deadline: taskDeadline,
@@ -132,7 +132,7 @@ const ProjectDetails = ({ projectId }) => {
   const handleUpdateTask = async () => {
     try {
       setLoading(true);
-      await api.put(`/projects/${projectId}/tasks/${currentTask._id}`, {
+      await api.put(`/api/projects/${projectId}/tasks/${currentTask._id}`, {
         title: taskName,
         description: taskDescription,
         deadline: taskDeadline,
@@ -158,7 +158,7 @@ const ProjectDetails = ({ projectId }) => {
     if (!taskToDelete) return;
     try {
       setLoading(true);
-      await api.delete(`/projects/${projectId}/tasks/${taskToDelete}`);
+      await api.delete(`/api/projects/${projectId}/tasks/${taskToDelete}`);
       setSuccess("Task deleted successfully.");
       fetchTasks();
       handleCloseDeleteModal();

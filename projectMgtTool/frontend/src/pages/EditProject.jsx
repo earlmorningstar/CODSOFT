@@ -24,7 +24,7 @@ const EditProject = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const { data } = await api.put(`/projects/${id}`);
+        const { data } = await api.put(`/api/projects/${id}`);
         setName(data.name);
         setDescription(data.description);
       } catch (err) {
@@ -43,7 +43,7 @@ const EditProject = () => {
     setMessage("");
 
     try {
-      const { data } = await api.put(`/projects/${id}`, { name, description });
+      const { data } = await api.put(`/api/projects/${id}`, { name, description });
       setMessage(data.message || "Project updated successfully!");
       setTimeout(() => navigate("/dashboard"), 2000);
     } catch (err) {

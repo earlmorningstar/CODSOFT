@@ -38,13 +38,13 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const { data } = await api.post("/users/login", { email, password });
+      const { data } = await api.post("/api/users/login", { email, password });
       login(data);
       localStorage.setItem("user", JSON.stringify(data));
       setSuccess("Login Successful!");
       setTimeout(() => {
         setSuccess("");
-        navigate("/dashboard", {replace: true});
+        navigate("/dashboard", { replace: true });
       }, 3000);
     } catch (err) {
       setError(

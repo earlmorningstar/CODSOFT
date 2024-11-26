@@ -38,7 +38,7 @@ const Dashboard = () => {
 
   const fetchProjects = async () => {
     try {
-      const { data } = await api.get("/projects");
+      const { data } = await api.get("/api/projects");
       setProjects(data.projects || []);
     } catch (err) {
       setError(err.response?.data?.message || "Failed to fetch projects.");
@@ -70,7 +70,7 @@ const Dashboard = () => {
   const handleConfirmDeleteProject = async () => {
     if (!projectToDelete) return;
     try {
-      await api.delete(`/projects/${projectToDelete}`);
+      await api.delete(`/api/projects/${projectToDelete}`);
       setDeleteSuccess("Project deleted successfully!");
       setProjects((prev) =>
         prev.filter((project) => project._id !== projectToDelete)

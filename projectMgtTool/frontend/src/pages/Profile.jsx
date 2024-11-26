@@ -12,12 +12,36 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const navigate = useNavigate();
 
+  const validateForm = () => {
+    if (password) {
+      if (password.length < 6) {
+        setError("Password must be at least 6 characters long");
+        return false;
+      }
+      const uppercaseRegex = /[A-Z]/;
+      if (!uppercaseRegex.test(password)) {
+        setError("Password must contain at least one uppercase letter");
+        return false;
+      }
+      if (password === "Password") {
+        setError("Password cannot be 'Password'");
+        return false;
+      }
+      if (password !== confirmPassword) {
+        setError("Passwords do not match");
+        return false;
+      }
+    }
+    return true;
+  };
+
   const fetchUserProfile = async () => {
     try {
-      const { data } = await api.get("/users/profile");
+      const { data } = await api.get("/api/users/profile");
       setName(data.name);
       setEmail(data.email);
       setCreatedAt(data.createdAt);
@@ -31,13 +55,21 @@ const Profile = () => {
     setLoading(true);
     setError("");
     setSuccess("");
+
+    if (!validateForm()) {
+      setLoading(false);
+      return;
+    }
+
     try {
-      await api.put("/users/profile", {
+      await api.put("/api/users/profile", {
         name,
         email,
         password,
       });
       setSuccess("Profile updated successfully!");
+      setPassword("");
+      setConfirmPassword("");
     } catch (err) {
       setError(err.response?.data?.message || "Failed to upddate profile");
     } finally {
@@ -113,7 +145,16 @@ const Profile = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           margin="normal"
-          helperText="Leave 'New Password' blank to keep your current password"
+          helperText="Leave this input blank to keep your current password"
+        />
+        <TextField
+          fullWidth
+          label="Confirm New Password"
+          type="password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          margin="normal"
+          helperText="Leave this input blank to keep your current password"
         />
         <button disabled={loading} type="submit" className="proj-btn">
           {loading ? (

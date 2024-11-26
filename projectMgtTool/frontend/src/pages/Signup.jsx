@@ -80,7 +80,7 @@ const Signup = () => {
     setSuccess("");
 
     try {
-      const { data } = await api.post("/users/register", {
+      const { data } = await api.post("/api/users/register", {
         name,
         email,
         password,

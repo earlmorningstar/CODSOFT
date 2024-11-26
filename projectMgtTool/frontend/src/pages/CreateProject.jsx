@@ -25,7 +25,7 @@ const CreateProject = () => {
     setError("");
 
     try {
-      const { data } = await api.post("/projects", { name, description });
+      const { data } = await api.post("/api/projects", { name, description });
       setMessage(data.message || "Project created successfully!");
       setTimeout(() => {
         navigate("/dashboard", {replace: true});
