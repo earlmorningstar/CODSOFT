@@ -1,13 +1,6 @@
 const Cart = require("../models/Cart");
 const Product = require("../models/Products");
-
-const sendError = (res, statusCode, message, error = null) => {
-  res.status(statusCode).json({ success: true, message, error });
-};
-
-const sendSuccess = (res, statusCode, message, data = null) => {
-  res.status(statusCode).json({ success: true, message, data });
-};
+const { sendSuccess, sendError } = require("../utils/response");
 
 const getCart = async (req, res) => {
   try {

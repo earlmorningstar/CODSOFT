@@ -1,28 +1,29 @@
 const Product = require("../models/Products");
-
-const sendError = (res, statusCode, message, error = null) => {
-  res.status(statusCode).json({ success: true, message, error });
-};
-
-const sendSuccess = (res, statusCode, message, data = null) => {
-  res.status(statusCode).json({ success: true, message, data });
-};
+const User = require("../models/User");
+const { sendSuccess, sendError } = require("../utils/response");
 
 const getProducts = async (req, res) => {
   try {
-    const { category, minPrice, maxPrice, search } = req.query;
+    const { category, minPrice, maxPrice, search, priceRange, sort } =
+      req.query;
     let query = {};
+    let sortCriteria = {};
 
     //filter by category
     if (category) {
       query.category = category;
     }
-    //filter by priice range
-    if (minPrice || maxPrice) {
+
+    //filtering by price range (using either minPrice/maxPrice or priceRange)
+    if (priceRange) {
+      const [min, max] = priceRange.split("-");
+      query.price = { $gte: Number(min), $lte: Number(max) };
+    } else if (minPrice || maxPrice) {
       query.price = {};
       if (minPrice) query.price.$gte = parseFloat(minPrice);
       if (maxPrice) query.price.$lte = parseFloat(maxPrice);
     }
+
     // search by name or description
     if (search) {
       query.$or = [
@@ -31,7 +32,12 @@ const getProducts = async (req, res) => {
       ];
     }
 
-    const products = await Product.find(query);
+    //sorting criteria
+    if (sort === "price") sortCriteria.price = 1;
+    if (sort === "price") sortCriteria.price = -1;
+    if (sort === "rating") sortCriteria.averageRating = 1;
+
+    const products = await Product.find(query).sort(sortCriteria);
     if (products.length === 0) {
       return sendSuccess(res, 200, "No products match the criteria", []);
     }
@@ -105,10 +111,96 @@ const deleteProduct = async (req, res) => {
   }
 };
 
+const addToRecentlyViewed = async (req, res) => {
+  try {
+    const { productId } = req.body;
+    const user = await User.findById(req.user.id);
+
+    const product = await Product.findById(productId);
+    if (!product) {
+      sendError(res, 404, "Product not found");
+    }
+
+    if (!user.recentlyViewed.includes(productId)) {
+      user.recentlyViewed.unshift(productId);
+      if (user.recentlyViewed.length > 10) {
+        user.recentlyViewed.pop();
+      }
+      await user.save();
+    }
+    sendSuccess(res, 200, "Product added to recently viewed");
+  } catch (error) {
+    sendError(res, 500, error.message);
+  }
+};
+
+const getRecommendations = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).populate("recentlyViewed");
+    if (!user) {
+      sendError(res, 404, "User not found");
+    }
+
+    const categories = user.recentlyViewed.map((product) => product.category);
+    const recommendations = await Product.find({
+      category: { $in: categories },
+    })
+      .sort({ rating: -1 })
+      .limit(10);
+    if (!recommendations) {
+      sendError(res, 404, "No recommendations available.");
+    }
+    sendSuccess(res, 200, recommendations);
+  } catch (error) {
+    sendError(res, 500, error.message);
+  }
+};
+
+const addProductReview = async (req, res) => {
+  try {
+    const { productId, rating, comment } = req.body;
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      sendError(res, 404, "Product not found");
+      return;
+    }
+    const alreadyreviewed = product.reviews.find(
+      (r) => r.user.toString() === req.user.id.toString()
+    );
+    if (alreadyreviewed) {
+      sendError(res, 400, "Product already reviewed");
+      return;
+    }
+
+    const review = {
+      user: req.user.id,
+      name: req.user.name,
+      rating: Number(rating),
+      comment,
+    };
+
+    product.reviews.push(review);
+    product.numberOfRatings = product.reviews.length;
+    product.averageRating =
+      product.reviews.reduce((acc, r) => acc + r.rating, 0) /
+      product.reviews.length;
+
+    await product.save();
+
+    sendSuccess(res, 200, "Review added successfully");
+  } catch (error) {
+    sendError(res, 500, error.message);
+  }
+};
+
 module.exports = {
   getProducts,
   getProductById,
   createProduct,
   updateProduct,
   deleteProduct,
+  addToRecentlyViewed,
+  getRecommendations,
+  addProductReview,
 };

@@ -15,6 +15,23 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: [true],
   },
+  role: {
+    type: String,
+    enum: ["user", "admin"],
+    default: "user",
+  },
+  recentlyViewed: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+    }
+  ],
+  wishlist: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product"
+    }
+  ]
 });
 
 UserSchema.pre("save", async function (next) {
