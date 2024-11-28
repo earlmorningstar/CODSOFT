@@ -101,28 +101,6 @@ const placeOrder = async (req, res) => {
   }
 };
 
-const viewOrderHistory = async (req, res) => {
-  try {
-    const orders = await Order.find({ user: req.user.id }).sort({
-      createdAt: -1,
-    });
-
-    sendSuccess(res, 200, "Order history retrieved successfully", orders);
-  } catch (error) {
-    sendError(res, 500, "Failed to retrieve order history", error.message);
-  }
-};
-
-const viewAllOrders = async (req, res) => {
-  try {
-    const orders = await Order.find().sort({ createdAt: -1 });
-
-    sendSuccess(res, 200, "All orders retrieved successfully", orders);
-  } catch (error) {
-    sendError(res, 500, "Failed to retrieve orders", error.message);
-  }
-};
-
 const updateOrderStatus = async (req, res) => {
   try {
     const { status } = req.body;
@@ -146,10 +124,42 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
+const getOrders = async (req, res) => {
+  try {
+    const { page = 1, limit = 10 } = req.query;
+
+    const pageNumber = parseInt(page, 10);
+    const limitNumber = parseInt(limit, 10);
+
+    const query = req.user.isAdmin
+      ? {} //admin sees all orders
+      : { user: req.user.id }; //reg users sees their orders only
+
+    const totalOrders = await Order.countDocuments(query);
+
+    const orders = await Order.find(query)
+      .skip((pageNumber - 1) * limitNumber)
+      .limit(limitNumber)
+      .sort({ createdAt: -1 });
+
+    sendSuccess(res, 200, "Order retrieved successfully", {
+      orders,
+      pagination: {
+        totalOrders,
+        currentPage: pageNumber,
+        totalPages: Math.ceil(totalOrders / limitNumber),
+        hasNextPage: pageNumber * limitNumber < totalOrders,
+        hasPrevPage: pageNumber > 1,
+      },
+    });
+  } catch (error) {
+    sendError(res, 500, "Failed to retrieve orders", error.message);
+  }
+};
+
 module.exports = {
   checkout,
   placeOrder,
-  viewOrderHistory,
-  viewAllOrders,
   updateOrderStatus,
+  getOrders,
 };

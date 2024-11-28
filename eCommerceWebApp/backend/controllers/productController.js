@@ -4,8 +4,16 @@ const { sendSuccess, sendError } = require("../utils/response");
 
 const getProducts = async (req, res) => {
   try {
-    const { category, minPrice, maxPrice, search, priceRange, sort } =
-      req.query;
+    const {
+      category,
+      minPrice,
+      maxPrice,
+      search,
+      priceRange,
+      sort,
+      page = 1,
+      limit = 10,
+    } = req.query;
     let query = {};
     let sortCriteria = {};
 
@@ -34,14 +42,35 @@ const getProducts = async (req, res) => {
 
     //sorting criteria
     if (sort === "price") sortCriteria.price = 1;
-    if (sort === "price") sortCriteria.price = -1;
+    if (sort === "-price") sortCriteria.price = -1;
     if (sort === "rating") sortCriteria.averageRating = 1;
 
-    const products = await Product.find(query).sort(sortCriteria);
+    const skip = (page - 1) * limit;
+    const products = await Product.find(query)
+      .sort(sortCriteria)
+      .skip(skip)
+      .limit(Number(limit));
+
+    const totalProducts = await Product.countDocuments(query);
+
     if (products.length === 0) {
-      return sendSuccess(res, 200, "No products match the criteria", []);
+      return sendSuccess(res, 200, "No products match the criteria", {
+        products: [],
+        pagination: {
+          currentPage: Number(page),
+          totalPages: Math.ceil(totalProducts / limit),
+          totalProducts,
+        },
+      });
     }
-    sendSuccess(res, 200, "Products retrieved successfully", products);
+    sendSuccess(res, 200, "Products retrieved successfully", {
+      products,
+      pagination: {
+        currentPage: Number(page),
+        totalPages: Math.ceil(totalProducts / limit),
+        totalProducts,
+      },
+    });
   } catch (error) {
     sendError(res, 500, "failed to retrieve products", error.message);
   }
