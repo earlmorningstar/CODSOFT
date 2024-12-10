@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
+const cors = require("cors");
 const connectDB = require("./config/database");
 const authRoutes = require("./routes/authRoutes");
 const productsRoutes = require("./routes/productRoutes");
@@ -9,20 +10,27 @@ const orderRoutes = require("./routes/orderRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const orderAdminRoutes = require("./routes/orderAdminRoutes");
 const wishlistRoutes = require("./routes/wishlistRoutes");
-const cors = require("cors");
+// const shopifyRoutes = require("./routes/shopifyRoutes");
 
 const PORT = process.env.PORT || 8000;
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 app.use(express.json());
 connectDB();
-app.use("/api/auth", authRoutes);
+app.use("/api/users", authRoutes);
 app.use("/api/products", productsRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/orders", orderAdminRoutes);
-app.use("/api/users", wishlistRoutes);
+app.use("/api/users/whishlist", wishlistRoutes);
+// app.use('/api/shopify', shopifyRoutes);
 
 app.get("/", (req, res) => {
   res.send("E-Commerce Web Application Is Running...");

@@ -11,3 +11,23 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 } */
+
+
+.background {
+  position: absolute;
+  background-image: url('./images/new-1.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  /* filter: blur(3px);
+  -webkit-filter: blur(3px); */
+  z-index: 1;
+}
+
+/* #welcome-page-background {
+  background-image: url('./images/new-2.webp');
+} */
