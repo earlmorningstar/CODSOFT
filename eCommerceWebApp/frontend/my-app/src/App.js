@@ -9,6 +9,7 @@ import SearchPage from "./pages/SearchPage";
 import CartPage from "./pages/CartPage";
 import ProfilePage from "./pages/ProfilePage";
 import WelcomeNote from "./pages/WelcomeNote";
+import OrderPage from "./pages/OrderPage";
 
 const router = createBrowserRouter([
   {
@@ -27,6 +28,7 @@ const router = createBrowserRouter([
           { path: "/search", element: <SearchPage /> },
           { path: "/cart", element: <CartPage /> },
           { path: "/profile", element: <ProfilePage /> },
+          { path: "/order", element: <OrderPage /> },
         ],
       },
     ],

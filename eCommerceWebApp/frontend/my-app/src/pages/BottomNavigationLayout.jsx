@@ -1,29 +1,35 @@
 import { NavLink, Outlet } from "react-router-dom";
+import { GoHome } from "react-icons/go";
+import { GoSearch } from "react-icons/go";
+import { IoCartOutline } from "react-icons/io5";
+import { PiHandbag } from "react-icons/pi";
+import { VscAccount } from "react-icons/vsc";
 
 const BottomNavigationLayout = () => {
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100vh" }}>
-      
-      <div style={{ flex: 1, overflow: "auto" }}>
+    <section className="btm-main-container">
+      <div className="btm-root-main-outlet">
         <Outlet />
       </div>
 
-    
-      <nav style={{ display: "flex", justifyContent: "space-around", padding: "1rem", borderTop: "1px solid #ccc" }}>
-        <NavLink to="/homepage" end>
-           Home
+      <nav className="btm-nav-root-container">
+        <NavLink className="btm-bar-navlinks" to="/homepage" end>
+          <GoHome color="#838383" size={20} />
         </NavLink>
-        <NavLink to="/search">
-          Search
+        <NavLink className="btm-bar-navlinks" to="/search">
+          <GoSearch color="#838383" size={20} />
         </NavLink>
-        <NavLink to="/cart">
-           Cart
+        <NavLink className="btm-bar-navlinks" to="/cart">
+          <IoCartOutline color="#838383" size={20} />
         </NavLink>
-        <NavLink to="/profile">
-         Profile
+        <NavLink className="btm-bar-navlinks" to="/order">
+          <PiHandbag color="#838383" size={20} />
+        </NavLink>
+        <NavLink className="btm-bar-navlinks" to="/profile">
+          <VscAccount color="#838383" size={20} />
         </NavLink>
       </nav>
-    </div>
+    </section>
   );
 };
 

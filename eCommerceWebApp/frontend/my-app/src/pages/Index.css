@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Signika+Negative:wght@300..700&display=swap");
 
 * {
   margin: 0;
@@ -12,7 +13,7 @@
 .welcome-page {
   font-family: "Poppins", sans-serif;
   position: relative;
-  padding: 3rem 5rem;
+  padding: 9rem 5rem 3rem 5rem;
   text-align: center;
   color: #fff;
   width: 100%;
@@ -20,7 +21,7 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  /* justify-content: center; */
   align-items: center;
 }
 
@@ -108,6 +109,15 @@
   object-fit: contain;
 }
 
+#signup-login-image-container-id {
+  margin-left: 0;
+}
+
+#signup-login-image-container-id img {
+  width: 8rem;
+  height: 12vh;
+}
+
 /* WelcomeNote Section--- */
 
 #welcome-note-container {
@@ -122,20 +132,151 @@
 }
 
 #welcome-note-container span {
-    font-size: 22px;
-    font-weight: 400;
+  font-size: 22px;
+  font-weight: 400;
 }
 
-#welcome-note-container p{
-    font-size: 19px;
-    font-weight: 400;
+#welcome-note-container p {
+  font-size: 19px;
+  font-weight: 400;
 }
+
+/* RootLayout Section---  */
+.root-main-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 2rem;
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 1000;
+}
+
+.root-main-container span {
+  cursor: pointer;
+}
+
+.root-main-container h3 {
+  font-family: "Signika Negative", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+}
+
+/* Bottom Nav Layout Section-- */
+
+.btm-main-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+.btm-root-main-outlet {
+  margin: 4rem 0 3.2rem 0;
+  padding: 2rem;
+  flex: 1;
+  overflow: auto;
+}
+
+.btm-nav-root-container {
+  display: flex;
+  justify-content: space-around;
+  padding: 0.9rem;
+  box-shadow: 2px 0px 8px rgba(0, 0, 0, 0.2);
+  border-top-left-radius: 1.5rem;
+  border-top-right-radius: 1.5rem;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: 1000;
+  text-decoration: none;
+}
+
+.btm-bar-navlinks {
+  text-decoration: none;
+}
+
+/* ----- */
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -80%; 
+  width: 80%;
+  height: 100vh;
+  background-color: #ffffff;
+  border-top-right-radius: 1.5rem;
+  border-bottom-right-radius: 1.5rem;
+  box-shadow: 2px 0px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1100;
+  transition: left 0.7s ease; 
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+
+}
+
+.sidebar.open {
+  left: 0; 
+}
+
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.close-icon {
+  cursor: pointer;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sidebar-nav span {
+  font-family: "Raleway", sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  margin: 1rem 0;
+  color: #777E90;
+}
+
+.sidebar-link {
+  font-family: "Poppins", sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+border-radius: 10px;
+  text-decoration: none;
+  color: #777E90;
+  transition: color 0.3s ease;
+}
+
+.sidebar-link:hover {
+  background-color: #f1f2f3;
+  padding: 10px;
+  color: #000000;
+}
+
+.sidebar-link.active {
+  font-weight: 600;
+  color: #000000;
+}
+
 
 /* Screen Sizes--- */
 
 @media screen and (max-width: 650px) {
   .welcome-page {
-    padding: 3rem 1rem;
+    padding: 9rem 1rem 3rem 1rem;
   }
 }
 
@@ -150,5 +291,12 @@
 
   .signup-login-Container {
     padding: 4rem 1rem;
+  }
+
+  .btm-root-main-outlet {
+    padding: 2rem 1rem;
+  }
+  .root-main-container {
+    padding: 1.5rem 1rem;
   }
 }
