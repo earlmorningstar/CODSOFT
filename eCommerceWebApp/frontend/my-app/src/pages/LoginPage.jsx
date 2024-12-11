@@ -39,7 +39,7 @@ const LoginPage = () => {
 
     try {
       const { data } = await api.post("/api/users/login", { email, password });
-      login(data);
+      login(data.data);
       localStorage.setItem("user", JSON.stringify(data));
       setSuccess("Login Successful");
       setTimeout(() => {

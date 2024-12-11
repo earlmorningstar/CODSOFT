@@ -1,6 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Merriweather+Sans:ital,wght@0,300..800;1,300..800&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Signika+Negative:wght@300..700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&display=swap');
 
 * {
   margin: 0;
@@ -202,8 +203,8 @@
 .sidebar {
   position: fixed;
   top: 0;
-  left: -80%; 
-  width: 80%;
+  left: -85%; 
+  width: 85%;
   height: 100vh;
   background-color: #ffffff;
   border-top-right-radius: 1.5rem;
@@ -213,7 +214,7 @@
   transition: left 0.7s ease; 
   display: flex;
   flex-direction: column;
-  padding: 20px;
+  padding: 20px 20px 20px 10px;
 
 }
 
@@ -235,14 +236,14 @@
 .sidebar-nav {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 2px;
 }
 
 .sidebar-nav span {
   font-family: "Raleway", sans-serif;
   font-size: 15px;
-  font-weight: 700;
-  margin: 1rem 0;
+  font-weight: 500;
+  margin: 1.5rem 0;
   color: #777E90;
 }
 
@@ -254,7 +255,7 @@
   align-items: center;
   gap: 10px;
   padding: 10px;
-border-radius: 10px;
+  border-radius: 10px;
   text-decoration: none;
   color: #777E90;
   transition: color 0.3s ease;
@@ -269,6 +270,30 @@ border-radius: 10px;
 .sidebar-link.active {
   font-weight: 600;
   color: #000000;
+}
+
+.avatar-name-email-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.avatar-container {
+  border-radius: 50%;
+  padding: 1px;
+  border: 1px solid #ccc;
+  width: 3rem;
+  height: 3rem;
+  object-fit: contain;
+}
+
+.avatar-name-email-container span {
+  font-family: "Rajdhani", sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 

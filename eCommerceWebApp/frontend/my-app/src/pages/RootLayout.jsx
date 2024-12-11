@@ -1,21 +1,19 @@
 import { Outlet, NavLink } from "react-router-dom";
-import { useState } from "react";
-import { RiMenu2Fill } from "react-icons/ri";
-import { GoBell } from "react-icons/go";
-import { GoX } from "react-icons/go";
-import { GoHome } from "react-icons/go";
-import { GoSearch } from "react-icons/go";
+import { useState, useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
+import { RiMenu2Fill, RiSettings2Line } from "react-icons/ri";
+import { GoBell, GoX, GoHome, GoSearch } from "react-icons/go";
 import { IoCartOutline } from "react-icons/io5";
 import { PiHandbag } from "react-icons/pi";
 import { VscAccount } from "react-icons/vsc";
-import { RiSettings2Line } from "react-icons/ri";
 import { AiOutlineExclamationCircle } from "react-icons/ai";
 
 import "./Index.css";
 
-const images = [{ src: "/images/avatar1.png", alt: "Avatar 1" }];
+const images = [{ src: "/images/avatar1.jpg", alt: "Avatar 1" }];
 
 function RootLayout() {
+  const { user } = useContext(AuthContext);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -41,11 +39,16 @@ function RootLayout() {
 
       <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <div className="sidebar-header">
-          <div>
-            <img src={images[0].src} alt={images[0].alt} />
+          <div className="avatar-name-email-container">
+            <img
+              className="avatar-container"
+              src={images[0].src}
+              alt={images[0].alt}
+            />
+
             <span>
-              <p>Full Name</p>
-              <p>Email Address</p>
+              <p>{user?.name}</p>
+              <p>{user?.email}</p>
             </span>
           </div>
           <span onClick={closeSidebar} className="close-icon">
