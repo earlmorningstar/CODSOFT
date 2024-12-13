@@ -76,8 +76,6 @@ const LoginPage = () => {
               }
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              multiline
-              maxRows={4}
               variant="standard"
             />
             <FormControl variant="standard">

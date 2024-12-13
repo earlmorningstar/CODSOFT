@@ -122,8 +122,6 @@ const SignupPage = () => {
               }
               value={name}
               onChange={(e) => setName(e.target.value)}
-              multiline
-              maxRows={4}
               variant="standard"
             />
             <TextField
@@ -134,8 +132,6 @@ const SignupPage = () => {
               }
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              multiline
-              maxRows={4}
               variant="standard"
             />
             <FormControl variant="standard">

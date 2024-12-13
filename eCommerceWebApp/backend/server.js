@@ -10,7 +10,7 @@ const orderRoutes = require("./routes/orderRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 const orderAdminRoutes = require("./routes/orderAdminRoutes");
 const wishlistRoutes = require("./routes/wishlistRoutes");
-// const shopifyRoutes = require("./routes/shopifyRoutes");
+const shopifyRoutes = require("./routes/shopifyRoutes");
 
 const PORT = process.env.PORT || 8000;
 
@@ -30,7 +30,7 @@ app.use("/api/orders", orderRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/orders", orderAdminRoutes);
 app.use("/api/users/whishlist", wishlistRoutes);
-// app.use('/api/shopify', shopifyRoutes);
+app.use("/api/shopify", shopifyRoutes);
 
 app.get("/", (req, res) => {
   res.send("E-Commerce Web Application Is Running...");
