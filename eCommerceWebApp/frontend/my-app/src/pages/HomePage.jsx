@@ -46,7 +46,7 @@ function HomePage() {
       </div>
       <HeroCarousel />
       <FeaturedProducts products={products} />
-      <ProductList products={products}/>
+      <ProductList products={products} />
     </section>
   );
 }

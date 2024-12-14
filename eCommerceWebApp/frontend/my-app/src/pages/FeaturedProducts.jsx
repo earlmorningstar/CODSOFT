@@ -1,12 +1,15 @@
 import { useEffect, useState, useRef } from "react";
+import { useNavigate, NavLink } from "react-router-dom";
 import Glide from "@glidejs/glide";
 import { CiHeart } from "react-icons/ci";
+import { IoIosArrowRoundDown } from "react-icons/io";
 import "@glidejs/glide/dist/css/glide.core.min.css";
 import "@glidejs/glide/dist/css/glide.theme.min.css";
 
 const FeaturedProducts = ({ products }) => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const glideRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (products?.length > 0) {
@@ -51,21 +54,41 @@ const FeaturedProducts = ({ products }) => {
 
   return (
     <section className="prod-main-container">
-      <h4 className="prod-header">Featured Products</h4>
+      <div className="prod-header-nav-flex-container">
+        <h4 className="prod-header">Featured Products</h4>
+        <NavLink className="view-prod-link" to="/products">
+          <span className="view-prod-link-holder">
+           View More Products <IoIosArrowRoundDown size={25} />
+          </span>
+        </NavLink>
+      </div>
 
       <div className="glide" ref={glideRef}>
         <div className="glide__track" data-glide-el="track">
           <ul className="glide__slides">
             {featuredProducts.map((product, index) => (
               <li className="glide__slide" key={index}>
-                <div className="product-card">
+                <div
+                  className="product-card"
+                  onClick={(e) => {
+                    if (!e.target.closest(".heart-icon")) {
+                      navigate(`/products/${product.id}`);
+                    }
+                  }}
+                >
                   <div className="featProd-img-container">
                     <img
                       className="featured-carousel-img"
                       src={product.image?.src}
                       alt={product.title}
                     />
-                    <CiHeart className="heart-icon" size={25} />
+                    <CiHeart
+                      className="heart-icon"
+                      size={25}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                    />
                   </div>
                   <div className="product-info">
                     <span>{product.title}</span>

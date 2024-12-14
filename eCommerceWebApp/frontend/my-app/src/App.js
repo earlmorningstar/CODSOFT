@@ -11,6 +11,7 @@ import ProfilePage from "./pages/ProfilePage";
 import WelcomeNote from "./pages/WelcomeNote";
 import OrderPage from "./pages/OrderPage";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
+import ProductsPage from "./pages/ProductsPage";
 
 const router = createBrowserRouter([
   {
@@ -30,6 +31,7 @@ const router = createBrowserRouter([
           { path: "/cart", element: <CartPage /> },
           { path: "/profile", element: <ProfilePage /> },
           { path: "/order", element: <OrderPage /> },
+          {path: '/products', element: <ProductsPage />},
           { path: "/products/:id", element: <ProductDetailsPage /> },
         ],
       },
