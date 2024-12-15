@@ -1,9 +1,6 @@
-import { useEffect, useState } from "react";
-import {
-  useParams,
-  // useNavigate,
-  NavLink,
-} from "react-router-dom";
+import { useEffect, useState, useContext } from "react";
+import { useParams, useNavigate, NavLink } from "react-router-dom";
+import CartContext from "../store/CartContext";
 import api from "../utils/api";
 import { CiHeart } from "react-icons/ci";
 import { MdKeyboardBackspace } from "react-icons/md";
@@ -14,7 +11,12 @@ const ProductDetailsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
-  //   const navigate = useNavigate();
+  const {
+    items: cartItems,
+    addItemToCart,
+    removeItemFromCart,
+  } = useContext(CartContext);
+  const navigate = useNavigate();
 
   const handleSizeClick = (size) => {
     setSelectedSize(size);
@@ -37,12 +39,30 @@ const ProductDetailsPage = () => {
     fetchProductDetails();
   }, [id]);
 
+  const alreadyInCart = (id) => {
+    return cartItems.some((item) => item.id === id);
+  };
+
+  const toggleCartButton = (product) => {
+    if (alreadyInCart(product.id)) {
+      removeItemFromCart(product.id);
+    } else {
+      addItemToCart({
+        id: product.id,
+        title: product.title,
+        price: parseFloat(product.variants[0]?.price || 0),
+        quantity: 1,
+        image: product.image?.src || "https://via.placeholder.com/150",
+      });
+    }
+  };
+
+  const handleCartPage = () => {
+    navigate("/cart");
+  };
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
-
-  //   const handleBackToHomePage = () => {
-  //     navigate("/homepage");
-  //   };
 
   return (
     <section className="product-details-container">
@@ -108,8 +128,18 @@ const ProductDetailsPage = () => {
           </span>
         </div>
         <div className="product-detail-actions">
-          <button>Add to Bag</button>
-          <button>View Cart</button>
+          <button
+            style={{
+              backgroundColor: alreadyInCart(product.id)
+                ? "#ffffff"
+                : "#6055d8",
+              color: alreadyInCart(product.id) ? "#6055d8" : "#ffffff",
+            }}
+            onClick={() => toggleCartButton(product)}
+          >
+            Add to Bag
+          </button>
+          <button onClick={handleCartPage}>View Cart</button>
         </div>
       </div>
     </section>

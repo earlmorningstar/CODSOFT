@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const { sendError } = require("../utils/response");
 
 const protect = async (req, res, next) => {
   let token;
@@ -9,21 +10,29 @@ const protect = async (req, res, next) => {
   ) {
     try {
       token = req.headers.authorization.split(" ")[1];
+
+      if (!token) {
+        return sendError(res, 401, "Not authorized, no token provided");
+      }
+
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       req.user = await User.findById(decoded.id).select("-password");
+
       if (!req.user) {
-        return res.status(401).json({ message: "User not found" });
+        return sendError(res, 401, "User not found");
       }
+
       next();
     } catch (error) {
+      if (error.name === "TokenExpiredError") {
+        return sendError(res, 401, "Token expired. Please login again.");
+      }
+
       console.error(error);
-      return res.status(401).json({ message: "Not authorized, token failed!" });
+      return sendError(res, 401, "Not authorized, token failed!");
     }
-  }
-  if (!token) {
-    return res
-      .status(401)
-      .json({ message: "Not authoried, no available token" });
+  } else {
+    return sendError(res, 401, "Not authorized, token failed!");
   }
 };
 
@@ -31,9 +40,7 @@ const isAdmin = async (req, res, next) => {
   if (req.user && req.user.role === "admin") {
     next();
   } else {
-    return res
-      .status(403)
-      .json({ success: false, message: "Access denied. Admins only" });
+    return sendError(res, 403, "Access denied. Admins only.");
   }
 };
 

@@ -47,7 +47,7 @@ function HomePage() {
       <HeroCarousel />
       <FeaturedProducts products={products} />
       <ProductList products={products} />
-    </section>
+    </section> 
   );
 }
 

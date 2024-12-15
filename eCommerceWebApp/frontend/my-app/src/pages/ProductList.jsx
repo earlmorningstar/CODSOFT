@@ -1,10 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
 import { CiHeart } from "react-icons/ci";
 import { IoIosArrowRoundDown } from "react-icons/io";
+import CartContext from "../store/CartContext";
 
 const ProductList = ({ products }) => {
   const [randomProducts, setRandomProducts] = useState([]);
+  const {
+    items: cartItems,
+    addItemToCart,
+    removeItemFromCart,
+  } = useContext(CartContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -14,15 +20,33 @@ const ProductList = ({ products }) => {
     }
   }, [products]);
 
+  const alreadyInCart = (id) => {
+    return cartItems.some((item) => item.id === id);
+  };
+
+  const toggleCartButton = (product) => {
+    if (alreadyInCart(product.id)) {
+      removeItemFromCart(product.id);
+    } else {
+      addItemToCart({
+        id: product.id,
+        title: product.title,
+        price: parseFloat(product.variants[0]?.price || 0),
+        quantity: 1,
+        image: product.image?.src || "https://via.placeholder.com/150",
+      });
+    }
+  };
+
   return (
     <section className="prod-main-container">
       <div className="prod-header-nav-flex-container">
         <h4 className="prod-header">Explore Products</h4>
-          <NavLink className="view-prod-link" to="/products">
-        <span className="view-prod-link-holder">
-          View More Products <IoIosArrowRoundDown size={25}/>
+        <NavLink className="view-prod-link" to="/products">
+          <span className="view-prod-link-holder">
+            View More Products <IoIosArrowRoundDown size={25} />
           </span>
-          </NavLink>
+        </NavLink>
       </div>
       <div className="product-grid">
         {randomProducts.map((product) => (
@@ -52,7 +76,17 @@ const ProductList = ({ products }) => {
                 <button onClick={() => navigate(`/products/${product.id}`)}>
                   Full Details
                 </button>
-                <button className="btn-add-to-bag">Add to Bag</button>
+                <button
+                  style={{
+                    backgroundColor: alreadyInCart(product.id)
+                      ? "#ffffff"
+                      : "#6055d8",
+                    color: alreadyInCart(product.id) ? "#6055d8" : "#ffffff",
+                  }}
+                  onClick={() => toggleCartButton(product)}
+                >
+                  Add to Bag
+                </button>
               </div>
             </div>
           </div>

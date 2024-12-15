@@ -5,6 +5,8 @@ const Product = require("../models/Products");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const { sendSuccess, sendError } = require("../utils/response");
 
+const VALID_STATUSES = ["Pending", "Shipped", "Delivered", "Canceled"];
+
 const checkout = async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -15,6 +17,7 @@ const checkout = async (req, res) => {
       .session(session);
 
     if (!cart || cart.items.length === 0) {
+      session.endSession();
       return sendError(res, 400, "Your cart is empty");
     }
 
@@ -23,6 +26,7 @@ const checkout = async (req, res) => {
 
     for (const item of cart.items) {
       if (item.product.stock < item.quantity) {
+        session.endSession();
         return sendError(
           res,
           400,
@@ -80,20 +84,41 @@ const checkout = async (req, res) => {
 
 const placeOrder = async (req, res) => {
   try {
-    const { items, totalAmount, paymentDetails } = req.body;
+    const { totalAmount, paymentDetails } = req.body;
 
-    if (!items || items.length === 0) {
+    const cart = await Cart.findOne({ user: req.user.id }).populate(
+      "items.product"
+    );
+    if (!cart || cart.items.length === 0) {
       return sendError(res, 400, "Order must include an item");
+    }
+
+    let calculatedTotal = 0;
+    for (const item of cart.items) {
+      if (item.product.stock < item.quantity) {
+        return sendError(
+          res,
+          400,
+          `Insufficient stock for product: ${item.product.name}`
+        );
+      }
+      calculatedTotal += item.product.price * item.quantity;
+    }
+
+    if (Math.round(calculatedTotal * 100) !== Math.round(totalAmount * 100)) {
+      return sendError(res, 400, "Order total mismatch");
     }
 
     const order = new Order({
       user: req.user.id,
-      items,
-      totalAmount,
+      items: cart.items,
+      totalAmount: calculatedTotal,
       paymentDetails,
       status: "Pending", //default
     });
     await order.save();
+    cart.items = [];
+    await cart.save();
 
     sendSuccess(res, 201, "Order placed successfully", order);
   } catch (error) {
@@ -105,8 +130,7 @@ const updateOrderStatus = async (req, res) => {
   try {
     const { status } = req.body;
 
-    const validStatuses = ["Pending", "Shipped", "Delivered", "Canceled"];
-    if (!validStatuses.includes(status)) {
+    if (!VALID_STATUSES.includes(status)) {
       return sendError(res, 400, "Invalid order status");
     }
 
@@ -128,8 +152,8 @@ const getOrders = async (req, res) => {
   try {
     const { page = 1, limit = 10 } = req.query;
 
-    const pageNumber = parseInt(page, 10);
-    const limitNumber = parseInt(limit, 10);
+    // const pageNumber = parseInt(page, 10);
+    // const limitNumber = parseInt(limit, 10);
 
     const query = req.user.isAdmin
       ? {} //admin sees all orders
@@ -138,18 +162,18 @@ const getOrders = async (req, res) => {
     const totalOrders = await Order.countDocuments(query);
 
     const orders = await Order.find(query)
-      .skip((pageNumber - 1) * limitNumber)
-      .limit(limitNumber)
+      .skip((page - 1) * limitNumber)
+      .limit(parseInt(limit, 10))
       .sort({ createdAt: -1 });
 
     sendSuccess(res, 200, "Order retrieved successfully", {
       orders,
       pagination: {
         totalOrders,
-        currentPage: pageNumber,
-        totalPages: Math.ceil(totalOrders / limitNumber),
-        hasNextPage: pageNumber * limitNumber < totalOrders,
-        hasPrevPage: pageNumber > 1,
+        currentPage: parseInt(page, 10),
+        totalPages: Math.ceil(totalOrders / limit),
+        hasNextPage: page * limit < totalOrders,
+        hasPrevPage: page > 1,
       },
     });
   } catch (error) {

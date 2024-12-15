@@ -28,7 +28,7 @@ app.use("/api/products", productsRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/admin", adminRoutes);
-app.use("/api/orders", orderAdminRoutes);
+app.use("/api/admin/orders", orderAdminRoutes);
 app.use("/api/users/whishlist", wishlistRoutes);
 app.use("/api/shopify", shopifyRoutes);
 

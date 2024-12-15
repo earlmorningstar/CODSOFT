@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import CartContext from "../store/CartContext";
 import api from "../utils/api";
 import { CiHeart } from "react-icons/ci";
 import Pagination from "@mui/material/Pagination";
@@ -11,10 +12,14 @@ const ProductsPage = () => {
   const [filteredProducts, setFilteredproducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const {
+    items: cartItems,
+    addItemToCart,
+    removeItemFromCart,
+  } = useContext(CartContext);
   const navigate = useNavigate();
   const location = useLocation();
   const productsPerPage = 16;
-
   const query = new URLSearchParams(location.search);
   const currentPage = parseInt(query.get("page") || "1", 10);
 
@@ -74,6 +79,24 @@ const ProductsPage = () => {
     navigate("?page=1");
   };
 
+  const alreadyInCart = (id) => {
+    return cartItems.some((item) => item.id === id);
+  };
+
+  const toggleCartButton = (product) => {
+    if (alreadyInCart(product.id)) {
+      removeItemFromCart(product.id);
+    } else {
+      addItemToCart({
+        id: product.id,
+        title: product.title,
+        price: parseFloat(product.variants[0]?.price || 0),
+        quantity: 1,
+        image: product.image?.src || "https://via.placeholder.com/150",
+      });
+    }
+  };
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
 
@@ -109,13 +132,23 @@ const ProductsPage = () => {
                 <button onClick={() => navigate(`/products/${product.id}`)}>
                   Full Details
                 </button>
-                <button className="btn-add-to-bag">Add to Bag</button>
+                <button
+                  className="btn-add-to-bag"
+                  style={{
+                    backgroundColor: alreadyInCart(product.id)
+                      ? "#ffffff"
+                      : "#6055d8",
+                    color: alreadyInCart(product.id) ? "#6055d8" : "#ffffff",
+                  }}
+                  onClick={() => toggleCartButton(product)}
+                >
+                  {alreadyInCart(product.id) ? "Remove from Bag" : "Add to Bag"}
+                </button>
               </div>
             </div>
           </div>
         ))}
       </div>
-
       <Stack spacing={2} sx={{ marginTop: 10, alignItems: "center" }}>
         <Pagination
           page={currentPage}

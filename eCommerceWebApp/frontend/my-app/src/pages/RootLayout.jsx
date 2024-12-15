@@ -47,8 +47,8 @@ function RootLayout() {
             />
 
             <span>
-              <p>{user?.name}</p>
-              <p>{user?.email}</p>
+              <p>{user?.name || "Nothing to see here"} </p>
+              <p>{user?.email || "Nothing to see here"}</p>
             </span>
           </div>
           <span onClick={closeSidebar} className="close-icon">
