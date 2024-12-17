@@ -42,9 +42,9 @@ const loginUser = async (req, res) => {
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1d",
-    });
+
+    const token = generateToken(user._id);
+    console.log("Generated Token:", token);
 
     res.status(200).json({
       message: "Login successful",

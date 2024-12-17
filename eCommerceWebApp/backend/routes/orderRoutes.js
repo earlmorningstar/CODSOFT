@@ -1,5 +1,8 @@
 const express = require("express");
-const { protect, isAdmin } = require("../middleware/authMiddleware");
+const { validateObjectId } = require("../utils/validators");
+const { protect, 
+  isAdmin 
+} = require("../middleware/authMiddleware");
 const {
   checkout,
   placeOrder,
@@ -8,24 +11,23 @@ const {
 } = require("../controllers/orderController");
 const router = express.Router();
 
-// router.post("/checkout", protect, checkout);
+//Checkout Route
+router.post("/checkout", protect, checkout);
 
-router.post(
-  "/checkout",
-  protect,
-  (req, res, next) => {
-    console.log("Checkout route hit");
-    next();
-  },
-  checkout
-);
-
+//Place Order
 router.post("/", protect, placeOrder);
 
 //Admin routes
 router.get("/admin", protect, isAdmin, getOrders);
-router.put("/:id/status", protect, isAdmin, updateOrderStatus);
+router.put(
+  "/:id/status",
+  protect,
+  isAdmin,
+  validateObjectId,
+  updateOrderStatus
+);
 
+//Get Orders for User
 router.get("/", protect, getOrders);
 
 module.exports = router;

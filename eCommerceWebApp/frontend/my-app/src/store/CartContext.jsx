@@ -1,5 +1,5 @@
 import { createContext, useReducer, useEffect } from "react";
-import axios from "axios";
+import api from "../utils/api";
 
 const CartContext = createContext();
 
@@ -57,7 +57,11 @@ const cartReducer = (state, action) => {
     case "REMOVE_ITEM":
       return {
         ...state,
-        items: state.items.filter((item) => item.id !== action.payload),
+        items: state.items.filter(
+          (item) =>
+            item.id !== action.payload &&
+            item.shopifyProductId !== action.payload
+        ),
       };
 
     case "CLEAR_CART":
@@ -102,23 +106,39 @@ export const CartProvider = ({ children }) => {
   };
 
   const checkout = async () => {
+
+    if (cartState.items.length === 0) {
+      console.error("Cart is empty");
+      throw new Error("Your cart is empty");
+    }
+
     try {
-      const response = await axios.post("/api/orders/checkout");
+      const user = JSON.parse(localStorage.getItem("user"));
+      console.log("Token in localStorage:", user?.token);
+
+      const normalisedCartItems = cartState.items.map((item) => ({
+        id: String(item.shopifyProductId || item.id || item._id),
+        quantity: item.quantity,
+      }));
+
+      const response = await api.post("/api/orders/checkout", {
+        items: normalisedCartItems,
+      });
+      console.log("Checkout Successful:", response.data.data);
       return response.data.data;
     } catch (error) {
-      console.error(
-        "Failed to initiate checkout",
-        error.response?.data || error
-      );
-      throw new Error("Checkout failed");
+      console.error("Full Checkout error", error.response?.data || error);
+      throw new Error(error.response?.data?.message || "Checkout failed");
     }
   };
 
   const placeOrder = async (paymentDetails) => {
     try {
-      const response = await axios.post("/api/orders", {
+
+
+      const response = await api.post("/api/orders", {
         items: cartState.items.map((item) => ({
-          product: item.id,
+          product: item.product._id,
           quantity: item.quantity,
         })),
         totalAmount: cartState.totalAmount,

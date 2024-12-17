@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import CartContext from "../store/CartContext";
 import { loadStripe } from "@stripe/stripe-js";
 import {
@@ -10,29 +10,45 @@ import {
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
-const Checkout = () => {
+const CheckoutForm = () => {
   const cartCtx = useContext(CartContext);
   const stripe = useStripe();
   const elements = useElements();
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleCheckout = async () => {
+  const handleCheckout = async (e) => {
+    e.preventDefault();
+
+    if (cartCtx.items.length === 0) {
+      alert("Your bag is empty. Please add items before checkout.");
+      return;
+    }
+
     if (!stripe || !elements) {
       alert("Stripe is not initialised yet");
       return;
     }
+
+    setIsProcessing(true);
+
     try {
       const { clientSecret } = await cartCtx.checkout();
       console.log("Client Secret:", clientSecret);
+
+      const cardElement = elements.getElement(CardElement);
+
       const paymentResult = await stripe.confirmCardPayment(clientSecret, {
         payment_method: {
-          card: elements.getElement(CardElement),
+          card: cardElement,
         },
       });
+
       console.log("Payment Result:", paymentResult);
 
       if (paymentResult.error) {
-        console.error('Payment Error:', paymentResult.error.message);
+        console.error("Payment Error:", paymentResult.error.message);
         alert(`Payment failed: ${paymentResult.error.message}`);
+        setIsProcessing(false);
         return;
       }
 
@@ -45,6 +61,8 @@ const Checkout = () => {
     } catch (error) {
       console.error("Checkout failed:", error.message);
       alert("Checkout failed. Please try again.");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -65,19 +83,20 @@ const Checkout = () => {
   };
 
   return (
+    <form onSubmit={handleCheckout}>
+      <h2>Checkout</h2>
+      <CardElement options={cardElementOptions} />
+      <button type="submit" disabled={!stripe || isProcessing}>
+        {isProcessing ? "Processing..." : "Confirm Payment & Place Order"}
+      </button>
+    </form>
+  );
+};
+
+const Checkout = () => {
+  return (
     <Elements stripe={stripePromise}>
-      <div>
-        <h2>Checkout</h2>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleCheckout();
-          }}
-        >
-          <CardElement options={cardElementOptions}/>
-          <button type="submit">Confirm Payment & Place Order</button>
-        </form>
-      </div>
+      <CheckoutForm />
     </Elements>
   );
 };

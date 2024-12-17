@@ -1,3 +1,4 @@
+import HomepageBanner from "./HomepageBanner";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
@@ -20,22 +21,32 @@ const images = [
 
 function HeroCarousel() {
   return (
-    <div className="carousel-wrapper">
-    <Swiper
-      loop={true}
-      spaceBetween={30}
-      centeredSlides={true}
-      autoplay={{ delay: 5000, disableOnInteraction: false }}
-      pagination={{ clickable: true }}
-      modules={[Autoplay, Pagination, Navigation]}
-    >
-      {images.map((image, index) => (
-        <SwiperSlide className="carousel-container" key={index}>
-          <img className="carousel-img" src={image.src} alt={image.alt} />
-        </SwiperSlide>
-      ))}
-    </Swiper>
-    </div>
+    <>
+      <div className="carousel-wrapper">
+        <Swiper
+          loop={true}
+          spaceBetween={30}
+          centeredSlides={true}
+          autoplay={{ delay: 5000, disableOnInteraction: false }}
+          pagination={{ clickable: true }}
+          modules={[Autoplay, Pagination, Navigation]}
+        >
+          {images.map((image, index) => (
+            <SwiperSlide className="carousel-container" key={index}>
+              <img className="carousel-img" src={image.src} alt={image.alt} />
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </div>
+      <div className="homepage-banner">
+        <HomepageBanner
+        divContent="Holiday Specials Are Here!"
+        spanContent="Shop our exclusive deals and make this season extra special. Limited time only!"
+        divClassName="banner-content-holder"
+          spanClassName="banner-subheading"
+        />
+      </div>
+    </>
   );
 }
 

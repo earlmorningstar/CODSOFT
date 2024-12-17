@@ -5,6 +5,7 @@ import { CiHeart } from "react-icons/ci";
 import { IoIosArrowRoundDown } from "react-icons/io";
 import "@glidejs/glide/dist/css/glide.core.min.css";
 import "@glidejs/glide/dist/css/glide.theme.min.css";
+import HomepageBanner from "./HomepageBanner";
 
 const FeaturedProducts = ({ products }) => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
@@ -58,7 +59,7 @@ const FeaturedProducts = ({ products }) => {
         <h4 className="prod-header">Featured Products</h4>
         <NavLink className="view-prod-link" to="/products">
           <span className="view-prod-link-holder">
-           View More Products <IoIosArrowRoundDown size={25} />
+            View More Products <IoIosArrowRoundDown size={25} />
           </span>
         </NavLink>
       </div>
@@ -101,6 +102,10 @@ const FeaturedProducts = ({ products }) => {
             ))}
           </ul>
         </div>
+      </div>
+
+      <div className="homepage-banner">
+        <HomepageBanner spanContent="Discover the latest trends in fashion, accessories, electronics, and more at unbeatable prices." />
       </div>
     </section>
   );

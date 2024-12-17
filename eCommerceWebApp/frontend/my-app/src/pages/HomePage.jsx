@@ -8,6 +8,7 @@ import { LuGlasses } from "react-icons/lu";
 import { GiBed } from "react-icons/gi";
 import { IoPhonePortraitOutline } from "react-icons/io5";
 import ProductList from "./ProductList";
+import HomepageBanner from "./HomepageBanner";
 
 function HomePage() {
   const [products, setProducts] = useState([]);
@@ -25,6 +26,9 @@ function HomePage() {
 
   return (
     <section className="homepage-main-container">
+      <div className="homepage-banner" id="wlcm-banner-id">
+        <HomepageBanner divContent="Welcome to TrendVault!" />
+      </div>
       <div className="homepage-select-tab-container">
         <span>
           <RiMenLine className="homepage-select-icon" size={20} /> <p>Men</p>
@@ -47,7 +51,7 @@ function HomePage() {
       <HeroCarousel />
       <FeaturedProducts products={products} />
       <ProductList products={products} />
-    </section> 
+    </section>
   );
 }
 

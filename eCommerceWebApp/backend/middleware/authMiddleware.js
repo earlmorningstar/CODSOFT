@@ -3,6 +3,7 @@ const User = require("../models/User");
 const { sendError } = require("../utils/response");
 
 const protect = async (req, res, next) => {
+  console.log("Authorization Header Recieved:", req.headers.authorization);
   let token;
   if (
     req.headers.authorization &&
@@ -28,15 +29,15 @@ const protect = async (req, res, next) => {
         return sendError(res, 401, "Token expired. Please login again.");
       }
 
-      console.error(error);
+      console.error("Token validation error:", error.message);
       return sendError(res, 401, "Not authorized, token failed!");
     }
   } else {
-    return sendError(res, 401, "Not authorized, token failed!");
+    return sendError(res, 401, "Not authorized, token missing!");
   }
 };
 
-const isAdmin = async (req, res, next) => {
+const isAdmin = (req, res, next) => {
   if (req.user && req.user.role === "admin") {
     next();
   } else {

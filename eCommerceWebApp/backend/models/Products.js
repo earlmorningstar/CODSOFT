@@ -2,46 +2,45 @@ const mongoose = require("mongoose");
 
 const ProductSchema = new mongoose.Schema(
   {
-    name: {
+    shopifyProductId: {
+      type: String,
+      unique: true,
+      sparse: true,
+    },
+    title: {
       type: String,
       required: true,
     },
-    description: {
-      type: String,
-      required: true,
-    },
-    price: {
-      type: Number,
-      required: true,
-    },
-    stock: {
-      type: Number,
-      required: true,
-    },
-    category: {
-      type: String,
-      required: true,
-    },
-    image: {
-      type: String,
-      required: true,
-    },
-    reviews: [
+    body_html: String,
+    vendor: String,
+    product_type: String,
+    tags: [String],
+    variants: [
       {
-        user: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
-        },
-        name: String,
-        rating: { type: Number, required: true, min: 1, max: 5 },
-        comment: String,
+        shopifyVariantId: String,
+        price: Number,
+        Sku: String,
+        inventory_quantity: Number,
       },
     ],
-    averageRating: { type: Number, default: 0 },
-    numberOfRatings: { type: Number, default: 0 },
+    images: [
+      {
+        shopifyImageId: String,
+        src: String,
+      },
+    ],
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
+    updatedAt: {
+      type: Date,
+      default: Date.now,
+    },
   },
   { timestamps: true }
 );
 
-const Product = mongoose.model("Product", ProductSchema);
-module.exports = Product;
+ProductSchema.index({ shopifyProductId: 1 }, { unique: true });
+
+module.exports = mongoose.model("Product", ProductSchema);

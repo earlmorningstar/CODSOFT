@@ -4,7 +4,6 @@ import CartContext from "../store/CartContext";
 import { HiPlus } from "react-icons/hi2";
 import { RxMinus } from "react-icons/rx";
 
-
 const CartPage = () => {
   const {
     items: cartItems,

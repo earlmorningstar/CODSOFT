@@ -1,108 +1,177 @@
 const mongoose = require("mongoose");
 const Order = require("../models/Order");
-const Cart = require("../models/Cart");
 const Product = require("../models/Products");
+const Cart = require("../models/Cart");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const { sendSuccess, sendError } = require("../utils/response");
 
 const VALID_STATUSES = ["Pending", "Shipped", "Delivered", "Canceled"];
 
 const checkout = async (req, res) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
+  if (!req.user || !req.user.id) {
+    console.error("User not authenticated");
+    return sendError(res, 401, "User not authenticated");
+  }
   try {
-    const cart = await Cart.findOne({ user: req.user.id })
-      .populate("items.product")
-      .session(session);
+    const { items } = req.body;
 
-    if (!cart || cart.items.length === 0) {
-      session.endSession();
-      return sendError(res, 400, "Your cart is empty");
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      console.error("Empty cart:", items); //here
+      return sendError(res, 400, "You cart is empty");
     }
 
-    //validate stock, calc total amt
-    let totalAmount = 0;
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
-    for (const item of cart.items) {
-      if (item.product.stock < item.quantity) {
-        session.endSession();
-        return sendError(
-          res,
-          400,
-          `Insufficient stock for product: ${item.product.name}`
-        );
+    try {
+      let calculatedTotal = 0;
+
+      for (const item of items) {
+        let product;
+
+        if (/^\d+$/.test(item.id)) {
+          product = await Product.findOne({
+            shopifyProductId: item.id,
+          }).session(session);
+        } else if (mongoose.Types.ObjectId.isValid(item.id)) {
+          product = await Product.findById(item.id).session(session);
+        } else {
+          await session.abortTransaction();
+          return sendError(res, 400, `Invalid product ID: ${item.id}`);
+        }
+
+        if (!product) {
+          console.error("Product not found:", item.id);
+          await session.abortTransaction();
+          return sendError(res, 400, `Product not found: ${item.id}`);
+        }
+
+        const variant = product.variants[0];
+        if (!variant || !variant.price) {
+          console.error(`No price found for product: ${product.title}`);
+          await session.abortTransaction();
+          return sendError(
+            res,
+            400,
+            `No price set for product: ${product.title}`
+          );
+        }
+
+        if (variant.inventory_quantity < item.quantity) {
+          await session.abortTransaction();
+          return sendError(
+            res,
+            400,
+            `Insufficient stock for: ${product.title}`
+          );
+        }
+
+        const itemTotal = variant.price * item.quantity;
+
+        calculatedTotal += itemTotal;
       }
-      totalAmount += item.product.price * item.quantity;
-    }
 
-    //create payment intent
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(totalAmount * 100),
-      currency: process.env.STRIPE_CURRENCY || "usd",
-      metadata: { userId: req.user.id },
-    });
+      let paymentIntent;
 
-    //Reduce stock quantitiess for each product
-    for (const item of cart.items) {
-      const product = await Product.findById(item.product._id).session(session);
-      product.stock -= item.quantity;
-      await product.save({ session });
-    }
+      try {
+        paymentIntent = await stripe.paymentIntents.create({
+          amount: Math.round(calculatedTotal * 100),
+          currency: process.env.STRIPE_CURRENCY || "usd",
+          metadata: { userId: req.user.id },
+        });
+      } catch (stripeError) {
+        console.error("Stripe PaymentIntent Error:", stripeError);
+        await session.abortTransaction();
+        return sendError(res, 500, "Payment failed", stripeError);
+      }
 
-    //create order
-    const order = new Order({
-      user: req.user.id,
-      items: cart.items,
-      totalAmount,
-      paymentStatus: "Pending",
-      paymentDetails: {
-        id: paymentIntent.id,
+      for (const item of items) {
+        const product = /^\d+$/.test(item.id)
+          ? await Product.findOne({ shopifyProductId: item.id }).session(
+              session
+            )
+          : await Product.findById(item.id).session(session);
+
+        const variantIndex = product.variants.findIndex(
+          (v) => v.inventory_quantity >= item.quantity
+        );
+
+        if (variantIndex === -1) {
+          await session.abortTransaction();
+          return sendError(
+            res,
+            400,
+            `Cannot find variant with sufficient stock for: ${product.title}`
+          );
+        }
+
+        product.variants[variantIndex].inventory_quantity -= item.quantity;
+        await product.save({ session });
+      }
+
+      await session.commitTransaction();
+      session.endSession();
+
+      sendSuccess(res, 200, "Checkout successful", {
         clientSecret: paymentIntent.client_secret,
-      },
-    });
-
-    await order.save({ session });
-
-    cart.items = [];
-    await cart.save({ session });
-
-    //commit transaction
-    await session.commitTransaction();
-    session.endSession();
-
-    sendSuccess(res, 200, "Order created successfully", {
-      order,
-      clientSecret: paymentIntent.client_secret,
-    });
+      });
+    } catch (error) {
+      await session.abortTransaction();
+      console.error("Checkout error:", error);
+      return sendError(res, 500, "Checkout failed", error);
+    } finally {
+      session.endSession();
+    }
   } catch (error) {
-    await session.abortTransaction(); //abort in case of error
-    session.endSession();
-    sendError(res, 500, "Failed to complete checkout", error.message);
+    console.error("Checkout error:", error);
+    sendError(res, 500, "Failed to complete checkout");
   }
 };
 
 const placeOrder = async (req, res) => {
   try {
-    const { totalAmount, paymentDetails } = req.body;
+    const { items, totalAmount, paymentDetails } = req.body;
 
-    const cart = await Cart.findOne({ user: req.user.id }).populate(
-      "items.product"
-    );
-    if (!cart || cart.items.length === 0) {
+    if (!items || items.length === 0) {
       return sendError(res, 400, "Order must include an item");
     }
 
     let calculatedTotal = 0;
-    for (const item of cart.items) {
-      if (item.product.stock < item.quantity) {
-        return sendError(
-          res,
-          400,
-          `Insufficient stock for product: ${item.product.name}`
-        );
+    const processedItems = [];
+
+    for (const item of items) {
+      try {
+        const productId = mongoose.Types.ObjectId(item.product);
+
+        const product = await Product.findById(productId);
+
+        if (!product) {
+          return sendError(res, 400, `Product not found: ${item.product}`);
+        }
+
+        if (product.stock < item.quantity) {
+          return sendError(
+            res,
+            400,
+            `Insufficient sock for product: ${product.name}`
+          );
+        }
+
+        const itemTotal = product.price * item.quantity;
+
+        calculatedTotal += itemTotal;
+
+        processedItems.push({
+          product: productId,
+          quantity: item.quantity,
+        });
+
+        product.stock -= item.quantity;
+        await product.save();
+      } catch (itemError) {
+        console.error(`Error processing item ${item.product}:`, itemError);
+        return sendError(res, 400, `Invalid product ID: ${item.product}`);
       }
-      calculatedTotal += item.product.price * item.quantity;
     }
 
     if (Math.round(calculatedTotal * 100) !== Math.round(totalAmount * 100)) {
@@ -111,17 +180,51 @@ const placeOrder = async (req, res) => {
 
     const order = new Order({
       user: req.user.id,
-      items: cart.items,
+      items: processedItems,
       totalAmount: calculatedTotal,
       paymentDetails,
-      status: "Pending", //default
+      status: "Pending",
     });
+
     await order.save();
-    cart.items = [];
-    await cart.save();
+
+    // const cart = await Cart.findOne({ user: req.user.id }).populate(
+    //   "items.product"
+    // );
+    // if (!cart || cart.items.length === 0) {
+    //   return sendError(res, 400, "Order must include an item");
+    // }
+
+    // let calculatedTotal = 0;
+    // for (const item of cart.items) {
+    //   if (item.product.stock < item.quantity) {
+    //     return sendError(
+    //       res,
+    //       400,
+    //       `Insufficient stock for product: ${item.product.name}`
+    //     );
+    //   }
+    //   calculatedTotal += item.product.price * item.quantity;
+    // }
+
+    // if (Math.round(calculatedTotal * 100) !== Math.round(totalAmount * 100)) {
+    //   return sendError(res, 400, "Order total mismatch");
+    // }
+
+    // const order = new Order({
+    //   user: req.user.id,
+    //   items: cart.items,
+    //   totalAmount: calculatedTotal,
+    //   paymentDetails,
+    //   status: "Pending", //default
+    // });
+    // await order.save();
+    // cart.items = [];
+    // await cart.save();
 
     sendSuccess(res, 201, "Order placed successfully", order);
   } catch (error) {
+    console.error("Order placement error:", error);
     sendError(res, 500, "Failed to place order", error.message);
   }
 };
@@ -152,8 +255,8 @@ const getOrders = async (req, res) => {
   try {
     const { page = 1, limit = 10 } = req.query;
 
-    // const pageNumber = parseInt(page, 10);
-    // const limitNumber = parseInt(limit, 10);
+    const pageNumber = parseInt(page, 10);
+    const limitNumber = parseInt(limit, 10);
 
     const query = req.user.isAdmin
       ? {} //admin sees all orders
@@ -170,13 +273,14 @@ const getOrders = async (req, res) => {
       orders,
       pagination: {
         totalOrders,
-        currentPage: parseInt(page, 10),
-        totalPages: Math.ceil(totalOrders / limit),
-        hasNextPage: page * limit < totalOrders,
-        hasPrevPage: page > 1,
+        currentPage: pageNumber,
+        totalPages: Math.ceil(totalOrders / limitNumber),
+        hasNextPage: pageNumber * limitNumber < totalOrders,
+        hasPrevPage: pageNumber > 1,
       },
     });
   } catch (error) {
+    console.error("Get orders error:", error.message);
     sendError(res, 500, "Failed to retrieve orders", error.message);
   }
 };

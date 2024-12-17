@@ -29,6 +29,9 @@ const ProductsPage = () => {
         setLoading(true);
         const response = await api.get("/api/shopify/products");
         const fetchedProducts = response?.data?.data?.products || [];
+
+        await syncShopifyProducts(fetchedProducts);
+
         setProducts(fetchedProducts);
         setFilteredproducts(fetchedProducts);
       } catch (error) {
@@ -40,6 +43,17 @@ const ProductsPage = () => {
     };
     fetchProducts();
   }, []);
+
+  const syncShopifyProducts = async (shopifyProducts) => {
+    try {
+      const response = await api.post("/api/products/sync", {
+        products: shopifyProducts,
+      });
+      console.log("Product sync response:", response.data);
+    } catch (error) {
+      console.error("Failed to sync Shopify products:", error);
+    }
+  };
 
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
@@ -79,21 +93,53 @@ const ProductsPage = () => {
     navigate("?page=1");
   };
 
-  const alreadyInCart = (id) => {
-    return cartItems.some((item) => item.id === id);
+  const alreadyInCart = (shopifyProductId) => {
+    return cartItems.some(
+      (item) =>
+        item.shopifyProductId === shopifyProductId ||
+        item.id === shopifyProductId
+    );
   };
 
-  const toggleCartButton = (product) => {
-    if (alreadyInCart(product.id)) {
-      removeItemFromCart(product.id);
-    } else {
-      addItemToCart({
-        id: product.id,
+  const toggleCartButton = async (product) => {
+    try {
+      const mongoProductResponse = await api.get(
+        `/api/products/shopify/${product.id}`
+      );
+      const mongoProduct = mongoProductResponse.data.data;
+
+      const cartItem = {
+        id: mongoProduct?._id || product.id,
+        shopifyProductId: product.id,
+        shopifyVariantId: product.variants[0]?.id || null,
         title: product.title,
         price: parseFloat(product.variants[0]?.price || 0),
         quantity: 1,
-        image: product.image?.src || "https://via.placeholder.com/150",
-      });
+        image: product.images[0]?.src || "https://via.placeholder.com/150",
+      };
+
+      if (alreadyInCart(product.id)) {
+        removeItemFromCart(product.id);
+      } else {
+        addItemToCart(cartItem);
+      }
+    } catch (error) {
+      console.error("Error toggling cart item:", error);
+
+      const cartItem = {
+        id: product.id,
+        shopifyProductId: product.id,
+        title: product.title,
+        price: parseFloat(product.variants[0]?.price || 0),
+        quantity: 1,
+        image: product.images[0]?.src || "https://via.placeholder.com/150",
+      };
+
+      if (alreadyInCart(product.id)) {
+        removeItemFromCart(product.id);
+      } else {
+        addItemToCart(cartItem);
+      }
     }
   };
 
