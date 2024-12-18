@@ -26,7 +26,7 @@
   display: flex;
   flex-direction: column;
   align-items: center; 
-  z-index: 1500;
+  z-index: 1600;
 }
 
 .welcome-page span,
@@ -170,7 +170,8 @@
   bottom: 0;
   right: 0;
   left: 0;
-  z-index: 1000;
+  z-index: 1500;
+  background-color: #ffffff;
   text-decoration: none;
 }
 
@@ -238,7 +239,7 @@
   border-top-right-radius: 1.5rem;
   border-bottom-right-radius: 1.5rem;
   box-shadow: 2px 0px 8px rgba(0, 0, 0, 0.2);
-  z-index: 1100;
+  z-index: 1500;
   transition: left 0.7s ease;
   display: flex;
   flex-direction: column;

@@ -19,7 +19,12 @@ const PORT = process.env.PORT || 8000;
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://codsoft-trendvault.vercel.app"],
+    origin: [
+      "http://localhost:3000",
+      "https://codsoft-trendvault.vercel.app",
+      "https://codsoft-trendvault-5ewnftgxs-onyeabor-joels-projects.vercel.app",
+      "https://codsoft-trendvault-git-main-onyeabor-joels-projects.vercel.app",
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
