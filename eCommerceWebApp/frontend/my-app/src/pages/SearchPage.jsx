@@ -6,6 +6,7 @@ import Search from "./Search";
 import { CiHeart } from "react-icons/ci";
 import Skeleton from "@mui/material/Skeleton";
 import Box from "@mui/material/Box";
+import { IoChevronBackOutline } from "react-icons/io5";
 
 const SearchPage = () => {
   const [products, setProducts] = useState([]);
@@ -13,12 +14,14 @@ const SearchPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [skeleton, setSkeleton] = useState(true);
+  const [isSearching, setIsSearching] = useState(false);
+  const [activeCollection, setActiveCollection] = useState(null);
   const {
     items: cartItems,
     addItemToCart,
     removeItemFromCart,
   } = useContext(CartContext);
-  const [isSearching, setIsSearching] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -52,6 +55,7 @@ const SearchPage = () => {
   }, []);
 
   const handleSearch = (searchTerm) => {
+    setActiveCollection(null);
     const trimmedSearch = searchTerm.trim().toLowerCase();
     setIsSearching(trimmedSearch !== "");
 
@@ -75,8 +79,24 @@ const SearchPage = () => {
 
       setFilteredProducts(filtered);
     } else {
-      setFilteredProducts([]);
+      setFilteredProducts(products);
     }
+  };
+
+  const handleCollectionClick = (collection) => {
+    setActiveCollection(collection);
+    setIsSearching(true);
+    const filtered = products.filter(
+      (product) =>
+        product.product_type?.toLowerCase() === collection.toLowerCase()
+    );
+    setFilteredProducts(filtered);
+  };
+
+  const handleBackToCollections = () => {
+    setActiveCollection(null);
+    setIsSearching(false);
+    setFilteredProducts(products);
   };
 
   const alreadyInCart = (shopifyProductId) => {
@@ -89,36 +109,36 @@ const SearchPage = () => {
 
   const toggleCartButton = async (product) => {
     const cartItem = {
-         id: product.id,
-         shopifyProductId: product.id,
-         shopifyVariantId: product.variants[0]?.id || null,
-         title: product.title,
-         price: parseFloat(product.variants[0]?.price || 0),
-         quantity: 1,
-         image: product.images[0]?.src || "https://via.placeholder.com/150",
-       };
-   
-       if (alreadyInCart(product.id)) {
-         removeItemFromCart(product.id);
-       } else {
-         addItemToCart(cartItem);
-       }
-   
-       try {
-         const mongoProductResponse = await api.get(
-           `/api/products/shopify/${product.id}`
-         );
-         const mongoProduct = mongoProductResponse.data.data;
-   
-         if (!mongoProduct) {
-           await api.post("/api/products/sync", {
-             products: [product],
-           });
-         }
-       } catch (error) {
-         console.warm("Could not sync product:", error);
-       }
-     };
+      id: product.id,
+      shopifyProductId: product.id,
+      shopifyVariantId: product.variants[0]?.id || null,
+      title: product.title,
+      price: parseFloat(product.variants[0]?.price || 0),
+      quantity: 1,
+      image: product.images[0]?.src || "https://via.placeholder.com/150",
+    };
+
+    if (alreadyInCart(product.id)) {
+      removeItemFromCart(product.id);
+    } else {
+      addItemToCart(cartItem);
+    }
+
+    try {
+      const mongoProductResponse = await api.get(
+        `/api/products/shopify/${product.id}`
+      );
+      const mongoProduct = mongoProductResponse.data.data;
+
+      if (!mongoProduct) {
+        await api.post("/api/products/sync", {
+          products: [product],
+        });
+      }
+    } catch (error) {
+      console.warm("Could not sync product:", error);
+    }
+  };
 
   if (error) return <p>{error}</p>;
 
@@ -140,7 +160,7 @@ const SearchPage = () => {
         >
           {Array.from(new Array(skeleton)).map((_, index) => (
             <Box key={index} sx={{ width: "100%" }}>
-              <Skeleton animation="wave" height={70} width="100%"  />
+              <Skeleton animation="wave" height={70} width="100%" />
               <Skeleton animation="wave" height={70} width="100%" />
               <Skeleton animation="wave" height={70} width="100%" />
               <Skeleton animation="wave" height={70} width="100%" />
@@ -150,6 +170,23 @@ const SearchPage = () => {
         </div>
       ) : (
         <>
+          {activeCollection && (
+            <div
+              className="back-to-collections"
+              onClick={handleBackToCollections}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                cursor: "pointer",
+                marginBottom: "18px",
+                fontWeight: "400",
+                color: "#6055d8",
+              }}
+            >
+              <IoChevronBackOutline size={20} style={{ marginRight: "10px" }} />
+              Back to Collections
+            </div>
+          )}
           {isSearching && filteredProducts.length > 0 && (
             <div className="product-grid">
               {filteredProducts.map((product) => (
@@ -208,11 +245,20 @@ const SearchPage = () => {
 
           {!isSearching && (
             <div className="searchPage-collection-container">
-              <span>Clothing</span>
-              <span>Shoes</span>
-              <span>Electronics</span>
-              <span>Accessories</span>
-              <span>Furniture</span>
+              {[
+                "Clothing",
+                "Shoes",
+                "Electronics",
+                "Accessories",
+                "Furniture",
+              ].map((collection) => (
+                <span
+                  key={collection}
+                  onClick={() => handleCollectionClick(collection)}
+                >
+                  {collection}
+                </span>
+              ))}
             </div>
           )}
 

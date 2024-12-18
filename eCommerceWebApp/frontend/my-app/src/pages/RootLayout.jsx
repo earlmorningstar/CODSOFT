@@ -1,4 +1,4 @@
-import { Outlet, NavLink } from "react-router-dom";
+import { Outlet, NavLink, useLocation } from "react-router-dom";
 import { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import CartContext from "../store/CartContext";
@@ -22,6 +22,9 @@ function RootLayout() {
   );
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const location = useLocation();
+  const isHomepage = location.pathname === "/homepage";
+
   const toggleSidebar = () => {
     setSidebarOpen((prev) => !prev);
   };
@@ -33,14 +36,19 @@ function RootLayout() {
   return (
     <>
       <section className="root-main-container">
-        <span onClick={toggleSidebar}>
-          <RiMenu2Fill size={20} />
-        </span>
+        {isHomepage && (
+          <>
+            <span onClick={toggleSidebar}>
+              <RiMenu2Fill size={20} />
+            </span>
 
-        <h3>TrendVault</h3>
-        <span>
-          <GoBell size={20} />
-        </span>
+            <h3>TrendVault</h3>
+
+            <span>
+              <GoBell size={20} />
+            </span>
+          </>
+        )}
       </section>
 
       <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
@@ -73,10 +81,15 @@ function RootLayout() {
             <GoSearch size={20} /> Search
           </NavLink>
           <NavLink to="/cart" onClick={closeSidebar} className="sidebar-link">
-              <IoCartOutline  size={20} />
-             <p id="cartCount-holder-id">{cartItemCount > 0 && (
-                <p className="cartCount" id="cartCount-id">{cartItemCount}</p>
-              )}{" "}Cart</p> 
+            <IoCartOutline size={20} />
+            <p id="cartCount-holder-id">
+              {cartItemCount > 0 && (
+                <p className="cartCount" id="cartCount-id">
+                  {cartItemCount}
+                </p>
+              )}{" "}
+              Cart
+            </p>
           </NavLink>
           <NavLink to="/order" onClick={closeSidebar} className="sidebar-link">
             <PiHandbag size={20} /> Order

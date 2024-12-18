@@ -225,6 +225,7 @@
   font-family: "Signika Negative", sans-serif;
   font-optical-sizing: auto;
   font-weight: 700;
+  text-align: center;
 }
 
 .sidebar {
@@ -855,6 +856,10 @@
 .recent-tag button {
   background-color: transparent;
   border: none;
+}
+
+.back-to-collections {
+  font-family: "Raleway", sans-serif;
 }
 
 /* Cart Section --- */
