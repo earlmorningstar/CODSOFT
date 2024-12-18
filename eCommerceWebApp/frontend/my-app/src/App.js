@@ -1,4 +1,8 @@
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import {
+  RouterProvider,
+  createBrowserRouter,
+  // ScrollRestoration,
+} from "react-router-dom";
 import RootLayout from "./pages/RootLayout";
 import WelcomePage from "./pages/WelcomePage";
 import LoginPage from "./pages/LoginPage";
@@ -13,6 +17,7 @@ import OrderPage from "./pages/OrderPage";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
 import ProductsPage from "./pages/ProductsPage";
 import Checkout from "./pages/Checkout";
+import ScrollPosition from "./hooks/ScrollPosition";
 
 const router = createBrowserRouter([
   {
@@ -25,16 +30,21 @@ const router = createBrowserRouter([
       { path: "welcome-note-page", element: <WelcomeNote /> },
       {
         path: "/",
-        element: <BottomNavigationLayout />,
+        element: (
+          <>
+            <ScrollPosition />
+            <BottomNavigationLayout />
+          </>
+        ),
         children: [
           { path: "/homepage", element: <HomePage /> },
           { path: "/search", element: <SearchPage /> },
           { path: "/cart", element: <CartPage /> },
           { path: "/profile", element: <ProfilePage /> },
           { path: "/order", element: <OrderPage /> },
-          {path: '/products', element: <ProductsPage />},
+          { path: "/products", element: <ProductsPage /> },
           { path: "/products/:id", element: <ProductDetailsPage /> },
-          {path: '/checkout', element: <Checkout />},
+          { path: "/checkout", element: <Checkout /> },
         ],
       },
     ],

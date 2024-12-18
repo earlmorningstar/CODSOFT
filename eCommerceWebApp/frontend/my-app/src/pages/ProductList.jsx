@@ -3,9 +3,13 @@ import { useNavigate, NavLink } from "react-router-dom";
 import { CiHeart } from "react-icons/ci";
 import { IoIosArrowRoundDown } from "react-icons/io";
 import CartContext from "../store/CartContext";
+import Skeleton from "@mui/material/Skeleton"; 
+import Box from "@mui/material/Box";
 
 const ProductList = ({ products }) => {
   const [randomProducts, setRandomProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [skeletonCount, setSkeletonCount] = useState(4);
   const {
     items: cartItems,
     addItemToCart,
@@ -13,12 +17,34 @@ const ProductList = ({ products }) => {
   } = useContext(CartContext);
   const navigate = useNavigate();
 
+  const updateSkeletonCount = () => {
+    const width = window.innerWidth;
+    if (width > 1140) {
+      setSkeletonCount(4);
+    } else if (width > 900) {
+      setSkeletonCount(3);
+    } else if (width > 700) {
+      setSkeletonCount(2);
+    } else {
+      setSkeletonCount(1);
+    }
+  };
+
+  useEffect(() => {
+    updateSkeletonCount();
+    window.addEventListener("resize", updateSkeletonCount);
+    return () => window.removeEventListener("resize", updateSkeletonCount);
+  }, []);
+
   useEffect(() => {
     if (products?.length > 0) {
-      const shuffled = [...products].sort(() => 0.5 - Math.random());
-      setRandomProducts(shuffled.slice(0, 12));
+      setTimeout(() => {
+        const shuffled = [...products].sort(() => 0.5 - Math.random());
+        setRandomProducts(shuffled.slice(0, 12));
+        setLoading(false);
+      }, 1500);
     }
-  }, [products]);
+  }, [products, skeletonCount]);
 
   const alreadyInCart = (id) => {
     return cartItems.some((item) => item.id === id);
@@ -48,50 +74,82 @@ const ProductList = ({ products }) => {
           </span>
         </NavLink>
       </div>
-      <div className="product-grid">
-        {randomProducts.map((product) => (
-          <div className="productList-card" key={product.id}>
-            <div className="prod-img-container">
-              <img
-                src={product.image?.src || "https://via.placeholder.com/150"}
-                alt={product.title}
-                className="product-image"
+
+      {loading ? (
+        <div
+          className="glide__slides"
+          id="skeleton-container"
+          sx={{ overflow: "hidden" }}
+        >
+          {Array.from(new Array(skeletonCount)).map((_, index) => (
+            <Box key={index} sx={{ width: "100%" }}>
+              <Skeleton
+                variant="rectangular"
+                width="100%"
+                height={200}
+                animation="wave"
               />
-              <CiHeart className="heart-icon" size={25} />
-            </div>
+              <Skeleton
+                animation="wave"
+                height={20}
+                width="60%"
+                style={{ marginTop: 8 }}
+              />
+              <Skeleton animation="wave" height={130} width="100%" />
+              <Skeleton animation="wave" height={20} width="20%" />
+              <Skeleton animation="wave" height={45} width="100%" />
+              <Skeleton animation="wave" height={45} width="100" />
+            </Box>
+          ))}
+        </div>
+      ) : (
+        <div className="product-grid">
+          {randomProducts.map((product) => (
+            <div className="productList-card" key={product.id}>
+              <div className="prod-img-container">
+                <img
+                  src={product.image?.src || "https://via.placeholder.com/150"}
+                  alt={product.title}
+                  className="product-image"
+                />
+                <CiHeart className="heart-icon" size={25} />
+              </div>
 
-            <div className="product-details">
-              <span>{product.title}</span>
-              <aside>
-                <h5>
-                  {product.body_html
-                    ?.replace(/<\/?[^>]+(>|$)/g, "")
-                    .slice(0, 100) || "No description available..."}
-                  ...
-                </h5>
-              </aside>
+              <div className="product-details">
+                <span>{product.title}</span>
+                <aside>
+                  <h5>
+                    {product.body_html
+                      ?.replace(/<\/?[^>]+(>|$)/g, "")
+                      .slice(0, 100) || "No description available..."}
+                    ...
+                  </h5>
+                </aside>
 
-              <p>${product.variants[0]?.price || "No Available Price"}</p>
-              <div className="product-actions">
-                <button onClick={() => navigate(`/products/${product.id}`)}>
-                  Full Details
-                </button>
-                <button
-                  style={{
-                    backgroundColor: alreadyInCart(product.id)
-                      ? "#ffffff"
-                      : "#6055d8",
-                    color: alreadyInCart(product.id) ? "#6055d8" : "#ffffff",
-                  }}
-                  onClick={() => toggleCartButton(product)}
-                >
-                  {alreadyInCart(product.id) ? "Remove from Bag" : "Add to Bag"}
-                </button>
+                <p>${product.variants[0]?.price || "No Available Price"}</p>
+                <div className="product-actions">
+                  <button onClick={() => navigate(`/products/${product.id}`)}>
+                    View Details
+                  </button>
+                  <button
+                    style={{
+                      backgroundColor: alreadyInCart(product.id)
+                        ? "#ffffff"
+                        : "#6055d8",
+                      color: alreadyInCart(product.id) ? "#6055d8" : "#ffffff",
+                    }}
+                    onClick={() => toggleCartButton(product)}
+                  >
+                    {alreadyInCart(product.id)
+                      ? "Remove from Bag"
+                      : "Add to Bag"}
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </section>
   );
 };

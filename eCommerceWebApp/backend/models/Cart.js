@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+//Not in use
 const CartSchema = new mongoose.Schema(
   {
     user: {

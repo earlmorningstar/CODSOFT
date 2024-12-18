@@ -7,12 +7,14 @@ import AuthProvider from "./context/AuthContext";
 import { CartProvider } from "./store/CartContext";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
+// import ScrollPosition from "./hooks/ScrollPosition";
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
+    {/* <ScrollPosition> */}
     <Elements stripe={stripePromise}>
       <AuthProvider>
         <CartProvider>
@@ -20,6 +22,7 @@ root.render(
         </CartProvider>
       </AuthProvider>
     </Elements>
+    {/* </ScrollPosition> */}
   </React.StrictMode>
 );
 

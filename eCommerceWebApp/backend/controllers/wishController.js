@@ -1,6 +1,8 @@
 const User = require("../models/User");
 const { sendSuccess, sendError } = require("../utils/response");
 
+//Not yet in use
+
 const addToWishlist = async (req, res) => {
   try {
     const { productId } = req.body;

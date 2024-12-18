@@ -2,6 +2,8 @@ const Cart = require("../models/Cart");
 const Product = require("../models/Products");
 const { sendSuccess, sendError } = require("../utils/response");
 
+//Not in use as I'm mananging cart in the frontend
+
 const getCart = async (req, res) => {
   try {
     const cart = await Cart.findOne({ user: req.user.id }).populate(

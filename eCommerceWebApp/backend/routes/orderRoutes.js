@@ -17,7 +17,7 @@ router.post("/checkout", protect, checkout);
 //Place Order
 router.post("/", protect, placeOrder);
 
-//Admin routes
+//Admin routes -- Not yet in use.
 router.get("/admin", protect, isAdmin, getOrders);
 router.put(
   "/:id/status",

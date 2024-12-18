@@ -3,7 +3,6 @@ const User = require("../models/User");
 const { sendError } = require("../utils/response");
 
 const protect = async (req, res, next) => {
-  console.log("Authorization Header Recieved:", req.headers.authorization);
   let token;
   if (
     req.headers.authorization &&

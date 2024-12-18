@@ -5,24 +5,39 @@ const ScrollPosition = ({ children }) => {
   const location = useLocation();
 
   useEffect(() => {
-    const handleBeforeUnload = () => {
-      const scrollPosition = window.scrollY;
-      window.history.replaceState({ scrollPosition }, "");
+    // Always scroll to top when route changes
+    window.scrollTo(0, 0);
+
+    // Save scroll positions for different routes
+    const saveScrollPosition = () => {
+      sessionStorage.setItem(
+        `scrollPosition:${location.pathname}`,
+        window.scrollY.toString()
+      );
     };
+
+    // Restore scroll position for specific route when navigating back
     const restoreScrollPosition = () => {
-      const savedState = window.history.state;
-      if (savedState?.scrollPosition) {
-        window.scrollTo(0, savedState.scrollPosition);
-      } else {
-        window.scrollTo(0, 0);
+      const savedPosition = sessionStorage.getItem(
+        `scrollPosition:${location.pathname}`
+      );
+
+      if (savedPosition) {
+        window.scrollTo(0, parseInt(savedPosition, 10));
       }
     };
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    restoreScrollPosition();
+
+    window.addEventListener("scroll", saveScrollPosition);
+
+    // Restore position after a short delay to ensure page is rendered
+    const timeoutId = setTimeout(restoreScrollPosition, 0);
+
     return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("scroll", saveScrollPosition);
+      clearTimeout(timeoutId);
     };
-  }, [location]);
+  }, [location.pathname]);
+
   return children;
 };
 

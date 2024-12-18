@@ -1,6 +1,7 @@
 import { Outlet, NavLink } from "react-router-dom";
 import { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
+import CartContext from "../store/CartContext";
 import { RiMenu2Fill, RiSettings2Line } from "react-icons/ri";
 import { GoBell, GoX, GoHome, GoSearch } from "react-icons/go";
 import { IoCartOutline } from "react-icons/io5";
@@ -14,6 +15,11 @@ const images = [{ src: "/images/avatar1.jpg", alt: "Avatar 1" }];
 
 function RootLayout() {
   const { user } = useContext(AuthContext);
+  const { items: cartItems } = useContext(CartContext);
+  const cartItemCount = cartItems.reduce(
+    (count, item) => count + item.quantity,
+    0
+  );
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -67,7 +73,10 @@ function RootLayout() {
             <GoSearch size={20} /> Search
           </NavLink>
           <NavLink to="/cart" onClick={closeSidebar} className="sidebar-link">
-            <IoCartOutline size={20} /> Cart
+              <IoCartOutline  size={20} />
+             <p id="cartCount-holder-id">{cartItemCount > 0 && (
+                <p className="cartCount" id="cartCount-id">{cartItemCount}</p>
+              )}{" "}Cart</p> 
           </NavLink>
           <NavLink to="/order" onClick={closeSidebar} className="sidebar-link">
             <PiHandbag size={20} /> Order

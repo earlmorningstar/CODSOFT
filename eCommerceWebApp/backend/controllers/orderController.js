@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
+const axios = require("axios");
 const Order = require("../models/Order");
 const Product = require("../models/Products");
-const Cart = require("../models/Cart");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const { sendSuccess, sendError } = require("../utils/response");
 
@@ -129,10 +129,15 @@ const checkout = async (req, res) => {
 };
 
 const placeOrder = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
   try {
     const { items, totalAmount, paymentDetails } = req.body;
 
     if (!items || items.length === 0) {
+      await session.abortTransaction();
+      session.endSession();
       return sendError(res, 400, "Order must include an item");
     }
 
@@ -141,40 +146,56 @@ const placeOrder = async (req, res) => {
 
     for (const item of items) {
       try {
-        const productId = mongoose.Types.ObjectId(item.product);
-
-        const product = await Product.findById(productId);
+        let product = await Product.findOne({
+          shopifyProductId: item.product,
+        }).session(session);
 
         if (!product) {
+          await session.abortTransaction();
+          session.endSession();
           return sendError(res, 400, `Product not found: ${item.product}`);
         }
 
-        if (product.stock < item.quantity) {
+        const variantIndex = product.variants.findIndex(
+          (variant) => variant.inventory_quantity >= item.quantity
+        );
+
+        if (variantIndex === -1) {
+          await session.abortTransaction();
+          session.endSession();
           return sendError(
             res,
             400,
-            `Insufficient sock for product: ${product.name}`
+            `Insufficient stock for product: ${product.title}`
           );
         }
 
-        const itemTotal = product.price * item.quantity;
-
+        const variant = product.variants[variantIndex];
+        const itemTotal = variant.price * item.quantity;
         calculatedTotal += itemTotal;
 
         processedItems.push({
-          product: productId,
+          product: product._id,
           quantity: item.quantity,
         });
 
-        product.stock -= item.quantity;
-        await product.save();
+        variant.inventory_quantity -= item.quantity;
+        await product.save({ session });
       } catch (itemError) {
+        await session.abortTransaction();
+        session.endSession();
         console.error(`Error processing item ${item.product}:`, itemError);
-        return sendError(res, 400, `Invalid product ID: ${item.product}`);
+        return sendError(
+          res,
+          400,
+          `Failed to process product: ${item.product}`
+        );
       }
     }
 
-    if (Math.round(calculatedTotal * 100) !== Math.round(totalAmount * 100)) {
+    if (Math.abs(calculatedTotal - totalAmount) > 0.01) {
+      await session.abortTransaction();
+      session.endSession();
       return sendError(res, 400, "Order total mismatch");
     }
 
@@ -183,47 +204,18 @@ const placeOrder = async (req, res) => {
       items: processedItems,
       totalAmount: calculatedTotal,
       paymentDetails,
-      status: "Pending",
+      paymentStatus: paymentDetails.status || "Pending",
     });
 
-    await order.save();
+    await order.save({ session });
 
-    // const cart = await Cart.findOne({ user: req.user.id }).populate(
-    //   "items.product"
-    // );
-    // if (!cart || cart.items.length === 0) {
-    //   return sendError(res, 400, "Order must include an item");
-    // }
-
-    // let calculatedTotal = 0;
-    // for (const item of cart.items) {
-    //   if (item.product.stock < item.quantity) {
-    //     return sendError(
-    //       res,
-    //       400,
-    //       `Insufficient stock for product: ${item.product.name}`
-    //     );
-    //   }
-    //   calculatedTotal += item.product.price * item.quantity;
-    // }
-
-    // if (Math.round(calculatedTotal * 100) !== Math.round(totalAmount * 100)) {
-    //   return sendError(res, 400, "Order total mismatch");
-    // }
-
-    // const order = new Order({
-    //   user: req.user.id,
-    //   items: cart.items,
-    //   totalAmount: calculatedTotal,
-    //   paymentDetails,
-    //   status: "Pending", //default
-    // });
-    // await order.save();
-    // cart.items = [];
-    // await cart.save();
+    await session.commitTransaction();
+    session.endSession();
 
     sendSuccess(res, 201, "Order placed successfully", order);
   } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
     console.error("Order placement error:", error);
     sendError(res, 500, "Failed to place order", error.message);
   }

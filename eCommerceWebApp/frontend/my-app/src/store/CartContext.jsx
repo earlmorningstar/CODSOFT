@@ -4,7 +4,7 @@ import api from "../utils/api";
 const CartContext = createContext();
 
 const initialState = {
-  items: [],
+  items: JSON.parse(localStorage.getItem("cartItems")) || [],
   totalAmount: 0,
 };
 
@@ -78,6 +78,10 @@ export const CartProvider = ({ children }) => {
   const [cartState, dispatch] = useReducer(cartReducer, initialState);
 
   useEffect(() => {
+    localStorage.setItem("cartItems", JSON.stringify(cartState.items));
+  }, [cartState.items]);
+
+  useEffect(() => {
     const total = cartState.items.reduce(
       (sum, item) => sum + item.price * item.quantity,
       0
@@ -106,16 +110,14 @@ export const CartProvider = ({ children }) => {
   };
 
   const checkout = async () => {
-
     if (cartState.items.length === 0) {
       console.error("Cart is empty");
       throw new Error("Your cart is empty");
     }
 
     try {
-      const user = JSON.parse(localStorage.getItem("user"));
-      console.log("Token in localStorage:", user?.token);
-
+      // const user = JSON.parse(localStorage.getItem("user"));
+      // console.log("Token in localStorage:", user?.token);
       const normalisedCartItems = cartState.items.map((item) => ({
         id: String(item.shopifyProductId || item.id || item._id),
         quantity: item.quantity,
@@ -124,7 +126,6 @@ export const CartProvider = ({ children }) => {
       const response = await api.post("/api/orders/checkout", {
         items: normalisedCartItems,
       });
-      console.log("Checkout Successful:", response.data.data);
       return response.data.data;
     } catch (error) {
       console.error("Full Checkout error", error.response?.data || error);
@@ -134,22 +135,41 @@ export const CartProvider = ({ children }) => {
 
   const placeOrder = async (paymentDetails) => {
     try {
+      const items = cartState.items.map((item) => ({
+        product: item.shopifyProductId || item.id,
+        quantity: item.quantity,
+      }));
 
+      const mapPaymentStatus = (status) => {
+        switch (status) {
+          case "succeeded":
+            return "Paid";
+          case "requires_payment_method":
+            return "Failed";
+          default:
+            return "Pending";
+        }
+      };
+
+      const processedPaymentDetails = {
+        ...paymentDetails,
+        status: mapPaymentStatus(paymentDetails.status),
+      };
 
       const response = await api.post("/api/orders", {
-        items: cartState.items.map((item) => ({
-          product: item.product._id,
-          quantity: item.quantity,
-        })),
+        items,
         totalAmount: cartState.totalAmount,
-        paymentDetails,
+        paymentDetails: processedPaymentDetails,
       });
+
       clearCart();
-      alert("Order placed successfully!");
       return response.data.data;
     } catch (error) {
-      console.error("Failed to place order:", error.response?.data || error);
-      throw new Error("Order placement failed");
+      console.error("Full Order Placement Error:", error);
+      console.error("Error Response:", error.response?.data);
+      throw new Error(
+        error.response?.data?.message || "Order placement failed"
+      );
     }
   };
 

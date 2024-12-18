@@ -6,16 +6,43 @@ import { IoIosArrowRoundDown } from "react-icons/io";
 import "@glidejs/glide/dist/css/glide.core.min.css";
 import "@glidejs/glide/dist/css/glide.theme.min.css";
 import HomepageBanner from "./HomepageBanner";
+import Skeleton from "@mui/material/Skeleton";
+import Box from "@mui/material/Box";
 
 const FeaturedProducts = ({ products }) => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [skeletonCount, setSkeletonCount] = useState(4);
   const glideRef = useRef(null);
   const navigate = useNavigate();
 
+  const updateSkeletonCount = () => {
+    const width = window.innerWidth;
+    if (width > 1140) {
+      setSkeletonCount(4);
+    } else if (width > 900) {
+      setSkeletonCount(3);
+    } else if (width > 700) {
+      setSkeletonCount(2);
+    } else {
+      setSkeletonCount(1);
+    }
+  };
+
+  useEffect(() => {
+    updateSkeletonCount();
+    window.addEventListener("resize", updateSkeletonCount);
+
+    return () => window.removeEventListener("resize", updateSkeletonCount);
+  }, []);
+
   useEffect(() => {
     if (products?.length > 0) {
-      const shuffled = [...products].sort(() => 0.5 - Math.random());
-      setFeaturedProducts(shuffled.slice(0, 15));
+      setTimeout(() => {
+        const shuffled = [...products].sort(() => 0.5 - Math.random());
+        setFeaturedProducts(shuffled.slice(0, 15));
+        setLoading(false);
+      }, 1500);
     } else {
       console.log("No products to dispslay");
     }
@@ -47,11 +74,7 @@ const FeaturedProducts = ({ products }) => {
 
       return () => glide.destroy();
     }
-  }, [featuredProducts]);
-
-  if (!products || products.length === 0) {
-    return <p>Loading featured products...</p>;
-  }
+  }, [featuredProducts, skeletonCount]);
 
   return (
     <section className="prod-main-container">
@@ -64,45 +87,66 @@ const FeaturedProducts = ({ products }) => {
         </NavLink>
       </div>
 
-      <div className="glide" ref={glideRef}>
-        <div className="glide__track" data-glide-el="track">
-          <ul className="glide__slides">
-            {featuredProducts.map((product, index) => (
-              <li className="glide__slide" key={index}>
-                <div
-                  className="product-card"
-                  onClick={(e) => {
-                    if (!e.target.closest(".heart-icon")) {
-                      navigate(`/products/${product.id}`);
-                    }
-                  }}
-                >
-                  <div className="featProd-img-container">
-                    <img
-                      className="featured-carousel-img"
-                      src={product.image?.src}
-                      alt={product.title}
-                    />
-                    <CiHeart
-                      className="heart-icon"
-                      size={25}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                      }}
-                    />
-                  </div>
-                  <div className="product-info">
-                    <span>{product.title}</span>
-                    <p>
-                      ${product.variants?.[0]?.price || "No Available Price"}
-                    </p>
-                  </div>
-                </div>
-              </li>
-            ))}
-          </ul>
+      {loading ? (
+        <div
+          className="glide__slides"
+          id="skeleton-container"
+          sx={{ overflow: "hidden" }}
+        >
+          {Array.from(new Array(skeletonCount)).map((_, index) => (
+            <Box key={index} sx={{ width: "100%" }}>
+              <Skeleton
+                variant="rectangular"
+                width="100%"
+                height={150}
+                animation="wave"
+              />
+              <Skeleton animation="wave" height={30} style={{ marginTop: 8 }} />
+              <Skeleton animation="wave" height={20} width="80%" />
+            </Box>
+          ))}
         </div>
-      </div>
+      ) : (
+        <div className="glide" ref={glideRef}>
+          <div className="glide__track" data-glide-el="track">
+            <ul className="glide__slides">
+              {featuredProducts.map((product, index) => (
+                <li className="glide__slide" key={index}>
+                  <div
+                    className="product-card"
+                    onClick={(e) => {
+                      if (!e.target.closest(".heart-icon")) {
+                        navigate(`/products/${product.id}`);
+                      }
+                    }}
+                  >
+                    <div className="featProd-img-container">
+                      <img
+                        className="featured-carousel-img"
+                        src={product.image?.src}
+                        alt={product.title}
+                      />
+                      <CiHeart
+                        className="heart-icon"
+                        size={25}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                        }}
+                      />
+                    </div>
+                    <div className="product-info">
+                      <span>{product.title}</span>
+                      <p>
+                        ${product.variants?.[0]?.price || "No Available Price"}
+                      </p>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      )}
 
       <div className="homepage-banner">
         <HomepageBanner spanContent="Discover the latest trends in fashion, accessories, electronics, and more at unbeatable prices." />

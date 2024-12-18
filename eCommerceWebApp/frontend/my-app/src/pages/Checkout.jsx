@@ -1,5 +1,6 @@
 import { useContext, useState } from "react";
 import CartContext from "../store/CartContext";
+import { useNavigate } from "react-router-dom";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   Elements,
@@ -7,6 +8,7 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
+import { Box, TextField, Stack, Alert, CircularProgress } from "@mui/material";
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
@@ -15,17 +17,26 @@ const CheckoutForm = () => {
   const stripe = useStripe();
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleCheckout = async (e) => {
     e.preventDefault();
 
     if (cartCtx.items.length === 0) {
-      alert("Your bag is empty. Please add items before checkout.");
+      setErrorMessage("Your bag is empty. Please add items before checkout.");
+      setTimeout(() => {
+        setErrorMessage("");
+      }, 4000);
       return;
     }
 
     if (!stripe || !elements) {
-      alert("Stripe is not initialised yet");
+      setErrorMessage("Stripe is not initialised yet");
+      setTimeout(() => {
+        setErrorMessage("");
+      }, 4000);
       return;
     }
 
@@ -33,7 +44,6 @@ const CheckoutForm = () => {
 
     try {
       const { clientSecret } = await cartCtx.checkout();
-      console.log("Client Secret:", clientSecret);
 
       const cardElement = elements.getElement(CardElement);
 
@@ -43,24 +53,36 @@ const CheckoutForm = () => {
         },
       });
 
-      console.log("Payment Result:", paymentResult);
-
       if (paymentResult.error) {
         console.error("Payment Error:", paymentResult.error.message);
-        alert(`Payment failed: ${paymentResult.error.message}`);
+        setErrorMessage(`Payment failed: ${paymentResult.error.message}`);
+        setTimeout(() => {
+          setErrorMessage("");
+        }, 4000);
         setIsProcessing(false);
         return;
       }
 
       if (paymentResult.paymentIntent.status === "succeeded") {
-        console.log("Payment Intent:", paymentResult.paymentIntent);
-        await cartCtx.placeOrder(paymentResult.paymentIntent);
-        alert("Payment successful! Your order has been placed.");
-        //Redirec to order history page
+        await cartCtx.placeOrder({
+          paymentIntentId: paymentResult.paymentIntent.id,
+          status: paymentResult.paymentIntent.status,
+          amount: paymentResult.paymentIntent.amount / 100,
+        });
+
+        setSuccessMessage("Payment successful! Your order has been placed.");
+        setTimeout(() => {
+          setSuccessMessage("");
+          navigate("/homepage");
+        }, 4000);
+        //Redirec to order history page (after setting up)
       }
     } catch (error) {
       console.error("Checkout failed:", error.message);
-      alert("Checkout failed. Please try again.");
+      setErrorMessage("Checkout failed. Please try again.");
+      setTimeout(() => {
+        setErrorMessage("");
+      }, 4000);
     } finally {
       setIsProcessing(false);
     }
@@ -83,12 +105,49 @@ const CheckoutForm = () => {
   };
 
   return (
-    <form onSubmit={handleCheckout}>
-      <h2>Checkout</h2>
+    <form className="checkoutForm-container" onSubmit={handleCheckout}>
+      <p>Checkout</p>
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        <TextField
+          label={
+            <div className="auth-label-flex">
+              Email Address <span style={{ color: "red" }}>*</span>
+            </div>
+          }
+          variant="standard"
+        />
+        <TextField
+          label={
+            <div className="auth-label-flex">
+              Delivery Address <span style={{ color: "red" }}>*</span>
+            </div>
+          }
+          variant="standard"
+        />
+      </Box>
+
       <CardElement options={cardElementOptions} />
-      <button type="submit" disabled={!stripe || isProcessing}>
-        {isProcessing ? "Processing..." : "Confirm Payment & Place Order"}
+      <button
+        className="signup-login-btn"
+        type="submit"
+        disabled={!stripe || isProcessing}
+      >
+        {isProcessing ? (
+          <CircularProgress size={24} color="inherit" />
+        ) : (
+          "Confirm Payment & Place Order"
+        )}
       </button>
+      {errorMessage && (
+        <Stack sx={{ width: "100%" }} spacing={2}>
+          <Alert severity="error">{errorMessage}</Alert>
+        </Stack>
+      )}
+      {successMessage && (
+        <Stack sx={{ width: "100%" }} spacing={2}>
+          <Alert severity="success">{successMessage}</Alert>
+        </Stack>
+      )}
     </form>
   );
 };

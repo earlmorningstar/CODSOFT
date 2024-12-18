@@ -2,6 +2,8 @@ const Product = require("../models/Products");
 const User = require("../models/User");
 const { sendSuccess, sendError } = require("../utils/response");
 
+//Not in use since I'm fetching products from shopify and handling it on the frontend. I'm only working with the Product Schema.
+
 const getProducts = async (req, res) => {
   try {
     const {

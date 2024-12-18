@@ -71,7 +71,6 @@ const Search = ({ onSearch }) => {
 
   return (
     <div className="search-container">
-      {/* Search Bar */}
       <form onSubmit={handleSubmit}>
         <div className="search-input-container">
           <input
@@ -89,7 +88,6 @@ const Search = ({ onSearch }) => {
         </div>
       </form>
 
-      {/* Recent Searches */}
       {showSuggestions && recentSearches.length > 0 && (
         <>
           <div className="recent-search-header">

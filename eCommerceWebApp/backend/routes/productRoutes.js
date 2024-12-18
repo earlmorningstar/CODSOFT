@@ -4,6 +4,8 @@ const router = express.Router();
 const Product = require("../models/Products");
 const { sendSuccess, sendError } = require("../utils/response");
 
+//Syncing shopify products structure from the frontend
+
 router.post("/sync", async (req, res) => {
   try {
     const { products } = req.body;

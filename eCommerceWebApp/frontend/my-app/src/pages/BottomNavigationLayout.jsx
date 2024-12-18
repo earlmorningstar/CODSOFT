@@ -1,11 +1,19 @@
+import { useContext } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import { GoHome } from "react-icons/go";
 import { GoSearch } from "react-icons/go";
 import { IoCartOutline } from "react-icons/io5";
 import { PiHandbag } from "react-icons/pi";
 import { VscAccount } from "react-icons/vsc";
+import CartContext from "../store/CartContext";
 
 const BottomNavigationLayout = () => {
+  const { items: cartItems } = useContext(CartContext);
+  const cartItemCount = cartItems.reduce(
+    (count, item) => count + item.quantity,
+    0
+  );
+
   return (
     <section className="btm-main-container">
       <div className="btm-root-main-outlet">
@@ -20,7 +28,10 @@ const BottomNavigationLayout = () => {
           <GoSearch color="#838383" size={20} />
         </NavLink>
         <NavLink className="btm-bar-navlinks" to="/cart">
-          <IoCartOutline color="#838383" size={20} />
+          <span className="cartCount-holder">
+            <IoCartOutline color="#838383" size={20} />
+            {cartItemCount > 0 && <p className="cartCount">{cartItemCount}</p>}
+          </span>
         </NavLink>
         <NavLink className="btm-bar-navlinks" to="/order">
           <PiHandbag color="#838383" size={20} />

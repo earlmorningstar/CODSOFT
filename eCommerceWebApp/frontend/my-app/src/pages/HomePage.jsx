@@ -12,15 +12,32 @@ import HomepageBanner from "./HomepageBanner";
 
 function HomePage() {
   const [products, setProducts] = useState([]);
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await api.get("/api/shopify/products");
-        setProducts(response.data.data.products);
+        const shopifyProducts = response?.data?.data?.products || [];
+
+        await syncShopifyProducts(shopifyProducts);
+
+        setProducts(shopifyProducts);
       } catch (error) {
         console.error("Error fetching products:", error);
       }
     };
+
+    const syncShopifyProducts = async (shopifyProducts) => {
+      try {
+        const syncResponse = await api.post("/api/products/sync", {
+          products: shopifyProducts,
+        });
+        console.log("Product sync response:", syncResponse.data);
+      } catch (error) {
+        console.error("Failes to sync shopify products:", error);
+      }
+    };
+
     fetchProducts();
   }, []);
 
