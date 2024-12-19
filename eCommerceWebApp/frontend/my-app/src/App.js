@@ -1,8 +1,4 @@
-import {
-  RouterProvider,
-  createBrowserRouter,
-  // ScrollRestoration,
-} from "react-router-dom";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import RootLayout from "./pages/RootLayout";
 import WelcomePage from "./pages/WelcomePage";
 import LoginPage from "./pages/LoginPage";
@@ -18,11 +14,17 @@ import ProductDetailsPage from "./pages/ProductDetailsPage";
 import ProductsPage from "./pages/ProductsPage";
 import Checkout from "./pages/Checkout";
 import ScrollPosition from "./hooks/ScrollPosition";
+import ErrorPage from "./pages/ErrorPage";
+import UserMenu from "./pages/UserMenu";
+import SavedPaymentDetailsPage from "./pages/SavedPaymentDetailsPage";
+import Settings from "./pages/Settings";
+import Wishlist from "./pages/Wishlist";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <RootLayout />,
+    errorElement: <ErrorPage />,
     children: [
       { index: true, element: <WelcomePage /> },
       { path: "/login", element: <LoginPage /> },
@@ -40,11 +42,18 @@ const router = createBrowserRouter([
           { path: "/homepage", element: <HomePage /> },
           { path: "/search", element: <SearchPage /> },
           { path: "/cart", element: <CartPage /> },
-          { path: "/profile", element: <ProfilePage /> },
+          { path: "/user-menu", element: <UserMenu /> },
           { path: "/order", element: <OrderPage /> },
           { path: "/products", element: <ProductsPage /> },
           { path: "/products/:id", element: <ProductDetailsPage /> },
           { path: "/checkout", element: <Checkout /> },
+          { path: "/profile", element: <ProfilePage /> },
+          {
+            path: "/saved-payment-detail",
+            element: <SavedPaymentDetailsPage />,
+          },
+          { path: "/Settings", element: <Settings /> },
+          { path: "/wishlist", element: <Wishlist /> },
         ],
       },
     ],

@@ -178,12 +178,16 @@ const SearchPage = () => {
                 display: "flex",
                 alignItems: "center",
                 cursor: "pointer",
-                marginBottom: "18px",
                 fontWeight: "400",
                 color: "#6055d8",
               }}
             >
-              <IoChevronBackOutline size={20} style={{ marginRight: "10px" }} />
+              <IoChevronBackOutline
+                size={20}
+                style={{
+                  marginRight: "10px",
+                }}
+              />
               Back to Collections
             </div>
           )}

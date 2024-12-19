@@ -15,6 +15,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import CountrySelect from "./CountrySelect";
 
 const images = [{ src: "/images/trend-vault-logo2.png", alt: "Logo 1" }];
 
@@ -22,8 +23,11 @@ const SignupPage = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [age, setAge] = useState("");
+  const [country, setCountry] = useState("");
+  const [deliveryAddress, setDeliveryAddress] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
@@ -46,7 +50,7 @@ const SignupPage = () => {
       setError("Email must be formatted correctly");
       return false;
     }
-    if (!password) {
+    if (!password.trim()) {
       setError("Password cannot be blank");
       return false;
     }
@@ -67,6 +71,18 @@ const SignupPage = () => {
       setError("Passwords do not match");
       return false;
     }
+    if (!age) {
+      setError("Age is required");
+      return false;
+    }
+    if (age < 18) {
+      setError("Person under the age of 18 cannot be registered");
+      return false;
+    }
+    if (!country) {
+      setError("Please, select your country of residence");
+      return false;
+    }
     return true;
   };
 
@@ -83,6 +99,9 @@ const SignupPage = () => {
       const { data } = await api.post("/api/users/register", {
         name,
         email,
+        age,
+        country,
+        deliveryAddress,
         password,
         confirmPassword,
       });
@@ -107,7 +126,7 @@ const SignupPage = () => {
       <span className="signup-login-image-container">
         <img src={images[0].src} alt={images[0].alt} />
       </span>
-      <Box sx={{ maxWidth: "400px", padding: "1rem" }}>
+      <Box sx={{ maxWidth: "400px", marginTop: "3rem", padding: "1rem" }}>
         <span className="signup-login-typography-container">
           Create your account
         </span>
@@ -132,6 +151,30 @@ const SignupPage = () => {
               }
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              variant="standard"
+            />
+            <TextField
+              label={
+                <div className="auth-label-flex">
+                  Age <span style={{ color: "red" }}>*</span>
+                </div>
+              }
+              value={age}
+              onChange={(e) => setAge(e.target.value)}
+              variant="standard"
+            />
+            <CountrySelect
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
+            />
+            <TextField
+              label={
+                <div className="auth-label-flex">
+                  Delivery Address (Optional)
+                </div>
+              }
+              value={deliveryAddress}
+              onChange={(e) => setDeliveryAddress(e.target.value)}
               variant="standard"
             />
             <FormControl variant="standard">

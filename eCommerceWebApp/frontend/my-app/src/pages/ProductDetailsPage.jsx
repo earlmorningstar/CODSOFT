@@ -170,7 +170,9 @@ const ProductDetailsPage = () => {
                 }}
                 onClick={() => toggleCartButton(product)}
               >
-                Add to Bag
+                {alreadyInCart(product.id)
+                      ? "Remove from Bag"
+                      : "Add to Bag"}
               </button>
               <button onClick={handleCartPage}>View Cart</button>
             </div>

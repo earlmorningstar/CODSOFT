@@ -38,14 +38,15 @@ const LoginPage = () => {
     setLoading(true);
 
     try {
-      const { data } = await api.post("/api/users/login", { email, password });
-      localStorage.setItem("user", JSON.stringify({
-        _id: data.data._id,
-        name: data.data.name,
-        email: data.data.email,
-        token: data.data.token
-      }));
-      login(data.data);
+      const response = await api.post("/api/users/login", { email, password });
+      console.log("Login Response:", response);
+
+      const { _id, name, email: userEmail, token } = response.data.data;
+
+      const user = { _id, name, email: userEmail, token };
+
+      localStorage.setItem("user", JSON.stringify(user));
+      login(user);
       setSuccess("Login Successful");
       setTimeout(() => {
         setSuccess("");
@@ -66,7 +67,7 @@ const LoginPage = () => {
       <span className="signup-login-image-container">
         <img src={images[0].src} alt={images[0].alt} />
       </span>
-      <Box sx={{ maxWidth: "400px", padding: "1rem" }}>
+      <Box sx={{ maxWidth: "400px", marginTop: "3.5rem", padding: "1rem" }}>
         <span className="signup-login-typography-container">
           Log into your account
         </span>

@@ -32,7 +32,7 @@ const CartPage = () => {
     return (
       <div className="empty-cart-alert">
         <h1>Cart is Empty</h1>
-        <button onClick={handleProductPage}>Add item</button>
+        <button onClick={handleProductPage}>Add an item</button>
       </div>
     );
   }

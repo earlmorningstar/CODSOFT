@@ -25,7 +25,7 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  align-items: center; 
+  align-items: center;
   z-index: 1600;
 }
 
@@ -125,7 +125,8 @@
 /* WelcomeNote Section--- */
 
 #welcome-note-container {
-  font-family: "Merriweather Sans", sans-serif;
+  font-family: "Poppins", sans-serif;
+  /* font-family: "Merriweather Sans", sans-serif; */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -136,12 +137,7 @@
 }
 
 #welcome-note-container span {
-  font-size: 22px;
-  font-weight: 400;
-}
-
-#welcome-note-container p {
-  font-size: 19px;
+  font-size: 18px;
   font-weight: 400;
 }
 
@@ -153,7 +149,7 @@
   height: 100vh;
 }
 .btm-root-main-outlet {
-  margin: 4rem 0 3.2rem 0;
+  margin: 3.5rem 0 3.2rem 0;
   padding: 2rem;
   flex: 1;
   overflow: auto;
@@ -179,7 +175,7 @@
   text-decoration: none;
 }
 
-.btm-bar-navlinks span{
+.btm-bar-navlinks span {
   display: flex;
 }
 
@@ -216,6 +212,8 @@
   right: 0;
   left: 0;
   z-index: 5;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .root-main-container span {
@@ -239,7 +237,7 @@
   border-top-right-radius: 1.5rem;
   border-bottom-right-radius: 1.5rem;
   box-shadow: 2px 0px 8px rgba(0, 0, 0, 0.2);
-  z-index: 1500;
+  z-index: 1600;
   transition: left 0.7s ease;
   display: flex;
   flex-direction: column;
@@ -276,8 +274,8 @@
 }
 
 .sidebar-link {
-  font-family: "Poppins", sans-serif;
-  font-size: 15px;
+  font-family: "Raleway", sans-serif;
+  font-size: 17px;
   font-weight: 400;
   display: flex;
   align-items: center;
@@ -317,7 +315,7 @@
 }
 
 .avatar-name-email-container span {
-  font-family: "Rajdhani", sans-serif;
+  font-family: "Raleway", sans-serif;
   font-size: 15px;
   font-weight: 500;
   display: flex;
@@ -329,7 +327,7 @@
   position: relative;
 }
 
-#cartCount-id{
+#cartCount-id {
   right: 35px;
 }
 
@@ -482,7 +480,6 @@
   justify-content: center;
   width: 100%;
   border-radius: 15px;
-
 }
 
 .skeleton {
@@ -861,6 +858,9 @@
 
 .back-to-collections {
   font-family: "Raleway", sans-serif;
+  display: flex;
+  align-items: center;
+  margin-bottom: 18px;
 }
 
 /* Cart Section --- */
@@ -1029,6 +1029,126 @@
   font-weight: 600;
 }
 
+.errorPage-main-container {
+  font-family: "Poppins", sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  margin: 8rem 4rem 0 4rem;
+}
+
+.errorPage-main-container span {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-size: 25px;
+  font-weight: 500;
+  line-height: 40px;
+  text-align: center;
+}
+
+.errorPage-main-container button {
+  cursor: pointer;
+  width: fit-content;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 7px;
+  background-color: #6055d8;
+  color: #f0f0f0;
+  font-size: 16px;
+}
+
+/* User Menu Section--- */
+
+#user-name-img-flex-holder {
+  flex-direction: column;
+  gap: 10px;
+}
+
+#avatar-container-id {
+  width: 4rem;
+  height: 4rem;
+}
+
+.userMenu-header {
+  font-family: "Raleway", sans-serif;
+  font-size: 25px;
+  font-weight: 500;
+  margin: 0 auto 3rem;
+}
+
+.userMenu-links-main-container {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 1rem;
+}
+
+.userMenu-nav-links {
+  cursor: pointer;
+  border: 1px solid #777e90;
+  border-radius: 5px;
+  padding: 15px;
+  width: 500px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 auto;
+  box-shadow: 2px 0px 8px rgba(0, 0, 0, 0.2);
+  color: #000000;
+  text-decoration: none;
+}
+
+.userMenu-icon-title-flex {
+  font-family: "Raleway", sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* User Profile Section--- */
+
+.usermenuPages-title-container span {
+color: #000000;
+}
+
+.userPages-main-container p {
+  font-size: 22px;
+  font-weight: 500;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+#usermenuPages-title {
+  font-family: "Manrope", sans-serif;
+}
+
+.profile-form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 400px;
+}
+
+.profile-form-container span {
+  font-family: "Manrope", sans-serif;
+  font-size: 12px;
+  margin-left: 20px;
+}
+
+.profile-text-field {
+  padding: 10px;
+}
+
+.age-span {
+  border-radius: 3px;
+  border: 1px solid #979696;
+  padding: 8px 20px 8px 10px;
+}
 
 /* Screen Sizes--- */
 
@@ -1068,6 +1188,16 @@
 }
 
 @media screen and (max-width: 750px) {
+  .signup-login-Container {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+  }
+
+  .signup-login-image-container {
+    margin-left: 0;
+  }
+
   .banner-content-holder {
     font-size: 17px;
     font-weight: 400;
@@ -1112,6 +1242,23 @@
   }
 
   .checkoutForm-container {
+    width: 100%;
+  }
+
+  .errorPage-main-container {
+    font-family: "Poppins", sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    margin: 8rem 1rem 0 1rem;
+  }
+
+  .errorPage-main-container span {
+    font-size: 18px;
+    line-height: 28px;
+  }
+  .userMenu-nav-links {
     width: 100%;
   }
 }

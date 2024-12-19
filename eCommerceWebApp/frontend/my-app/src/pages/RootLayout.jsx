@@ -6,14 +6,14 @@ import { RiMenu2Fill, RiSettings2Line } from "react-icons/ri";
 import { GoBell, GoX, GoHome, GoSearch } from "react-icons/go";
 import { IoCartOutline } from "react-icons/io5";
 import { PiHandbag } from "react-icons/pi";
-import { VscAccount } from "react-icons/vsc";
+import { FaRegUser } from "react-icons/fa";
 import { AiOutlineExclamationCircle } from "react-icons/ai";
 
 import "./Index.css";
 
 const images = [{ src: "/images/avatar1.jpg", alt: "Avatar 1" }];
 
-function RootLayout() {
+const RootLayout = () => {
   const { user } = useContext(AuthContext);
   const { items: cartItems } = useContext(CartContext);
   const cartItemCount = cartItems.reduce(
@@ -41,9 +41,7 @@ function RootLayout() {
             <span onClick={toggleSidebar}>
               <RiMenu2Fill size={20} />
             </span>
-
             <h3>TrendVault</h3>
-
             <span>
               <GoBell size={20} />
             </span>
@@ -95,11 +93,11 @@ function RootLayout() {
             <PiHandbag size={20} /> Order
           </NavLink>
           <NavLink
-            to="/profile"
+            to="/user-menu"
             onClick={closeSidebar}
             className="sidebar-link"
           >
-            <VscAccount size={20} /> Profile
+            <FaRegUser size={20} /> User Menu
           </NavLink>
           <span>OTHERS</span>
           <NavLink
@@ -124,6 +122,6 @@ function RootLayout() {
       </main>
     </>
   );
-}
+};
 
 export default RootLayout;

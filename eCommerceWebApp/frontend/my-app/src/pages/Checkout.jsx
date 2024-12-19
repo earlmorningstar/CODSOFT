@@ -128,6 +128,11 @@ const CheckoutForm = () => {
 
       <CardElement options={cardElementOptions} />
       <button
+        className="signup-login-btn"        
+      >
+        Save Checkout & Card Details
+      </button>
+      <button
         className="signup-login-btn"
         type="submit"
         disabled={!stripe || isProcessing}

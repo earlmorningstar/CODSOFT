@@ -4,7 +4,7 @@ import { GoHome } from "react-icons/go";
 import { GoSearch } from "react-icons/go";
 import { IoCartOutline } from "react-icons/io5";
 import { PiHandbag } from "react-icons/pi";
-import { VscAccount } from "react-icons/vsc";
+import { FaRegUser } from "react-icons/fa";
 import CartContext from "../store/CartContext";
 
 const BottomNavigationLayout = () => {
@@ -36,8 +36,8 @@ const BottomNavigationLayout = () => {
         <NavLink className="btm-bar-navlinks" to="/order">
           <PiHandbag color="#838383" size={20} />
         </NavLink>
-        <NavLink className="btm-bar-navlinks" to="/profile">
-          <VscAccount color="#838383" size={20} />
+        <NavLink className="btm-bar-navlinks" to="/user-menu">
+          <FaRegUser color="#838383" size={20} />
         </NavLink>
       </nav>
     </section>
