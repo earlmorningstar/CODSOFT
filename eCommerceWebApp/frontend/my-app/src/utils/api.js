@@ -40,8 +40,9 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      displayModal();
+    if (error.response?.status === 401 && error.response?.data?.isAuthError) {
+      localStorage.renoveItem("user");
+      window.location.href = "/login";
     }
     return Promise.reject(error);
   }

@@ -1113,7 +1113,7 @@
 /* User Profile Section--- */
 
 .usermenuPages-title-container span {
-color: #000000;
+  color: #000000;
 }
 
 .userPages-main-container p {
@@ -1127,11 +1127,18 @@ color: #000000;
   font-family: "Manrope", sans-serif;
 }
 
+/* .getProfile-fetchUserField-Container {
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+  margin-top: 3rem;
+} */
+
 .profile-form-container {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  max-width: 400px;
+  max-width: 500px;
 }
 
 .profile-form-container span {
@@ -1141,13 +1148,56 @@ color: #000000;
 }
 
 .profile-text-field {
-  padding: 10px;
+  padding: 14px 12px;
 }
 
 .age-span {
   border-radius: 3px;
   border: 1px solid #979696;
   padding: 8px 20px 8px 10px;
+}
+
+.userDetails-update-btn {
+  cursor: pointer;
+  font-family: "Manrope", sans-serif;
+  max-width: 500px;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 5px;
+  margin-top: 13px;
+  background-color: #000000;
+  color: #f0f0f0;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.btn-progress {
+  color: #f0f0f0;
+}
+
+.alert-message-holder {
+  max-width: 500px;
+  margin-bottom: 10px;
+}
+
+.timestamp-container {
+  font-family: "Poppins", sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border-left: 3px solid #44b700;
+  background-color: #f0f0f0;
+  
+}
+
+.timestamp-container main {
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.delete-modal-title {
+  font-family: "Raleway", sans-serif;
 }
 
 /* Screen Sizes--- */
@@ -1261,6 +1311,14 @@ color: #000000;
   .userMenu-nav-links {
     width: 100%;
   }
+
+  .userDetails-display {
+    font-size: 16px;
+  }
+
+  .userDetails-update-btn {
+    font-size: 13px;
+  }
 }
 
 @media screen and (max-width: 530px) {
@@ -1311,7 +1369,6 @@ color: #000000;
     gap: 0;
     width: 100%;
   }
-  
 }
 
 @media screen and (max-width: 500px) {
