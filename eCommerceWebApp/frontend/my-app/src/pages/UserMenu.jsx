@@ -1,15 +1,52 @@
-import { NavLink } from "react-router-dom";
+import { useContext, useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
 import { FaRegUser, FaRegHeart } from "react-icons/fa";
 import { IoChevronForward } from "react-icons/io5";
 import { FaRegCreditCard } from "react-icons/fa6";
 import { FiLogOut, FiSettings } from "react-icons/fi";
+import { Modal, Box, Button, Backdrop, CircularProgress } from "@mui/material";
+
+const modalStyle = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 320,
+  bgcolor: "background.paper",
+  boxShadow: 24,
+  p: 4,
+  borderRadius: 2,
+};
 
 const UserMenu = () => {
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleLogoutClick = () => {
+    setIsLogoutModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsLogoutModalOpen(false);
+  };
+
+  const handleLogout = async () => {
+    setLoading(true);
+    setIsLogoutModalOpen(false);
+
+    setTimeout(() => {
+      logout();
+      navigate("/login");
+      setLoading(false);
+    }, 1000);
+  };
   return (
     <section className="user-profile-main-container">
-        
       <div className="userMenu-links-main-container">
-      <span className="userMenu-header">User Menu</span>
+        <span className="userMenu-header">User Menu</span>
         <NavLink className="userMenu-nav-links" to="/profile">
           <span className="userMenu-icon-title-flex">
             <FaRegUser size={20} /> Profile
@@ -42,12 +79,46 @@ const UserMenu = () => {
             <IoChevronForward />
           </span>
         </NavLink>
-        <div className="userMenu-nav-links">
+        <div
+          className="userMenu-nav-links"
+          onClick={handleLogoutClick}
+          style={{ cursor: "pointer" }}
+        >
           <span className="userMenu-icon-title-flex">
             <FiLogOut size={20} /> Logout
           </span>
         </div>
       </div>
+
+      <Modal open={isLogoutModalOpen} onClose={handleCloseModal}>
+        <Box sx={modalStyle}>
+          <div className="verify-password-title">
+            <h2 style={{ marginBottom: "20px" }}>Logout Confirmation</h2>
+            <p style={{ marginBottom: "20px" }}>Do you want to logout?</p>
+          </div>
+
+          <Button
+            variant="contained"
+            onClick={handleLogout}
+            sx={{ marginRight: 2 }}
+          >
+            Okay
+          </Button>
+          <Button variant="outlined" onClick={handleCloseModal}>
+            Cancel
+          </Button>
+        </Box>
+      </Modal>
+
+      <Backdrop
+        sx={{
+          color: "#6055d8",
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+        }}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </section>
   );
 };

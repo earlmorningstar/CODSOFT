@@ -1,7 +1,8 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import CartContext from "../store/CartContext";
 import { useNavigate } from "react-router-dom";
 import { loadStripe } from "@stripe/stripe-js";
+import api from "../utils/api";
 import {
   Elements,
   CardElement,
@@ -17,9 +18,56 @@ const CheckoutForm = () => {
   const stripe = useStripe();
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isSavingCard, setIsSavingCard] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [userData, setUserData] = useState({
+    email: "",
+    deliveryAddress: "",
+  });
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchUserProfile();
+  }, []);
+
+  const fetchUserProfile = async () => {
+    try {
+      const response = await api.get("/api/users/profile");
+      const userData = response.data;
+      setUserData({
+        email: userData.email || "",
+        deliveryAddress: userData.deliveryAddress || "",
+      });
+    } catch (error) {
+      setErrorMessage(
+        error.response?.data?.message || "Failed to fetch user profile"
+      );
+      setTimeout(() => setErrorMessage(""), 4000);
+    }
+  };
+
+  const saveCardDetails = async () => {
+    setIsSavingCard(true);
+    try {
+      const cardElement = elements.getElement(CardElement);
+      const { token } = await stripe.createToken(cardElement);
+
+      await api.post("/api/users/cards/save-card", {
+        last4: token.card.last4,
+        expMonth: token.card.exp_month,
+        expYear: token.card.exp_year,
+        brand: token.card.brand,
+      });
+
+      setSuccessMessage("Card details saved successfully");
+      setIsSavingCard(false);
+      setTimeout(() => setSuccessMessage(""), 4000);
+    } catch (error) {
+      setErrorMessage("Failed to save card deetails. Please try again");
+      setTimeout(() => setErrorMessage(""), 4000);
+    }
+  };
 
   const handleCheckout = async (e) => {
     e.preventDefault();
@@ -115,6 +163,7 @@ const CheckoutForm = () => {
             </div>
           }
           variant="standard"
+          value={userData.email}
         />
         <TextField
           label={
@@ -123,14 +172,23 @@ const CheckoutForm = () => {
             </div>
           }
           variant="standard"
+          value={userData.deliveryAddress}
+          disabled
         />
       </Box>
 
       <CardElement options={cardElementOptions} />
       <button
-        className="signup-login-btn"        
+        className="signup-login-btn"
+        type="button"
+        onClick={saveCardDetails}
+        disabled={isSavingCard}
       >
-        Save Checkout & Card Details
+       {isSavingCard ? (
+          <CircularProgress size={24} color="inherit" />
+        ) : (
+          "Save Card Details"
+        )}
       </button>
       <button
         className="signup-login-btn"

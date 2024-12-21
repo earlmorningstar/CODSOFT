@@ -39,7 +39,6 @@ const LoginPage = () => {
 
     try {
       const response = await api.post("/api/users/login", { email, password });
-      console.log("Login Response:", response);
 
       const { _id, name, email: userEmail, token } = response.data.data;
 

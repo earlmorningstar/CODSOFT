@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 const connectDB = require("./config/database");
 const authRoutes = require("./routes/authRoutes");
 const productsRoutes = require("./routes/productRoutes");
@@ -11,6 +12,7 @@ const adminRoutes = require("./routes/adminRoutes");
 const orderAdminRoutes = require("./routes/orderAdminRoutes");
 const wishlistRoutes = require("./routes/wishlistRoutes");
 const shopifyRoutes = require("./routes/shopifyRoutes");
+const cardRoutes = require("./routes/cardRoutes");
 
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
@@ -29,6 +31,7 @@ app.use(
     credentials: true,
   })
 );
+app.use(cookieParser());
 app.use(express.json());
 connectDB();
 app.use("/api/users", authRoutes);
@@ -39,6 +42,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/admin/orders", orderAdminRoutes);
 app.use("/api/users/whishlist", wishlistRoutes);
 app.use("/api/shopify", shopifyRoutes);
+app.use("/api/users/", cardRoutes);
 
 app.get("/", (req, res) => {
   res.send("E-Commerce Web Application Is Running...");

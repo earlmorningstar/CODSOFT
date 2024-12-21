@@ -89,7 +89,7 @@
   border-radius: 50px;
   border: none;
   font-size: 18px;
-  background-color: rgb(0, 0, 0);
+  background-color: #6055d8;
   color: #ffffff;
   margin: 10px 0;
 }
@@ -987,7 +987,7 @@
   cursor: pointer;
   padding: 14px;
   border-radius: 30px;
-  background-color: #111111;
+  background-color: #6055d8;
   color: #ffffff;
   border: none;
   width: 20rem;
@@ -1112,6 +1112,10 @@
 
 /* User Profile Section--- */
 
+.usermenuPages-title-container {
+  margin-bottom: 1rem;
+}
+
 .usermenuPages-title-container span {
   color: #000000;
 }
@@ -1120,19 +1124,25 @@
   font-size: 22px;
   font-weight: 500;
   text-align: center;
-  margin-bottom: 1rem;
+  margin-bottom: 2rem;
 }
 
 #usermenuPages-title {
   font-family: "Manrope", sans-serif;
 }
 
-/* .getProfile-fetchUserField-Container {
-  display: flex;
-  flex-direction: column;
-  gap: 4rem;
-  margin-top: 3rem;
-} */
+.verify-password-title {
+  font-family: "Raleway", sans-serif;
+}
+
+.verify-password-title h2 {
+  font-size: 20px;
+}
+
+.verify-password-title p {
+  flex-shrink: 17px;
+  margin: 5px 0 12px 0;
+}
 
 .profile-form-container {
   display: flex;
@@ -1165,10 +1175,14 @@
   border: none;
   border-radius: 5px;
   margin-top: 13px;
-  background-color: #000000;
+  background-color: #6055d8;
   color: #f0f0f0;
   font-size: 15px;
   font-weight: 500;
+}
+
+#deleteBtn-warning {
+  background-color: red;
 }
 
 .btn-progress {
@@ -1177,7 +1191,7 @@
 
 .alert-message-holder {
   max-width: 500px;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 
 .timestamp-container {
@@ -1188,7 +1202,6 @@
   padding: 10px;
   border-left: 3px solid #44b700;
   background-color: #f0f0f0;
-  
 }
 
 .timestamp-container main {
@@ -1198,6 +1211,40 @@
 
 .delete-modal-title {
   font-family: "Raleway", sans-serif;
+}
+
+/* Saved Card Section--- */
+.usermenuPages-title-textCenter {
+  font-family: "Manrope", sans-serif;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 500;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.savedCard-details-container {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  border: 1px solid #777e90;
+  padding: 10px;
+  margin-bottom: 20px;
+  max-width: 400px;
+}
+
+#alert-message-savedCard-id {
+  max-width: 400px;
+}
+
+.savedCard-removeBtn {
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  color: #f0f0f0;
+  background-color: #6055d8;
+  font-size: 16px;
+  font-weight: 400;
 }
 
 /* Screen Sizes--- */

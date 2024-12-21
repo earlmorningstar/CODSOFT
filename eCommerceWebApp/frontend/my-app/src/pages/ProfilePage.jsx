@@ -261,8 +261,7 @@ const ProfilePage = () => {
 
   return (
     <section className="userPages-main-container">
-      <p id="usermenuPages-title">Profile</p>
-
+      
       <div className="usermenuPages-title-container">
         <NavLink to="/user-menu">
           <span>
@@ -270,6 +269,10 @@ const ProfilePage = () => {
           </span>
         </NavLink>
       </div>
+
+      <p id="usermenuPages-title">Profile</p>
+
+      
 
       <div
         className="avatar-name-email-container"
@@ -383,6 +386,7 @@ const ProfilePage = () => {
 
         <button
           type="button"
+          id="deleteBtn-warning"
           className="userDetails-update-btn"
           onClick={() => setDeleteModalOpen(true)}
         >

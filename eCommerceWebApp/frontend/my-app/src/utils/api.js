@@ -27,6 +27,8 @@ const displayModal = () => {
   }
 };
 
+console.log(displayModal);
+
 api.interceptors.request.use((config) => {
   const user = JSON.parse(localStorage.getItem("user"));
   if (user?.token) {
