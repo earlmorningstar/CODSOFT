@@ -56,6 +56,9 @@ const SavedPaymentDetailsPage = () => {
     } catch (error) {
       console.error("Failed to fetch card details:", error);
       setError("Failed to load card details");
+      setTimeout(() => {
+        setError('')
+      }, 4000)
     } finally {
       setLoading(false);
     }
@@ -93,6 +96,9 @@ const SavedPaymentDetailsPage = () => {
     if (!selectedCardId) {
       console.error("No card selected for deletion");
       setError("Unable to delete card. No card selected");
+      setTimeout(()=>{
+        setError('')
+      }, 4000)
       return;
     }
 
@@ -220,7 +226,9 @@ const SavedPaymentDetailsPage = () => {
             </div>
           ))
         ) : (
-          <p>No saved card details found.</p>
+          <div className="verify-password-title">
+            <p>No saved card details found.</p>
+          </div>
         )}
       </div>
 

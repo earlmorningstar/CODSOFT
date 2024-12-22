@@ -64,7 +64,8 @@ const CheckoutForm = () => {
       setIsSavingCard(false);
       setTimeout(() => setSuccessMessage(""), 4000);
     } catch (error) {
-      setErrorMessage("Failed to save card deetails. Please try again");
+      setErrorMessage("Failed to save card details. Please try again");
+      setIsSavingCard(false);
       setTimeout(() => setErrorMessage(""), 4000);
     }
   };
@@ -73,7 +74,7 @@ const CheckoutForm = () => {
     e.preventDefault();
 
     if (cartCtx.items.length === 0) {
-      setErrorMessage("Your bag is empty. Please add items before checkout.");
+      setErrorMessage("Your bag is empty. Please add an item before checkout.");
       setTimeout(() => {
         setErrorMessage("");
       }, 4000);

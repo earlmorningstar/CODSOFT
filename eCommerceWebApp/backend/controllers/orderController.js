@@ -5,7 +5,13 @@ const Product = require("../models/Products");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const { sendSuccess, sendError } = require("../utils/response");
 
-const VALID_STATUSES = ["Pending", "Shipped", "Delivered", "Canceled"];
+const VALID_STATUSES = [
+  "Pending",
+  "Processing",
+  "Shipped",
+  "Delivered",
+  "Canceled",
+];
 
 const checkout = async (req, res) => {
   if (!req.user || !req.user.id) {
@@ -221,61 +227,244 @@ const placeOrder = async (req, res) => {
   }
 };
 
-const updateOrderStatus = async (req, res) => {
-  try {
-    const { status } = req.body;
-
-    if (!VALID_STATUSES.includes(status)) {
-      return sendError(res, 400, "Invalid order status");
-    }
-
-    const order = await Order.findById(req.params.id);
-    if (!order) {
-      return sendError(res, 404, "Order not found");
-    }
-
-    order.status = status;
-    await order.save();
-
-    sendSuccess(res, 200, `Order status updated to ${status}.`, order);
-  } catch (error) {
-    sendError(res, 500, "Failed to update order status", error.message);
-  }
-};
-
 const getOrders = async (req, res) => {
   try {
-    const { page = 1, limit = 10 } = req.query;
+    const { startDate, endDate, status, limit = 10, page = 1 } = req.query;
 
-    const pageNumber = parseInt(page, 10);
-    const limitNumber = parseInt(limit, 10);
+    //Base query obj
+    const query = {};
 
-    const query = req.user.isAdmin
-      ? {} //admin sees all orders
-      : { user: req.user.id }; //reg users sees their orders only
+    //Adding users for non-admin users
+    if (!req.user.isAdmin) {
+      query.user = req.user.id;
+    }
+    //Date range filter
+    if (startDate || endDate) {
+      query.createdAt = {};
+      if (startDate) query.createdAt.$gte = new Date(startDate);
+      if (endDate) query.createdAt.$lte = new Date(endDate);
+    }
 
+    //Status filtering
+    if (status) {
+      query.paymentStatus = status;
+    }
+
+    //Calc skip value for pagination
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    //Fetch orders with populated fields
+    const orders = await Order.find(query)
+      .populate({
+        path: "user",
+        select: " email name",
+      })
+      .populate({
+        path: "items.product",
+        select: "title images variants",
+      })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    //Get total pagination count
     const totalOrders = await Order.countDocuments(query);
 
-    const orders = await Order.find(query)
-      .skip((page - 1) * limitNumber)
-      .limit(parseInt(limit, 10))
-      .sort({ createdAt: -1 });
+    //Calc total pages
+    const totalPages = Math.ceil(totalOrders / parseInt(limit));
 
-    sendSuccess(res, 200, "Order retrieved successfully", {
-      orders,
+    //Process orders to include only necessary information
+    const processedOrders = orders.map((order) => ({
+      id: order._id,
+      orderNumber: order._id.toString().slice(-6).toUpperCase(),
+      user: {
+        id: order.user._id,
+        email: order.user.email,
+        name: order.user.name,
+      },
+      items: order.items.map((item) => ({
+        product: {
+          id: item.product._id,
+          title: item.product.title,
+          image: item.product.images[0]?.src || null,
+          price: item.product.variant[0]?.price || 0,
+        },
+        quantity: item.quantity,
+      })),
+      totalAmount: order.totalAmount,
+      paymentStatus: order.paymentStatus,
+      paymentDetails: order.paymentDetails,
+      createdAt: order.createdAt,
+      updatedAt: order.updatedAt,
+    }));
+
+    sendSuccess(res, 200, "orders retrieved successfully", {
+      orders: processedOrders,
       pagination: {
+        currentPage: parseInt(page),
+        totalPages,
         totalOrders,
-        currentPage: pageNumber,
-        totalPages: Math.ceil(totalOrders / limitNumber),
-        hasNextPage: pageNumber * limitNumber < totalOrders,
-        hasPrevPage: pageNumber > 1,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
       },
     });
   } catch (error) {
-    console.error("Get orders error:", error.message);
-    sendError(res, 500, "Failed to retrieve orders", error.message);
+    console.error("Error fetching orders:", error);
+    sendError(res, 500, "Failed to fetch orders", error.message);
   }
 };
+
+const updateOrderStatus = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const { orderId } = req.params;
+    const { status } = req.body;
+
+    //Validate Id
+    if (!mongoose.Types.ObjectId.isValid(orderId)) {
+      return sendError(res, 400, "Invalid order ID");
+    }
+
+    //Validate status
+    const validStatuses = [
+      "Pending",
+      "Processing",
+      "Shipped",
+      "Delivered",
+      "Canceled",
+    ];
+    if (!validStatuses.includes(status)) {
+      return sendError(
+        res,
+        400,
+        "Invalid status. Must be one of:" + validStatuses.join(", ")
+      );
+    }
+
+    //Find order
+    const order = await Order.findById(orderId).session(session);
+
+    if (!order) {
+      await session.abortTransaction();
+      return sendError(res, 404, "Order not found");
+    }
+
+    //To see if user has permission (admin or owner of the order)
+    if (!req.user.isAdmin && order.user.toString() !== req.user.id) {
+      await session.abortTransaction();
+      return sendError(res, 403, "Unauthorised to update this order");
+    }
+
+    //Check if order can be updated (Cannot update delivered orders)
+    if (
+      order.paymentStatus === "Delivered" ||
+      order.paymentStatus === "Canceled"
+    ) {
+      await session.abortTransaction();
+      return sendError(
+        res,
+        400,
+        "Cannot update status of delivered or canceled orders"
+      );
+    }
+
+    //Create status update log
+    const statusUpdate = {
+      from: order.paymentStatus,
+      to: status,
+      updatedBy: req.user.id,
+      updatedAt: new Date(),
+    };
+
+    //Update order
+    const updatedOrder = await Order.findByIdAndUpdate(
+      orderId,
+      {
+        $set: { paymentStattus: status },
+        $push: { statusHistory: statusUpdate },
+      },
+      { new: true, session }
+    ).populate({
+      path: "items.product",
+      select: "title images variants",
+    });
+
+    await session.commitTransaction();
+
+    sendSuccess(res, 200, "Order status updated successfully", {
+      order: {
+        id: updatedOrder._id,
+        status: updatedOrder.paymentStatus,
+        updatedAt: updatedOrder.updatedAt,
+        statusHistory: updatedOrder.statusHistory,
+      },
+    });
+  } catch (error) {
+    await session.abortTransaction();
+    console.error("Error updating order status:", error);
+    sendError(res, 500, "failed to update order status", error.message);
+  } finally {
+    session.endSession();
+  }
+};
+
+// const updateOrderStatus = async (req, res) => {
+//   try {
+//     const { status } = req.body;
+
+//     if (!VALID_STATUSES.includes(status)) {
+//       return sendError(res, 400, "Invalid order status");
+//     }
+
+//     const order = await Order.findById(req.params.id);
+//     if (!order) {
+//       return sendError(res, 404, "Order not found");
+//     }
+
+//     order.status = status;
+//     await order.save();
+
+//     sendSuccess(res, 200, `Order status updated to ${status}.`, order);
+//   } catch (error) {
+//     sendError(res, 500, "Failed to update order status", error.message);
+//   }
+// };
+
+// const getOrders = async (req, res) => {
+//   try {
+//     const { page = 1, limit = 10 } = req.query;
+
+//     const pageNumber = parseInt(page, 10);
+//     const limitNumber = parseInt(limit, 10);
+
+//     const query = req.user.isAdmin
+//       ? {} //admin sees all orders
+//       : { user: req.user.id }; //reg users sees their orders only
+
+//     const totalOrders = await Order.countDocuments(query);
+
+//     const orders = await Order.find(query)
+//       .skip((page - 1) * limitNumber)
+//       .limit(parseInt(limit, 10))
+//       .sort({ createdAt: -1 });
+
+//     sendSuccess(res, 200, "Order retrieved successfully", {
+//       orders,
+//       pagination: {
+//         totalOrders,
+//         currentPage: pageNumber,
+//         totalPages: Math.ceil(totalOrders / limitNumber),
+//         hasNextPage: pageNumber * limitNumber < totalOrders,
+//         hasPrevPage: pageNumber > 1,
+//       },
+//     });
+//   } catch (error) {
+//     console.error("Get orders error:", error.message);
+//     sendError(res, 500, "Failed to retrieve orders", error.message);
+//   }
+// };
 
 module.exports = {
   checkout,
