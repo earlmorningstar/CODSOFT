@@ -16,10 +16,7 @@ const images = [{ src: "/images/avatar1.jpg", alt: "Avatar 1" }];
 const RootLayout = () => {
   const { user } = useContext(AuthContext);
   const { items: cartItems } = useContext(CartContext);
-  const cartItemCount = cartItems.reduce(
-    (count, item) => count + item.quantity,
-    0
-  );
+  const cartItemCount = cartItems.length;
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const location = useLocation();

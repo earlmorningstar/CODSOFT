@@ -9,10 +9,7 @@ import CartContext from "../store/CartContext";
 
 const BottomNavigationLayout = () => {
   const { items: cartItems } = useContext(CartContext);
-  const cartItemCount = cartItems.reduce(
-    (count, item) => count + item.quantity,
-    0
-  );
+  const cartItemCount = cartItems.length;
 
   return (
     <section className="btm-main-container">
