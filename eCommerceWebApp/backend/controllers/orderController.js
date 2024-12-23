@@ -1,17 +1,8 @@
 const mongoose = require("mongoose");
-const axios = require("axios");
 const Order = require("../models/Order");
 const Product = require("../models/Products");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const { sendSuccess, sendError } = require("../utils/response");
-
-const VALID_STATUSES = [
-  "Pending",
-  "Processing",
-  "Shipped",
-  "Delivered",
-  "Canceled",
-];
 
 const checkout = async (req, res) => {
   if (!req.user || !req.user.id) {
@@ -229,65 +220,49 @@ const placeOrder = async (req, res) => {
 
 const getOrders = async (req, res) => {
   try {
-    const { startDate, endDate, status, limit = 10, page = 1 } = req.query;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
 
-    //Base query obj
-    const query = {};
+    //Build query base on filter
+    const query = { user: req.user.id };
 
-    //Adding users for non-admin users
-    if (!req.user.isAdmin) {
-      query.user = req.user.id;
-    }
-    //Date range filter
-    if (startDate || endDate) {
-      query.createdAt = {};
-      if (startDate) query.createdAt.$gte = new Date(startDate);
-      if (endDate) query.createdAt.$lte = new Date(endDate);
+    //date filter if I change my mind to add it
+    if (req.query.startDate) {
+      query.createdAt = { $gte: new Date(req.query.startDate) };
     }
 
-    //Status filtering
-    if (status) {
-      query.paymentStatus = status;
+    //status filter
+    if (req.query.status) {
+      //multiple status
+      const statuses = req.query.status.split(",");
+      query.paymentStatus = { $in: statuses };
     }
 
-    //Calc skip value for pagination
-    const skip = (parseInt(page) - 1) * parseInt(limit);
-
-    //Fetch orders with populated fields
+    //execute query with pagination
     const orders = await Order.find(query)
-      .populate({
-        path: "user",
-        select: " email name",
-      })
       .populate({
         path: "items.product",
         select: "title images variants",
       })
       .sort({ createdAt: -1 })
       .skip(skip)
-      .limit(parseInt(limit));
+      .limit(limit);
 
-    //Get total pagination count
+    // total count for pagination
     const totalOrders = await Order.countDocuments(query);
+    const totalPages = Math.ceil(totalOrders / limit);
 
-    //Calc total pages
-    const totalPages = Math.ceil(totalOrders / parseInt(limit));
-
-    //Process orders to include only necessary information
+    //process order to include required info
     const processedOrders = orders.map((order) => ({
       id: order._id,
       orderNumber: order._id.toString().slice(-6).toUpperCase(),
-      user: {
-        id: order.user._id,
-        email: order.user.email,
-        name: order.user.name,
-      },
       items: order.items.map((item) => ({
         product: {
           id: item.product._id,
           title: item.product.title,
           image: item.product.images[0]?.src || null,
-          price: item.product.variant[0]?.price || 0,
+          price: item.product.variants[0]?.price || 0,
         },
         quantity: item.quantity,
       })),
@@ -297,11 +272,10 @@ const getOrders = async (req, res) => {
       createdAt: order.createdAt,
       updatedAt: order.updatedAt,
     }));
-
-    sendSuccess(res, 200, "orders retrieved successfully", {
+    sendSuccess(res, 200, "Orders retrieved successfully", {
       orders: processedOrders,
       pagination: {
-        currentPage: parseInt(page),
+        currentPage: page,
         totalPages,
         totalOrders,
         hasNextPage: page < totalPages,
@@ -311,6 +285,46 @@ const getOrders = async (req, res) => {
   } catch (error) {
     console.error("Error fetching orders:", error);
     sendError(res, 500, "Failed to fetch orders", error.message);
+  }
+};
+
+const getOrderById = async (req, res) => {
+  try {
+    const order = await Order.findOne({
+      _id: req.params.orderId,
+      user: req.user.id,
+    }).populate({
+      path: "items.product",
+      select: "title images variants",
+    });
+
+    if (!order) {
+      return sendError(res, 404, "order not found");
+    }
+
+    const processedOrders = {
+      id: order._id,
+      orderNumber: order._id.toString().slice(-6).toUpperCase(),
+      items: order.items.map((item) => ({
+        product: {
+          id: item.product._id,
+          title: item.product.title,
+          image: item.product.images[0]?.src || null,
+          price: item.product.variants[0]?.price || 0,
+        },
+        quantity: item.quantity,
+      })),
+      totalAmount: order.totalAmount,
+      paymentStatus: order.paymentStatus,
+      paymentDetails: order.paymentDetails,
+      createdAt: order.createdAt,
+      updatedAt: order.updatedAt,
+      statusHistory: order.statusHistory,
+    };
+    sendSuccess(res, 200, "Order retrieved successfully", processedOrders);
+  } catch (error) {
+    console.error("Error fetching order:", error);
+    sendError(res, 500, "Failed to fetch order", error.message);
   }
 };
 
@@ -352,7 +366,7 @@ const updateOrderStatus = async (req, res) => {
     }
 
     //To see if user has permission (admin or owner of the order)
-    if (!req.user.isAdmin && order.user.toString() !== req.user.id) {
+    if (!req.user.role !== "admin" && order.user.toString() !== req.user.id) {
       await session.abortTransaction();
       return sendError(res, 403, "Unauthorised to update this order");
     }
@@ -410,65 +424,10 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
-// const updateOrderStatus = async (req, res) => {
-//   try {
-//     const { status } = req.body;
-
-//     if (!VALID_STATUSES.includes(status)) {
-//       return sendError(res, 400, "Invalid order status");
-//     }
-
-//     const order = await Order.findById(req.params.id);
-//     if (!order) {
-//       return sendError(res, 404, "Order not found");
-//     }
-
-//     order.status = status;
-//     await order.save();
-
-//     sendSuccess(res, 200, `Order status updated to ${status}.`, order);
-//   } catch (error) {
-//     sendError(res, 500, "Failed to update order status", error.message);
-//   }
-// };
-
-// const getOrders = async (req, res) => {
-//   try {
-//     const { page = 1, limit = 10 } = req.query;
-
-//     const pageNumber = parseInt(page, 10);
-//     const limitNumber = parseInt(limit, 10);
-
-//     const query = req.user.isAdmin
-//       ? {} //admin sees all orders
-//       : { user: req.user.id }; //reg users sees their orders only
-
-//     const totalOrders = await Order.countDocuments(query);
-
-//     const orders = await Order.find(query)
-//       .skip((page - 1) * limitNumber)
-//       .limit(parseInt(limit, 10))
-//       .sort({ createdAt: -1 });
-
-//     sendSuccess(res, 200, "Order retrieved successfully", {
-//       orders,
-//       pagination: {
-//         totalOrders,
-//         currentPage: pageNumber,
-//         totalPages: Math.ceil(totalOrders / limitNumber),
-//         hasNextPage: pageNumber * limitNumber < totalOrders,
-//         hasPrevPage: pageNumber > 1,
-//       },
-//     });
-//   } catch (error) {
-//     console.error("Get orders error:", error.message);
-//     sendError(res, 500, "Failed to retrieve orders", error.message);
-//   }
-// };
-
 module.exports = {
   checkout,
   placeOrder,
-  updateOrderStatus,
   getOrders,
+  getOrderById,
+  updateOrderStatus,
 };

@@ -156,7 +156,7 @@ const SavedPaymentDetailsPage = () => {
           open={loading}
           onClick={handleClose}
         >
-          <CircularProgress />
+          <CircularProgress  color="inherit"/>
         </Backdrop>
       </div>
     );

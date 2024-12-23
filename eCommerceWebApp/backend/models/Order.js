@@ -26,8 +26,8 @@ const OrderSchema = new mongoose.Schema(
     },
     paymentStatus: {
       type: String,
-      enum: ["Pending", "Paid", "Failed", "succeeded"],
-      default: "Pending",
+      enum: ["pending", "paid", "failed", "succeeded", "shipped", "delivered"],
+      default: "pending",
     },
     paymentDetails: {
       type: Object,
@@ -36,6 +36,17 @@ const OrderSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    statusHistory: [
+      {
+        from: String,
+        to: String,
+        updatedBy: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        updatedAt: Date,
+      },
+    ],
   },
   {
     timestamps: true,

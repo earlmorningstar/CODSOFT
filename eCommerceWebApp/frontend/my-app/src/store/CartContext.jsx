@@ -156,7 +156,7 @@ export const CartProvider = ({ children }) => {
         status: mapPaymentStatus(paymentDetails.status),
       };
 
-      const response = await api.post("/api/orders", {
+      const response = await api.post("/api/orders/place-orders", {
         items,
         totalAmount: cartState.totalAmount,
         paymentDetails: processedPaymentDetails,

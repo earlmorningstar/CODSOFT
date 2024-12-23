@@ -9,7 +9,7 @@ import SearchPage from "./pages/SearchPage";
 import CartPage from "./pages/CartPage";
 import ProfilePage from "./pages/ProfilePage";
 import WelcomeNote from "./pages/WelcomeNote";
-import OrderPage from "./pages/OrderPage";
+import OrderHistory from "./pages/OrderHistory";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
 import ProductsPage from "./pages/ProductsPage";
 import Checkout from "./pages/Checkout";
@@ -19,6 +19,7 @@ import UserMenu from "./pages/UserMenu";
 import SavedPaymentDetailsPage from "./pages/SavedPaymentDetailsPage";
 import Settings from "./pages/Settings";
 import Wishlist from "./pages/Wishlist";
+import OrderDetailsPage from "./pages/OrderDetailsPage";
 
 const router = createBrowserRouter([
   {
@@ -43,7 +44,8 @@ const router = createBrowserRouter([
           { path: "/search", element: <SearchPage /> },
           { path: "/cart", element: <CartPage /> },
           { path: "/user-menu", element: <UserMenu /> },
-          { path: "/order", element: <OrderPage /> },
+          { path: "/order", element: <OrderHistory /> },
+          { path: "/orders/:orderId", element: <OrderDetailsPage /> },
           { path: "/products", element: <ProductsPage /> },
           { path: "/products/:id", element: <ProductDetailsPage /> },
           { path: "/checkout", element: <Checkout /> },

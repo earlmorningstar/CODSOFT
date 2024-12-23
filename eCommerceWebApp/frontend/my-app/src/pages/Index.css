@@ -1247,6 +1247,33 @@
   font-weight: 400;
 }
 
+
+/* Order History Section-- */
+
+.order-id {
+  font-family: "Manrope", sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.order-placed-date {
+  font-family: "Manrope", sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  margin-top: 15px;
+}
+
+.order-status {
+  font-family: "Manrope", sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+#order-txt-cntr {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
 /* Screen Sizes--- */
 
 @media screen and (max-width: 1000px) {
@@ -1415,6 +1442,15 @@
     justify-content: space-between;
     gap: 0;
     width: 100%;
+  }
+
+  .order-id {
+    font-size: 17px;
+  }
+  
+  .order-placed-date {
+    font-size: 13px;
+
   }
 }
 
