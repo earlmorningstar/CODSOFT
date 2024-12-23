@@ -143,11 +143,11 @@ export const CartProvider = ({ children }) => {
       const mapPaymentStatus = (status) => {
         switch (status) {
           case "succeeded":
-            return "Paid";
+            return "paid";
           case "requires_payment_method":
-            return "Failed";
+            return "failed";
           default:
-            return "Pending";
+            return "pending";
         }
       };
 

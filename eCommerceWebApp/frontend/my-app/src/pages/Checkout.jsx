@@ -122,9 +122,8 @@ const CheckoutForm = () => {
         setSuccessMessage("Payment successful! Your order has been placed.");
         setTimeout(() => {
           setSuccessMessage("");
-          navigate("/homepage");
-        }, 4000);
-        //Redirec to order history page (after setting up)
+          navigate("/order");
+        }, 3000);
       }
     } catch (error) {
       console.error("Checkout failed:", error.message);
@@ -185,7 +184,7 @@ const CheckoutForm = () => {
         onClick={saveCardDetails}
         disabled={isSavingCard}
       >
-       {isSavingCard ? (
+        {isSavingCard ? (
           <CircularProgress size={24} color="inherit" />
         ) : (
           "Save Card Details"
