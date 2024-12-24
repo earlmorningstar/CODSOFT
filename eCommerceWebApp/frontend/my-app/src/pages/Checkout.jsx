@@ -74,6 +74,11 @@ const CheckoutForm = () => {
 
       setSuccessMessage("Card details saved successfully");
       setIsSavingCard(false);
+      await createNotification(
+        "Card Saved Successfully!",
+        `Your card ending in ****${token.card.last4} has been saved securely for future transactions. You can now enjoy quicker checkouts on your next purchase.`,
+        "info"
+      );
       setTimeout(() => setSuccessMessage(""), 4000);
     } catch (error) {
       setErrorMessage("Failed to save card details. Please try again");
@@ -118,7 +123,7 @@ const CheckoutForm = () => {
         console.error("Payment Error:", paymentResult.error.message);
         setErrorMessage(`Payment failed: ${paymentResult.error.message}`);
         await createNotification(
-          "Payment Failed",
+          "Payment Failed!",
           "Your payment attempt was unsuccessful. Please try again to complete your order.",
           "error"
         );
@@ -155,7 +160,7 @@ const CheckoutForm = () => {
       setErrorMessage("Checkout failed. Please try again.");
 
       await createNotification(
-        "Payment Failed",
+        "Payment Failed!",
         "Your payment attempt was unsuccessful. Please try again to complete your order.",
         "error"
       );

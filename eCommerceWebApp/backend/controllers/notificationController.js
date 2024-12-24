@@ -51,4 +51,21 @@ const markAsRead = async (req, res) => {
   }
 };
 
-module.exports = { createNotification, getUserNotification, markAsRead };
+const getUnreadCount = async (req, res) => {
+  try {
+    const count = await Notification.countDocuments({
+      userId: req.user._id,
+      read: false,
+    });
+    return res.json({ count });
+  } catch (error) {
+    return sendError(res, 500, "Failed to fetch notification count");
+  }
+};
+
+module.exports = {
+  createNotification,
+  getUserNotification,
+  markAsRead,
+  getUnreadCount,
+};

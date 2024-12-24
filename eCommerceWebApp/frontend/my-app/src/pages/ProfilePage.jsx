@@ -11,6 +11,7 @@ import {
   Stack,
   Avatar,
   Alert,
+  // Backdrop,
   CircularProgress,
   Modal,
   Box,
@@ -110,6 +111,18 @@ const ProfilePage = () => {
     return true;
   };
 
+  const createNotification = async (title, message, type) => {
+    try {
+      await api.post("/api/notifications", {
+        title,
+        message,
+        type,
+      });
+    } catch (error) {
+      console.error("Failed to create notification:", error);
+    }
+  };
+
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
     const date = new Date(dateString);
@@ -179,6 +192,11 @@ const ProfilePage = () => {
       await api.put("/api/users/profile", updateData);
       setSuccess("profile updated successfully!");
       setLoading(false);
+      await createNotification(
+        "Profile Updated Successfully!!",
+        "Your profile information has been updated successfully. Thanks for keeping your information current.",
+        "info"
+      );
       setIsSaved(true);
       setFormData((prev) => ({
         ...prev,
@@ -227,6 +245,9 @@ const ProfilePage = () => {
       if (error.response?.status === 401) {
         if (error.response?.data?.isAuthError) {
           localStorage.removeItem("user");
+          setTimeout(() => {
+            setLoading(true);
+          }, 1000); //here
           logout();
           navigate("/login", { replace: true });
         } else {
@@ -243,6 +264,7 @@ const ProfilePage = () => {
       }
     } finally {
       setDeletingAccount(false);
+      setLoading(false);
     }
   };
 
@@ -259,9 +281,21 @@ const ProfilePage = () => {
     setDeleteError("");
   };
 
+  // if (loading) {
+  //   return (
+  //     <div>
+  //       <Backdrop
+  //         sx={(theme) => ({ color: "#6055d8", zIndex: theme.zIndex.drawer + 1 })}
+  //         open={loading}
+  //       >
+  //         <CircularProgress  color="inherit"/>
+  //       </Backdrop>
+  //     </div>
+  //   );
+  // }
+
   return (
     <section className="userPages-main-container">
-      
       <div className="usermenuPages-title-container">
         <NavLink to="/user-menu">
           <span>
@@ -271,8 +305,6 @@ const ProfilePage = () => {
       </div>
 
       <p id="usermenuPages-title">Profile</p>
-
-      
 
       <div
         className="avatar-name-email-container"

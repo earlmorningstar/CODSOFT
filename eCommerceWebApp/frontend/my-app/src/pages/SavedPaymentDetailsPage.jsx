@@ -57,10 +57,22 @@ const SavedPaymentDetailsPage = () => {
       console.error("Failed to fetch card details:", error);
       setError("Failed to load card details");
       setTimeout(() => {
-        setError('')
-      }, 4000)
+        setError("");
+      }, 4000);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const createNotification = async (title, message, type) => {
+    try {
+      await api.post("/api/notifications", {
+        title,
+        message,
+        type,
+      });
+    } catch (error) {
+      console.error("Failed to create notification:", error);
     }
   };
 
@@ -96,9 +108,15 @@ const SavedPaymentDetailsPage = () => {
     if (!selectedCardId) {
       console.error("No card selected for deletion");
       setError("Unable to delete card. No card selected");
-      setTimeout(()=>{
-        setError('')
-      }, 4000)
+      setTimeout(() => {
+        setError("");
+      }, 4000);
+      return;
+    }
+
+    const cardToDelete = cardDetails.find(card => card._id === selectedCardId);
+    if(!cardToDelete) {
+      setError("Card not found");
       return;
     }
 
@@ -112,6 +130,11 @@ const SavedPaymentDetailsPage = () => {
         setIsDeleteModalOpen(false);
         setSelectedCardId(null);
         setSuccess("Card successfully removed.");
+        await createNotification(
+          "Card Removed Successfully!",
+          `Your card ending in ****${cardToDelete.last4} has been removed from your account. It will no longer be available for transactions on this app.`,
+          "info"
+        );
         setTimeout(() => {
           setSuccess("");
         }, 4000);
@@ -147,16 +170,18 @@ const SavedPaymentDetailsPage = () => {
     setIsDeleteModalOpen(false);
   };
 
-
   if (loading) {
     return (
       <div onClick={handleOpen}>
         <Backdrop
-          sx={(theme) => ({ color: "#6055d8", zIndex: theme.zIndex.drawer + 1 })}
+          sx={(theme) => ({
+            color: "#6055d8",
+            zIndex: theme.zIndex.drawer + 1,
+          })}
           open={loading}
           onClick={handleClose}
         >
-          <CircularProgress  color="inherit"/>
+          <CircularProgress color="inherit" />
         </Backdrop>
       </div>
     );
@@ -176,12 +201,20 @@ const SavedPaymentDetailsPage = () => {
         Saved Payment Card Details
       </p>
       {error && (
-        <Alert className="alert-message-holder" id='alert-message-savedCard-id' severity="error">
+        <Alert
+          className="alert-message-holder"
+          id="alert-message-savedCard-id"
+          severity="error"
+        >
           {error}
         </Alert>
       )}
       {success && (
-        <Alert className="alert-message-holder" id='alert-message-savedCard-id' severity="success">
+        <Alert
+          className="alert-message-holder"
+          id="alert-message-savedCard-id"
+          severity="success"
+        >
           {success}
         </Alert>
       )}
@@ -222,7 +255,12 @@ const SavedPaymentDetailsPage = () => {
                   readOnly
                 />
               </FormControl>
-              <button className="savedCard-removeBtn" onClick={() => openDeleteModal(card._id)}>Remove</button>
+              <button
+                className="savedCard-removeBtn"
+                onClick={() => openDeleteModal(card._id)}
+              >
+                Remove
+              </button>
             </div>
           ))
         ) : (
@@ -233,43 +271,42 @@ const SavedPaymentDetailsPage = () => {
       </div>
 
       <Modal open={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <Box  sx={modalStyle}>
+        <Box sx={modalStyle}>
           <div className="modal-width">
             <span className="verify-password-title">
-          <h2>Verify Password</h2>
-          </span>
-          <TextField
-            type="password"
-            label="Enter your password"
-            fullWidth
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            margin="normal"
-          />
-          {error && (
-            <p style={{ color: "red" }} className="error-message">
-              {error}
-            </p>
-          )}
-          <Button
-            variant="contained"
-            onClick={handlePasswordVerification}
-            sx={{ mt: 2 }}
-          >
-            Verify
-          </Button>
+              <h2>Verify Password</h2>
+            </span>
+            <TextField
+              type="password"
+              label="Enter your password"
+              fullWidth
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              margin="normal"
+            />
+            {error && (
+              <p style={{ color: "red" }} className="error-message">
+                {error}
+              </p>
+            )}
+            <Button
+              variant="contained"
+              onClick={handlePasswordVerification}
+              sx={{ mt: 2 }}
+            >
+              Verify
+            </Button>
           </div>
-          
         </Box>
       </Modal>
 
       <Modal open={isDeleteModalOpen} onClose={closeDeleteModal}>
         <Box sx={modalStyle}>
           <span className="verify-password-title">
-             <h2>Remove Saved Card</h2>
-          <p>This action will remove this saved card. Are you sure?</p>
+            <h2>Remove Saved Card</h2>
+            <p>This action will remove this saved card. Are you sure?</p>
           </span>
-         
+
           <Button
             variant="contained"
             color="error"

@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const Notification = require("../models/Notification");
 const { sendSuccess, sendError } = require("../utils/response");
 
 const generateToken = (id) => {
@@ -50,7 +51,14 @@ const registerUser = async (req, res) => {
       deliveryAddress,
     });
 
-    res.status(201).json({
+    await Notification.create({
+      title: "Welcome to TrendVault!",
+      message: `Welcome aboard ${name}! Your account setup is complete. We're excited to have you with us.`,
+      type: "info",
+      userId: user._id,
+    });
+
+    return res.status(201).json({
       _id: user._id,
       name: user.name,
       email: user.email,
@@ -60,7 +68,7 @@ const registerUser = async (req, res) => {
       token: generateToken(user._id),
     });
   } catch (error) {
-    sendError(res, 500, "Server error", { error: error.message });
+    return sendError(res, 500, "Server error", { error: error.message });
   }
 };
 

@@ -328,7 +328,12 @@
 }
 
 #cartCount-id {
-  right: 35px;
+  right: 32px;
+}
+
+#notification-Count-id {
+  right: 22px;
+  top: 17px;
 }
 
 /* HomePage Style Section--- */
@@ -1328,6 +1333,10 @@
   border-left: 4px solid #f56565;
 }
 
+.notification-item.info {
+  border-left: 4px solid #2f76c6;
+}
+
 .notification-date {
   font-size: 0.8rem;
   color: #666;
@@ -1347,7 +1356,7 @@
   position: absolute;
   top: 15px;
   right: 15px;
-  color: #0066cc;
+  color: #2f76c6;
   font-size: 18px;
 }
 

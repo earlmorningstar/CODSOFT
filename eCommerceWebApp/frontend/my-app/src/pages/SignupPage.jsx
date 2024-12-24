@@ -86,8 +86,8 @@ const SignupPage = () => {
     return true;
   };
 
-  const handleSubmitSignupForm = async (err) => {
-    err.preventDefault();
+  const handleSubmitSignupForm = async (event) => {
+    event.preventDefault();
 
     if (!validateForm()) return;
 

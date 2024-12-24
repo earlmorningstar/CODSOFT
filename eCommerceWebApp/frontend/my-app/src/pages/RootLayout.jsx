@@ -1,7 +1,8 @@
 import { Outlet, NavLink, useLocation } from "react-router-dom";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 import CartContext from "../store/CartContext";
+import api from "../utils/api";
 import { RiMenu2Fill, RiSettings2Line } from "react-icons/ri";
 import { GoBell, GoX, GoHome, GoSearch } from "react-icons/go";
 import { IoCartOutline } from "react-icons/io5";
@@ -18,9 +19,25 @@ const RootLayout = () => {
   const { items: cartItems } = useContext(CartContext);
   const cartItemCount = cartItems.length;
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [notificationCount, setNotificationCount] = useState(0);
 
   const location = useLocation();
   const isHomepage = location.pathname === "/homepage";
+
+  useEffect(() => {
+    const fetchNotificationCount = async () => {
+      try {
+        const user = JSON.parse(localStorage.getItem("user"));
+        if(!user?.token) return;
+        
+        const response = await api.get("/api/notifications/unread/count");
+        setNotificationCount(response.data.count);
+      } catch (error) {
+        console.error("Failed to fetch notification count", error);
+      }
+    };
+    fetchNotificationCount();
+  }, []);
 
   const toggleSidebar = () => {
     setSidebarOpen((prev) => !prev);
@@ -40,9 +57,14 @@ const RootLayout = () => {
             </span>
             <h3>TrendVault</h3>
             <NavLink to="/notification">
-            <span>
-              <GoBell size={20} />
-            </span>
+              <span>
+                <GoBell size={20} />
+                {notificationCount > 0 && (
+                  <p className="cartCount" id="notification-Count-id">
+                    {notificationCount}
+                  </p>
+                )}{" "}
+              </span>
             </NavLink>
           </>
         )}
