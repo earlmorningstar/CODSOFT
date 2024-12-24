@@ -47,6 +47,18 @@ const CheckoutForm = () => {
     }
   };
 
+  const createNotification = async (title, message, type) => {
+    try {
+      await api.post("/api/notifications", {
+        title,
+        message,
+        type,
+      });
+    } catch (error) {
+      console.error("Failed to create notification:", error);
+    }
+  };
+
   const saveCardDetails = async () => {
     setIsSavingCard(true);
     try {
@@ -105,6 +117,12 @@ const CheckoutForm = () => {
       if (paymentResult.error) {
         console.error("Payment Error:", paymentResult.error.message);
         setErrorMessage(`Payment failed: ${paymentResult.error.message}`);
+        await createNotification(
+          "Payment Failed",
+          "Your payment attempt was unsuccessful. Please try again to complete your order.",
+          "error"
+        );
+
         setTimeout(() => {
           setErrorMessage("");
         }, 4000);
@@ -113,12 +131,19 @@ const CheckoutForm = () => {
       }
 
       if (paymentResult.paymentIntent.status === "succeeded") {
+        const amount = paymentResult.paymentIntent.amount / 100;
+
         await cartCtx.placeOrder({
           paymentIntentId: paymentResult.paymentIntent.id,
           status: paymentResult.paymentIntent.status,
-          amount: paymentResult.paymentIntent.amount / 100,
+          amount: amount,
         });
 
+        await createNotification(
+          "Payment Successful!",
+          `Your payment of $${amount} has been processed successfully. You can track your order on the "Order Tab". Thank you for your purchase!`,
+          "success"
+        );
         setSuccessMessage("Payment successful! Your order has been placed.");
         setTimeout(() => {
           setSuccessMessage("");
@@ -128,6 +153,12 @@ const CheckoutForm = () => {
     } catch (error) {
       console.error("Checkout failed:", error.message);
       setErrorMessage("Checkout failed. Please try again.");
+
+      await createNotification(
+        "Payment Failed",
+        "Your payment attempt was unsuccessful. Please try again to complete your order.",
+        "error"
+      );
       setTimeout(() => {
         setErrorMessage("");
       }, 4000);

@@ -20,6 +20,7 @@ import SavedPaymentDetailsPage from "./pages/SavedPaymentDetailsPage";
 import Settings from "./pages/Settings";
 import Wishlist from "./pages/Wishlist";
 import OrderDetailsPage from "./pages/OrderDetailsPage";
+import Notification from "./pages/Notification";
 
 const router = createBrowserRouter([
   {
@@ -56,6 +57,7 @@ const router = createBrowserRouter([
           },
           { path: "/Settings", element: <Settings /> },
           { path: "/wishlist", element: <Wishlist /> },
+          { path: "/notification", element: <Notification /> },
         ],
       },
     ],

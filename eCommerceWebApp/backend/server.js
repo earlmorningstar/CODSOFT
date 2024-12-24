@@ -13,6 +13,7 @@ const orderAdminRoutes = require("./routes/orderAdminRoutes");
 const wishlistRoutes = require("./routes/wishlistRoutes");
 const shopifyRoutes = require("./routes/shopifyRoutes");
 const cardRoutes = require("./routes/cardRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
 
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
@@ -27,8 +28,9 @@ app.use(
       "https://codsoft-trendvault-5ewnftgxs-onyeabor-joels-projects.vercel.app",
       "https://codsoft-trendvault-git-main-onyeabor-joels-projects.vercel.app",
     ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"]
   })
 );
 app.use(cookieParser());
@@ -43,6 +45,7 @@ app.use("/api/admin/orders", orderAdminRoutes);
 app.use("/api/users/whishlist", wishlistRoutes);
 app.use("/api/shopify", shopifyRoutes);
 app.use("/api/users/", cardRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 app.get("/", (req, res) => {
   res.send("E-Commerce Web Application Is Running...");

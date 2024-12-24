@@ -39,9 +39,11 @@ const RootLayout = () => {
               <RiMenu2Fill size={20} />
             </span>
             <h3>TrendVault</h3>
+            <NavLink to="/notification">
             <span>
               <GoBell size={20} />
             </span>
+            </NavLink>
           </>
         )}
       </section>

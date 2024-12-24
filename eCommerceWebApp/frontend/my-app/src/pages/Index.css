@@ -1247,7 +1247,6 @@
   font-weight: 400;
 }
 
-
 /* Order History Section-- */
 
 .order-id {
@@ -1272,6 +1271,84 @@
 #order-txt-cntr {
   text-align: center;
   margin-bottom: 40px;
+}
+
+/* Notification Section--- */
+.notification-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.notification-item {
+  cursor: pointer;
+  position: relative;
+  font-family: "Raleway", sans-serif;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.notification-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.notification-item h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.notification-item p {
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 20px;
+  margin-bottom: 8px;
+}
+
+.notification-date {
+  font-size: 0.8rem;
+  color: #718098;
+}
+
+.notification-item.unread {
+  background-color: #f0f7ff;
+  border-left: 4px solid #0066cc;
+}
+
+.notification-item.success {
+  border-left: 4px solid #48bb78;
+}
+
+.notification-item.error {
+  border-left: 4px solid #f56565;
+}
+
+.notification-date {
+  font-size: 0.8rem;
+  color: #666;
+  display: block;
+  margin-top: 8px;
+}
+
+.no-notification-text {
+  font-family: "Poppins", sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  text-align: center;
+  margin-top: 4rem;
+}
+
+.unread-indicator {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  color: #0066cc;
+  font-size: 18px;
 }
 
 /* Screen Sizes--- */
@@ -1447,10 +1524,8 @@
   .order-id {
     font-size: 17px;
   }
-  
   .order-placed-date {
     font-size: 13px;
-
   }
 }
 
@@ -1463,5 +1538,11 @@
   }
   .checkout-btns-style {
     width: 100%;
+  }
+  .notification-item h3 {
+    font-size: 17px;
+  }
+  .notification-item p {
+    font-size: 14px;
   }
 }
