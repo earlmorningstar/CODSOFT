@@ -12,6 +12,10 @@ const createNotification = async (req, res) => {
       type,
     });
     await notification.save();
+    req.app
+      .get("io")
+      .to(req.user._id.toString())
+      .emit("notification", notification);
     sendSuccess(res, 200, "Notification created successfuly", notification);
   } catch (error) {
     sendError(res, 500, "Failed to create notification", {

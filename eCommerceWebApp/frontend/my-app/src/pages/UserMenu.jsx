@@ -5,18 +5,23 @@ import { FaRegUser, FaRegHeart } from "react-icons/fa";
 import { IoChevronForward } from "react-icons/io5";
 import { FaRegCreditCard } from "react-icons/fa6";
 import { FiLogOut, FiSettings } from "react-icons/fi";
-import { Modal, Box, Button, Backdrop, CircularProgress } from "@mui/material";
+import {
+  Modal,
+  Box,
+  Backdrop,
+  CircularProgress,
+  Typography,
+} from "@mui/material";
 
 const modalStyle = {
   position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 320,
+  width: 300,
   bgcolor: "background.paper",
   boxShadow: 24,
-  p: 4,
-  borderRadius: 2,
+  p: 2,
 };
 
 const UserMenu = () => {
@@ -94,19 +99,27 @@ const UserMenu = () => {
         <Box sx={modalStyle}>
           <div className="verify-password-title">
             <h2 style={{ marginBottom: "20px" }}>Logout Confirmation</h2>
-            <p style={{ marginBottom: "20px" }}>Do you want to logout?</p>
+            <Typography
+              className="delete-modal-title"
+              style={{
+                color: "#000000",
+                marginBottom: "20px",
+                marginTop: "16px",
+                fontSize: "18px",
+              }}
+            >
+              Do you want to logout?
+            </Typography>
           </div>
 
-          <Button
-            variant="contained"
-            onClick={handleLogout}
-            sx={{ marginRight: 2 }}
-          >
-            Okay
-          </Button>
-          <Button variant="outlined" onClick={handleCloseModal}>
-            Cancel
-          </Button>
+          <span className="cart-modal-del-btnHolder">
+            <button className="cart-modal-button" onClick={handleLogout}>
+              Yes, Logout!
+            </button>
+            <button className="cart-modal-button" onClick={handleCloseModal}>
+              Cancel
+            </button>
+          </span>
         </Box>
       </Modal>
 

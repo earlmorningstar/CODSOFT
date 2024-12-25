@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
   Box,
@@ -11,6 +11,7 @@ import {
   Typography,
   Stack,
   Alert,
+  Snackbar,
   CircularProgress,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
@@ -28,6 +29,8 @@ const LoginPage = () => {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleMouseDownPassword = (e) => e.preventDefault();
@@ -59,6 +62,34 @@ const LoginPage = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    if (error) {
+      setShowError(true);
+    }
+  }, [error]);
+
+  const handleCloseError = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setShowError(false);
+    setError("");
+  };
+
+  useEffect(() => {
+    if (success) {
+      setShowSuccess(true);
+    }
+  }, [success]);
+
+  const handleCloseSuccess = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setShowSuccess(false);
+    setSuccess("");
   };
 
   return (
@@ -105,16 +136,28 @@ const LoginPage = () => {
                 required
               />
             </FormControl>
-            {error && (
+
+            <Snackbar
+              open={showError}
+              autoHideDuration={5000}
+              onClose={handleCloseError}
+              anchorOrigin={{ vertical: "top", horizontal: "center" }}
+            >
               <Stack sx={{ width: "100%" }} spacing={2}>
-                <Alert severity="error">{error}</Alert>
+                {error && <Alert severity="error">{error}</Alert>}
               </Stack>
-            )}
-            {success && (
+            </Snackbar>
+
+            <Snackbar
+              open={showSuccess}
+              autoHideDuration={5000}
+              onClose={handleCloseSuccess}
+              anchorOrigin={{ vertical: "top", horizontal: "center" }}
+            >
               <Stack sx={{ width: "100%" }} spacing={2}>
-                <Alert severity="success">{success}</Alert>
+                {success && <Alert severity="success">{success}</Alert>}
               </Stack>
-            )}
+            </Snackbar>
 
             <button className="signup-login-btn" type="submit">
               {loading ? (

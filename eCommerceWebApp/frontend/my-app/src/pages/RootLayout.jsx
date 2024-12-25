@@ -1,43 +1,86 @@
-import { Outlet, NavLink, useLocation } from "react-router-dom";
-import { useState, useContext, useEffect } from "react";
+import { Outlet, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import CartContext from "../store/CartContext";
-import api from "../utils/api";
+import { NotificationContext } from "../context/NotificationContext";
+// import api from "../utils/api";
 import { RiMenu2Fill, RiSettings2Line } from "react-icons/ri";
 import { GoBell, GoX, GoHome, GoSearch } from "react-icons/go";
 import { IoCartOutline } from "react-icons/io5";
 import { PiHandbag } from "react-icons/pi";
 import { FaRegUser } from "react-icons/fa";
 import { AiOutlineExclamationCircle } from "react-icons/ai";
+import { FiLogOut } from "react-icons/fi";
+import {
+  Modal,
+  Box,
+  Backdrop,
+  Typography,
+  CircularProgress,
+} from "@mui/material";
 
 import "./Index.css";
+
+const modalStyle = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 300,
+  bgcolor: "background.paper",
+  boxShadow: 24,
+  p: 2,
+};
 
 const images = [{ src: "/images/avatar1.jpg", alt: "Avatar 1" }];
 
 const RootLayout = () => {
-  const { user } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
+  const { unreadCount } = useContext(NotificationContext);
   const { items: cartItems } = useContext(CartContext);
   const cartItemCount = cartItems.length;
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [notificationCount, setNotificationCount] = useState(0);
+  // const [notificationCount, setNotificationCount] = useState(0);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
+  const navigate = useNavigate();
   const location = useLocation();
   const isHomepage = location.pathname === "/homepage";
 
-  useEffect(() => {
-    const fetchNotificationCount = async () => {
-      try {
-        const user = JSON.parse(localStorage.getItem("user"));
-        if(!user?.token) return;
-        
-        const response = await api.get("/api/notifications/unread/count");
-        setNotificationCount(response.data.count);
-      } catch (error) {
-        console.error("Failed to fetch notification count", error);
-      }
-    };
-    fetchNotificationCount();
-  }, []);
+  // useEffect(() => {
+  //   const fetchNotificationCount = async () => {
+  //     try {
+  //       const user = JSON.parse(localStorage.getItem("user"));
+  //       if (!user?.token) return;
+
+  //       const response = await api.get("/api/notifications/unread/count");
+  //       setNotificationCount(response.data.count);
+  //     } catch (error) {
+  //       console.error("Failed to fetch notification count", error);
+  //     }
+  //   };
+  //   fetchNotificationCount();
+  // }, []);
+
+  const handleLogoutClick = () => {
+    setSidebarOpen(false);
+    setIsLogoutModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsLogoutModalOpen(false);
+  };
+
+  const handleLogout = async () => {
+    setLoading(true);
+    setIsLogoutModalOpen(false);
+    setTimeout(() => {
+      logout();
+      navigate("/login");
+      setLoading(false);
+    }, 1000);
+  };
 
   const toggleSidebar = () => {
     setSidebarOpen((prev) => !prev);
@@ -59,9 +102,9 @@ const RootLayout = () => {
             <NavLink to="/notification">
               <span>
                 <GoBell size={20} />
-                {notificationCount > 0 && (
+                {unreadCount > 0 && (
                   <p className="cartCount" id="notification-Count-id">
-                    {notificationCount}
+                    {unreadCount}
                   </p>
                 )}{" "}
               </span>
@@ -135,7 +178,49 @@ const RootLayout = () => {
           >
             <AiOutlineExclamationCircle size={20} /> About Us
           </NavLink>
+          <button className="root-logout-btn" onClick={handleLogoutClick}>
+            <FiLogOut size={20} />
+            Logout
+          </button>
         </nav>
+
+        <Modal open={isLogoutModalOpen} onClose={handleCloseModal}>
+          <Box sx={modalStyle}>
+            <div className="verify-password-title">
+              <h2 style={{ marginBottom: "20px" }}>Logout Confirmation</h2>
+              <Typography
+                className="delete-modal-title"
+                style={{
+                  color: "#000000",
+                  marginBottom: "20px",
+                  marginTop: "16px",
+                  fontSize: "18px",
+                }}
+              >
+                Do you want to logout?
+              </Typography>
+            </div>
+
+            <span className="cart-modal-del-btnHolder">
+              <button className="cart-modal-button" onClick={handleLogout}>
+                Yes, Logout!
+              </button>
+              <button className="cart-modal-button" onClick={handleCloseModal}>
+                Cancel
+              </button>
+            </span>
+          </Box>
+        </Modal>
+
+        <Backdrop
+          sx={{
+            color: "#6055d8",
+            zIndex: (theme) => theme.zIndex.drawer + 1,
+          }}
+          open={loading}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
       </aside>
 
       <main className="root-main-outlet">

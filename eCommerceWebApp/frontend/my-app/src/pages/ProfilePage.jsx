@@ -12,9 +12,11 @@ import {
   Avatar,
   Alert,
   // Backdrop,
+  Snackbar,
   CircularProgress,
   Modal,
   Box,
+  Typography,
 } from "@mui/material";
 
 const images = [{ src: "/images/avatar1.jpg", alt: "Avatar 1" }];
@@ -53,11 +55,10 @@ const modalStyle = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 400,
+  width: 350,
   bgcolor: "background.paper",
-  borderRadius: "8px",
   boxShadow: 24,
-  p: 4,
+  p: 2,
 };
 
 const ProfilePage = () => {
@@ -84,6 +85,8 @@ const ProfilePage = () => {
   const [deletingAccount, setDeletingAccount] = useState(false);
   const [deletePassword, setDeletePassword] = useState("");
   const [deleteError, setDeleteError] = useState("");
+  const [showError, setShowError] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const validateForm = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -281,6 +284,34 @@ const ProfilePage = () => {
     setDeleteError("");
   };
 
+  useEffect(() => {
+    if (error) {
+      setShowError(true);
+    }
+  }, [error]);
+
+  const handleCloseError = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setShowError(false);
+    setError("");
+  };
+
+  useEffect(() => {
+    if (success) {
+      setShowSuccess(true);
+    }
+  }, [success]);
+
+  const handleCloseSuccess = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setShowSuccess(false);
+    setSuccess("");
+  };
+
   // if (loading) {
   //   return (
   //     <div>
@@ -328,16 +359,33 @@ const ProfilePage = () => {
         </span>
       </div>
 
-      {error && (
-        <Alert className="alert-message-holder" severity="error">
-          {error}
-        </Alert>
-      )}
-      {success && (
-        <Alert className="alert-message-holder" severity="success">
-          {success}
-        </Alert>
-      )}
+      <Snackbar
+        open={showError}
+        autoHideDuration={4000}
+        onClose={handleCloseError}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Stack sx={{ width: "100%" }} spacing={2}>
+          {error && (
+            <Alert className="alert-message-holder" severity="error">
+              {error}
+            </Alert>
+          )}
+        </Stack>
+      </Snackbar>
+
+      <Snackbar
+        open={showSuccess}
+        autoHideDuration={4000}
+        onClose={handleCloseSuccess}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        {success && (
+          <Alert className="alert-message-holder" severity="success">
+            {success}
+          </Alert>
+        )}
+      </Snackbar>
 
       <form className="profile-form-container" onSubmit={updateUserProfile}>
         <TextField
@@ -433,17 +481,18 @@ const ProfilePage = () => {
       >
         <Box sx={modalStyle}>
           <h2 className="delete-modal-title">Delete Account</h2>
-          <p
+          <Typography
             className="delete-modal-title"
             style={{
               color: "#000000",
               marginBottom: "16px",
               marginTop: "16px",
+              fontSize: '18px',
             }}
           >
             {" "}
             Please enter your password to confirm account deletion:
-          </p>
+          </Typography>
           <TextField
             fullWidth
             type="password"
@@ -454,10 +503,8 @@ const ProfilePage = () => {
             error={!!deleteError}
             helperText={deleteError}
           />
-          <div style={{ display: "flex", gap: "16px", marginTop: "24px" }}>
-            <Button
-              variant="contained"
-              color="error"
+          <div className="cart-modal-del-btnHolder">
+            <button className="cart-modal-button"
               onClick={() => {
                 if (!deletePassword) {
                   setDeleteError("Please enter your password");
@@ -468,14 +515,12 @@ const ProfilePage = () => {
               }}
             >
               Continue
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
+            </button>
+            <button className="cart-modal-button"
               onClick={handleCloseModals}
             >
               Cancel
-            </Button>
+            </button>
           </div>
         </Box>
       </Modal>
@@ -487,32 +532,32 @@ const ProfilePage = () => {
       >
         <Box sx={modalStyle}>
           <h2 className="delete-modal-title">Final Confirmation</h2>
-          <p
+          <Typography
             className="delete-modal-title"
             style={{
               color: "#dc3545",
               marginBottom: "16px",
               marginTop: "16px",
+              fontSize: '18px',
             }}
           >
             Warning: Deleted accounts cannot be recovered. All your data will be
             permanently lost.
-          </p>
-          <div style={{ display: "flex", gap: "16px" }}>
-            <Button
-              variant="contained"
-              color="error"
+          </Typography>
+          <div className="cart-modal-del-btnHolder">
+            <button
+              className="cart-modal-button"
               onClick={handleDeleteAccount}
               disabled={deletingAccount}
             >
               {deletingAccount ? (
                 <CircularProgress size={24} color="inherit" />
               ) : (
-                "Yes, Delete My Account"
+                "Yes, Delete!"
               )}
-            </Button>
-            <Button
-              variant="outlined"
+            </button>
+            <button
+              className="cart-modal-button"
               onClick={() => {
                 setConfirmDeleteModalOpen(false);
                 setDeleteModalOpen(true);
@@ -520,7 +565,7 @@ const ProfilePage = () => {
               disabled={deletingAccount}
             >
               Go Back
-            </Button>
+            </button>
           </div>
         </Box>
       </Modal>

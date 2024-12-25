@@ -12,6 +12,8 @@ import {
   Box,
   TextField,
   Button,
+  Stack,
+  Snackbar,
   Backdrop,
   CircularProgress,
 } from "@mui/material";
@@ -41,6 +43,8 @@ const SavedPaymentDetailsPage = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedCardId, setSelectedCardId] = useState(null);
   const [success, setSuccess] = useState("");
+  const [showError, setShowError] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   useEffect(() => {
     fetchCardDetails();
@@ -114,8 +118,10 @@ const SavedPaymentDetailsPage = () => {
       return;
     }
 
-    const cardToDelete = cardDetails.find(card => card._id === selectedCardId);
-    if(!cardToDelete) {
+    const cardToDelete = cardDetails.find(
+      (card) => card._id === selectedCardId
+    );
+    if (!cardToDelete) {
       setError("Card not found");
       return;
     }
@@ -170,6 +176,34 @@ const SavedPaymentDetailsPage = () => {
     setIsDeleteModalOpen(false);
   };
 
+  useEffect(() => {
+    if (error) {
+      setShowError(true);
+    }
+  }, [error]);
+
+  const handleCloseError = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setShowError(false);
+    setError("");
+  };
+
+  useEffect(() => {
+    if (success) {
+      setShowSuccess(true);
+    }
+  }, [success]);
+
+  const handleCloseSuccess = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setShowSuccess(false);
+    setSuccess("");
+  };
+
   if (loading) {
     return (
       <div onClick={handleOpen}>
@@ -200,24 +234,42 @@ const SavedPaymentDetailsPage = () => {
       <p className="usermenuPages-title-textCenter">
         Saved Payment Card Details
       </p>
-      {error && (
-        <Alert
-          className="alert-message-holder"
-          id="alert-message-savedCard-id"
-          severity="error"
-        >
-          {error}
-        </Alert>
-      )}
-      {success && (
-        <Alert
-          className="alert-message-holder"
-          id="alert-message-savedCard-id"
-          severity="success"
-        >
-          {success}
-        </Alert>
-      )}
+
+      <Snackbar
+        open={showError}
+        autoHideDuration={4000}
+        onClose={handleCloseError}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Stack sx={{ width: "100%" }} spacing={2}>
+          {error && (
+            <Alert
+              className="alert-message-holder"
+              id="alert-message-savedCard-id"
+              severity="error"
+            >
+              {error}
+            </Alert>
+          )}
+        </Stack>
+      </Snackbar>
+
+      <Snackbar
+        open={showSuccess}
+        autoHideDuration={4000}
+        onClose={handleCloseSuccess}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        {success && (
+          <Alert
+            className="alert-message-holder"
+            id="alert-message-savedCard-id"
+            severity="success"
+          >
+            {success}
+          </Alert>
+        )}
+      </Snackbar>
 
       <div>
         {cardDetails && cardDetails.length > 0 ? (

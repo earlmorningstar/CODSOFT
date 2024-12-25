@@ -5,6 +5,7 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import AuthProvider from "./context/AuthContext";
 import { CartProvider } from "./store/CartContext";
+import { NotificationProvider } from "./context/NotificationContext";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 // import ScrollPosition from "./hooks/ScrollPosition";
@@ -17,9 +18,11 @@ root.render(
     {/* <ScrollPosition> */}
     <Elements stripe={stripePromise}>
       <AuthProvider>
-        <CartProvider>
-          <App />
-        </CartProvider>
+        <NotificationProvider>
+          <CartProvider>
+            <App />
+          </CartProvider>
+        </NotificationProvider>
       </AuthProvider>
     </Elements>
     {/* </ScrollPosition> */}

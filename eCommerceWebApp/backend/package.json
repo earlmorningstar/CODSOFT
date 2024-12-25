@@ -22,7 +22,9 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.8.3",
     "shopify-api-node": "^3.14.1",
-    "stripe": "^17.4.0"
+    "socket.io": "^4.8.1",
+    "stripe": "^17.4.0",
+    "ws": "^8.18.0"
   },
   "engines": {
     "node": "18.x"

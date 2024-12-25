@@ -173,6 +173,15 @@
 
 .btm-bar-navlinks {
   text-decoration: none;
+  color: #838383;
+  padding: 5px 5px 3px 5px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btm-bar-navlinks.active-link {
+  background-color: #6055d8;
+  color: #ffffff;
+  border-radius: 10px;
 }
 
 .btm-bar-navlinks span {
@@ -285,13 +294,13 @@
   border-radius: 10px;
   text-decoration: none;
   color: #777e90;
-  transition: color 0.3s ease;
+  transition: color 0.2s ease;
 }
 
 .sidebar-link:hover {
-  background-color: #f1f2f3;
+  background-color: #776de7;
   padding: 10px;
-  color: #000000;
+  color: #ffffff;
 }
 
 .sidebar-link.active {
@@ -321,6 +330,21 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+.root-logout-btn {
+  cursor: pointer;
+  font-family: "Raleway", sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 17px;
+  font-weight: 400;
+  color: #777e90;
+  background-color: transparent;
+  border: none;
+  width: 10rem;
+  padding: 10px;
 }
 
 #cartCount-holder-id {
@@ -997,6 +1021,25 @@
   border: none;
   width: 20rem;
   font-size: 16px;
+}
+
+.cart-modal-del-btnHolder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.cart-modal-button {
+  cursor: pointer;
+  width: 10rem;
+  padding: 10px;
+  font-size: 18px;
+  margin-top: 15px;
+}
+
+#cart-title-header {
+  font-size: 2rem;
 }
 
 /* Search Page Section-- */

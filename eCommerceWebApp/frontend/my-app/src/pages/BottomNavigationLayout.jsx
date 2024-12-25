@@ -18,23 +18,49 @@ const BottomNavigationLayout = () => {
       </div>
 
       <nav className="btm-nav-root-container">
-        <NavLink className="btm-bar-navlinks" to="/homepage" end>
-          <GoHome color="#838383" size={20} />
+        <NavLink
+          className={({ isActive }) =>
+            `btm-bar-navlinks ${isActive ? "active-link" : ""}`
+          }
+          to="/homepage"
+          end
+        >
+          <GoHome size={22} />
         </NavLink>
-        <NavLink className="btm-bar-navlinks" to="/search">
-          <GoSearch color="#838383" size={20} />
+        <NavLink
+          className={({ isActive }) =>
+            `btm-bar-navlinks ${isActive ? "active-link" : ""}`
+          }
+          to="/search"
+        >
+          <GoSearch size={22} />
         </NavLink>
-        <NavLink className="btm-bar-navlinks" to="/cart">
+        <NavLink
+          className={({ isActive }) =>
+            `btm-bar-navlinks ${isActive ? "active-link" : ""}`
+          }
+          to="/cart"
+        >
           <span className="cartCount-holder">
-            <IoCartOutline color="#838383" size={20} />
+            <IoCartOutline size={22} />
             {cartItemCount > 0 && <p className="cartCount">{cartItemCount}</p>}
           </span>
         </NavLink>
-        <NavLink className="btm-bar-navlinks" to="/order">
-          <PiHandbag color="#838383" size={20} />
+        <NavLink
+          className={({ isActive }) =>
+            `btm-bar-navlinks ${isActive ? "active-link" : ""}`
+          }
+          to="/order"
+        >
+          <PiHandbag size={22} />
         </NavLink>
-        <NavLink className="btm-bar-navlinks" to="/user-menu">
-          <FaRegUser color="#838383" size={20} />
+        <NavLink
+          className={({ isActive }) =>
+            `btm-bar-navlinks ${isActive ? "active-link" : ""}`
+          }
+          to="/user-menu"
+        >
+          <FaRegUser size={22} />
         </NavLink>
       </nav>
     </section>

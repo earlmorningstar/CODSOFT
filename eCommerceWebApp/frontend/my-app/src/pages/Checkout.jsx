@@ -1,6 +1,6 @@
 import { useContext, useState, useEffect } from "react";
 import CartContext from "../store/CartContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, NavLink } from "react-router-dom";
 import { loadStripe } from "@stripe/stripe-js";
 import api from "../utils/api";
 import {
@@ -9,7 +9,15 @@ import {
   useStripe,
   useElements,
 } from "@stripe/react-stripe-js";
-import { Box, TextField, Stack, Alert, CircularProgress } from "@mui/material";
+import {
+  Box,
+  TextField,
+  Stack,
+  Alert,
+  Snackbar,
+  CircularProgress,
+} from "@mui/material";
+import { IoChevronBackOutline } from "react-icons/io5";
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
@@ -21,6 +29,8 @@ const CheckoutForm = () => {
   const [isSavingCard, setIsSavingCard] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [showError, setShowError] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
   const [userData, setUserData] = useState({
     email: "",
     deliveryAddress: "",
@@ -188,9 +198,47 @@ const CheckoutForm = () => {
     },
   };
 
+  useEffect(() => {
+    if (errorMessage) {
+      setShowError(true);
+    }
+  }, [errorMessage]);
+
+  const handleCloseError = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setShowError(false);
+    setErrorMessage("");
+  };
+
+  useEffect(() => {
+    if (successMessage) {
+      setShowSuccess(true);
+    }
+  }, [successMessage]);
+
+  const handleCloseSuccess = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setShowSuccess(false);
+    setSuccessMessage("");
+  };
+
   return (
+    <>
+    <div className="usermenuPages-title-container">
+        <NavLink to="/user-menu">
+          <span>
+            <IoChevronBackOutline size={25} />
+          </span>
+        </NavLink>
+      </div>
+      <p className="usermenuPages-title-textCenter">
+        Checkout
+      </p>
     <form className="checkoutForm-container" onSubmit={handleCheckout}>
-      <p>Checkout</p>
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
         <TextField
           label={
@@ -237,17 +285,37 @@ const CheckoutForm = () => {
           "Confirm Payment & Place Order"
         )}
       </button>
-      {errorMessage && (
+
+      <Snackbar
+        open={showError}
+        autoHideDuration={3000}
+        onClose={handleCloseError}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        {errorMessage && (
         <Stack sx={{ width: "100%" }} spacing={2}>
           <Alert severity="error">{errorMessage}</Alert>
         </Stack>
       )}
-      {successMessage && (
+        
+      </Snackbar>
+
+      <Snackbar
+        open={showSuccess}
+        autoHideDuration={3000}
+        onClose={handleCloseSuccess}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+         {successMessage && (
         <Stack sx={{ width: "100%" }} spacing={2}>
           <Alert severity="success">{successMessage}</Alert>
         </Stack>
       )}
+      </Snackbar>
+      
+     
     </form>
+    </>
   );
 };
 
