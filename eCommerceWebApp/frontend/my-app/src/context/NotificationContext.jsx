@@ -37,8 +37,7 @@ export const NotificationProvider = ({ children }) => {
 
   const handleNewNotification = useCallback(
     (newNotification) => {
-      console.log("New notification received:", newNotification);
-      setNotifications((prev) => {
+     setNotifications((prev) => {
         const updated = [newNotification, ...prev];
         updateUnreadCount(updated);
         return updated;
@@ -69,8 +68,6 @@ export const NotificationProvider = ({ children }) => {
     let newSocket = null;
 
     if (user?.token) {
-      console.log("Attempting to connect to:", process.env.REACT_APP_API_URL);
-
       newSocket = io(process.env.REACT_APP_API_URL, {
         auth: {
           token: user.token,
@@ -84,8 +81,7 @@ export const NotificationProvider = ({ children }) => {
       });
 
       newSocket.on("connect", () => {
-        console.log("Connected to notification server");
-        setConnectionError(null);
+      setConnectionError(null);
         fetchNotifications();
       });
 
