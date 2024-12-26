@@ -20,6 +20,7 @@ const io = new Server(server, {
   pingTimeout: 60000,
   allowEIO3: true,
 });
+app.set("io", io);
 
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
@@ -87,8 +88,10 @@ io.on("connection", (socket) => {
   socket.join(socket.userId);
 
   socket.on("mark_as_read", (notificationId) => {
-    socket.broadcast.to(socket.userId).emit('notification_read', notificationId)
-  })
+    socket.broadcast
+      .to(socket.userId)
+      .emit("notification_read", notificationId);
+  });
 
   socket.on("mark_all_read", () => {
     socket.broadcast.to(socket.userId).emit("notifications_cleared");

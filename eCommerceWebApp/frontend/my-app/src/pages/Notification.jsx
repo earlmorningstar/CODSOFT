@@ -1,12 +1,10 @@
 import { useEffect, useState, useContext } from "react";
 import { NavLink } from "react-router-dom";
-// import api from "../utils/api";
 import { Alert, Snackbar, Backdrop, CircularProgress } from "@mui/material";
 import { IoChevronBackOutline } from "react-icons/io5";
 import { NotificationContext } from "../context/NotificationContext";
 
 const Notification = () => {
-  // const [notifications, setNotifications] = useState([]);
   const { notifications, markAsRead } = useContext(NotificationContext);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -16,8 +14,7 @@ const Notification = () => {
     if (notifications) {
       setLoading(false);
     }
-    // fetchNotifications();
-  }, [notifications]);
+   }, [notifications]);
 
   useEffect(() => {
     if (error) {
@@ -41,33 +38,7 @@ const Notification = () => {
     }
   };
 
-  // const fetchNotifications = async () => {
-  //   try {
-  //     const response = await api.get("api/notifications");
-  //     setNotifications(response.data);
-  //   } catch (error) {
-  //     setError("Failed to fetch notification");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-  // const markAsRead = async (notificationId) => {
-  //   try {
-  //     await api.patch(`/api/notifications/${notificationId}/read`);
-  //     setNotifications(
-  //       notifications.map((notification) =>
-  //         notification._id === notificationId
-  //           ? { ...notification, read: true }
-  //           : notification
-  //       )
-  //     );
-  //   } catch (error) {
-  //     console.error("Failed to mark notification as read", error);
-  //   }
-  // };
-
-  const formatDate = (dateString) => {
+   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",

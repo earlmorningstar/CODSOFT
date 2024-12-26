@@ -153,153 +153,154 @@ const SignupPage = () => {
   };
 
   return (
-    <section className="signup-login-Container">
-      <span className="signup-login-image-container">
-        <img src={images[0].src} alt={images[0].alt} />
-      </span>
-      <Box sx={{ maxWidth: "400px", marginTop: "3rem", padding: "1rem" }}>
-        <span className="signup-login-typography-container">
-          Create your account
+    <>
+      <Snackbar
+        open={showError}
+        autoHideDuration={5000}
+        onClose={handleCloseError}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Stack sx={{ width: "100%" }} spacing={2}>
+          {error && <Alert severity="error">{error}</Alert>}
+        </Stack>
+      </Snackbar>
+
+      <Snackbar
+        open={showSuccess}
+        autoHideDuration={5000}
+        onClose={handleCloseSuccess}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Stack sx={{ width: "100%" }} spacing={2}>
+          {success && <Alert severity="success">{success}</Alert>}
+        </Stack>
+      </Snackbar>
+      <section className="signup-login-Container">
+        <span className="signup-login-image-container">
+          <img src={images[0].src} alt={images[0].alt} />
         </span>
+        <Box sx={{ maxWidth: "400px", marginTop: "3rem", padding: "1rem" }}>
+          <span className="signup-login-typography-container">
+            Create your account
+          </span>
 
-        <form onSubmit={handleSubmitSignupForm}>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            <TextField
-              label={
-                <div className="auth-label-flex">
-                  Full Name <span style={{ color: "red" }}>*</span>
-                </div>
-              }
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              variant="standard"
-            />
-            <TextField
-              label={
-                <div className="auth-label-flex">
-                  Email Address <span style={{ color: "red" }}>*</span>
-                </div>
-              }
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              variant="standard"
-            />
-            <TextField
-              label={
-                <div className="auth-label-flex">
-                  Age <span style={{ color: "red" }}>*</span>
-                </div>
-              }
-              value={age}
-              onChange={(e) => setAge(e.target.value)}
-              variant="standard"
-            />
-            <CountrySelect
-              value={country}
-              onChange={(e) => setCountry(e.target.value)}
-            />
-            <TextField
-              label={
-                <div className="auth-label-flex">
-                  Delivery Address (Optional)
-                </div>
-              }
-              value={deliveryAddress}
-              onChange={(e) => setDeliveryAddress(e.target.value)}
-              variant="standard"
-            />
-            <FormControl variant="standard">
-              <InputLabel htmlFor="confirm-password">
-                Password <span style={{ color: "red" }}>*</span>
-              </InputLabel>
-              <Input
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                type={showPassword ? "text" : "password"}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
+          <form onSubmit={handleSubmitSignupForm}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              <TextField
+                label={
+                  <div className="auth-label-flex">
+                    Full Name <span style={{ color: "red" }}>*</span>
+                  </div>
                 }
-                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                variant="standard"
               />
-            </FormControl>
-            <FormControl variant="standard">
-              <InputLabel htmlFor="confirm-password">
-                Confirm Password <span style={{ color: "red" }}>*</span>
-              </InputLabel>
-              <Input
-                id="confirm-password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                type={showPassword ? "text" : "password"}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
+              <TextField
+                label={
+                  <div className="auth-label-flex">
+                    Email Address <span style={{ color: "red" }}>*</span>
+                  </div>
                 }
-                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                variant="standard"
               />
-            </FormControl>
+              <TextField
+                label={
+                  <div className="auth-label-flex">
+                    Age <span style={{ color: "red" }}>*</span>
+                  </div>
+                }
+                value={age}
+                onChange={(e) => setAge(e.target.value)}
+                variant="standard"
+              />
+              <CountrySelect
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
+              />
+              <TextField
+                label={
+                  <div className="auth-label-flex">
+                    Delivery Address (Optional)
+                  </div>
+                }
+                value={deliveryAddress}
+                onChange={(e) => setDeliveryAddress(e.target.value)}
+                variant="standard"
+              />
+              <FormControl variant="standard">
+                <InputLabel htmlFor="confirm-password">
+                  Password <span style={{ color: "red" }}>*</span>
+                </InputLabel>
+                <Input
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  type={showPassword ? "text" : "password"}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  required
+                />
+              </FormControl>
+              <FormControl variant="standard">
+                <InputLabel htmlFor="confirm-password">
+                  Confirm Password <span style={{ color: "red" }}>*</span>
+                </InputLabel>
+                <Input
+                  id="confirm-password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  type={showPassword ? "text" : "password"}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  required
+                />
+              </FormControl>
 
-            <Snackbar
-              open={showError}
-              autoHideDuration={5000}
-              onClose={handleCloseError}
-              anchorOrigin={{ vertical: "top", horizontal: "center" }}
-            >
-              <Stack sx={{ width: "100%" }} spacing={2}>
-                {error && <Alert severity="error">{error}</Alert>}
-              </Stack>
-            </Snackbar>
-
-            <Snackbar
-              open={showSuccess}
-              autoHideDuration={5000}
-              onClose={handleCloseSuccess}
-              anchorOrigin={{ vertical: "top", horizontal: "center" }}
-            >
-              <Stack sx={{ width: "100%" }} spacing={2}>
-                {success && <Alert severity="success">{success}</Alert>}
-              </Stack>
-            </Snackbar>
-
-            <button
-              className="signup-login-btn"
-              type="submit"
-              disabled={loading}
-            >
-              {loading ? (
-                <CircularProgress size={24} color="inherit" />
-              ) : (
-                "Sign up"
-              )}
-            </button>
-          </Box>
-        </form>
-        <Typography
-          className="signup-login-switchLink"
-          variant="body2"
-          sx={{ marginTop: 2 }}
-        >
-          Already have an account?{" "}
-          <NavLink className="signup-login-navlink" to="/login">
-            Log In
-          </NavLink>
-        </Typography>
-      </Box>
-    </section>
+              <button
+                className="signup-login-btn"
+                type="submit"
+                disabled={loading}
+              >
+                {loading ? (
+                  <CircularProgress size={24} color="inherit" />
+                ) : (
+                  "Sign up"
+                )}
+              </button>
+            </Box>
+          </form>
+          <Typography
+            className="signup-login-switchLink"
+            variant="body2"
+            sx={{ marginTop: 2 }}
+          >
+            Already have an account?{" "}
+            <NavLink className="signup-login-navlink" to="/login">
+              Log In
+            </NavLink>
+          </Typography>
+        </Box>
+      </section>
+    </>
   );
 };
 

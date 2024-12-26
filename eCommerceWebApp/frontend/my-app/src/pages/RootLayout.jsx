@@ -1,9 +1,8 @@
 import { Outlet, NavLink, useLocation, useNavigate } from "react-router-dom";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 import CartContext from "../store/CartContext";
 import { NotificationContext } from "../context/NotificationContext";
-// import api from "../utils/api";
 import { RiMenu2Fill, RiSettings2Line } from "react-icons/ri";
 import { GoBell, GoX, GoHome, GoSearch } from "react-icons/go";
 import { IoCartOutline } from "react-icons/io5";
@@ -40,7 +39,6 @@ const RootLayout = () => {
   const { items: cartItems } = useContext(CartContext);
   const cartItemCount = cartItems.length;
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  // const [notificationCount, setNotificationCount] = useState(0);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -48,20 +46,9 @@ const RootLayout = () => {
   const location = useLocation();
   const isHomepage = location.pathname === "/homepage";
 
-  // useEffect(() => {
-  //   const fetchNotificationCount = async () => {
-  //     try {
-  //       const user = JSON.parse(localStorage.getItem("user"));
-  //       if (!user?.token) return;
-
-  //       const response = await api.get("/api/notifications/unread/count");
-  //       setNotificationCount(response.data.count);
-  //     } catch (error) {
-  //       console.error("Failed to fetch notification count", error);
-  //     }
-  //   };
-  //   fetchNotificationCount();
-  // }, []);
+  useEffect(() => {
+    console.log("RootLayout unreadCount updated:", unreadCount);
+  }, [unreadCount]);
 
   const handleLogoutClick = () => {
     setSidebarOpen(false);

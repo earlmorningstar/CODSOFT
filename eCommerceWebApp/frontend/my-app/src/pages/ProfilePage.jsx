@@ -116,13 +116,20 @@ const ProfilePage = () => {
 
   const createNotification = async (title, message, type) => {
     try {
-      await api.post("/api/notifications", {
+     const response = await api.post("/api/notifications", {
         title,
         message,
         type,
       });
+      console.log("Notification creation response:", response.data)
+      return response.data;
     } catch (error) {
-      console.error("Failed to create notification:", error);
+      console.error("Full error details:", {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      });
+      throw error;
     }
   };
 
@@ -193,13 +200,13 @@ const ProfilePage = () => {
     }
     try {
       await api.put("/api/users/profile", updateData);
-      setSuccess("profile updated successfully!");
-      setLoading(false);
       await createNotification(
         "Profile Updated Successfully!!",
         "Your profile information has been updated successfully. Thanks for keeping your information current.",
         "info"
       );
+      setSuccess("profile updated successfully!");
+      setLoading(false);
       setIsSaved(true);
       setFormData((prev) => ({
         ...prev,
@@ -208,7 +215,7 @@ const ProfilePage = () => {
       }));
       setTimeout(() => {
         setIsSaved(false);
-      }, 2000);
+      }, 4000);
       setTimeout(() => {
         setSuccess("");
         setIsSaved(false);
@@ -361,7 +368,7 @@ const ProfilePage = () => {
 
       <Snackbar
         open={showError}
-        autoHideDuration={4000}
+        autoHideDuration={3000}
         onClose={handleCloseError}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
@@ -376,7 +383,7 @@ const ProfilePage = () => {
 
       <Snackbar
         open={showSuccess}
-        autoHideDuration={4000}
+        autoHideDuration={3000}
         onClose={handleCloseSuccess}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >

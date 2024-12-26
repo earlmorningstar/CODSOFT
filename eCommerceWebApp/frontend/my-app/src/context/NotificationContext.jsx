@@ -18,14 +18,10 @@ export const NotificationProvider = ({ children }) => {
   const [connectionError, setConnectionError] = useState(null);
   const { user } = useContext(AuthContext);
 
-  useEffect(() => {
-    const unreadNotifications = notifications.filter(
-      (notif) => !notif.read
-    ).length;
-    if (unreadCount !== unreadNotifications) {
-      setUnreadCount(unreadNotifications);
-    }
-  }, [notifications, unreadCount]);
+  const updateUnreadCount = useCallback((notifs) => {
+    const count = notifs.filter((notif) => !notif.read).length;
+    setUnreadCount(count);
+  }, []);
 
   const fetchNotifications = useCallback(async () => {
     if (!user?.token) return;
@@ -33,12 +29,41 @@ export const NotificationProvider = ({ children }) => {
     try {
       const response = await api.get("/api/notifications");
       setNotifications(response.data);
-      const unreadCount = response.data.filter((notif) => !notif.read).length;
-      setUnreadCount(unreadCount);
+      updateUnreadCount(response.data);
     } catch (error) {
       console.error("Failed to fetch notifications:", error);
     }
-  }, [user?.token]);
+  }, [user?.token, updateUnreadCount]);
+
+  const handleNewNotification = useCallback(
+    (newNotification) => {
+      console.log("New notification received:", newNotification);
+      setNotifications((prev) => {
+        const updated = [newNotification, ...prev];
+        updateUnreadCount(updated);
+        return updated;
+      });
+    },
+    [updateUnreadCount]
+  );
+
+  const handleNotificationRead = useCallback(
+    (notificationId) => {
+      setNotifications((prev) => {
+        const updated = prev.map((notif) =>
+          notif._id === notificationId ? { ...notif, read: true } : notif
+        );
+        updateUnreadCount(updated);
+        return updated;
+      });
+    },
+    [updateUnreadCount]
+  );
+
+  const handleNotificationsCleared = useCallback(() => {
+    setNotifications([]);
+    setUnreadCount(0);
+  }, []);
 
   useEffect(() => {
     let newSocket = null;
@@ -69,34 +94,9 @@ export const NotificationProvider = ({ children }) => {
         setConnectionError(error.message);
       });
 
-      newSocket.on("error", (error) => {
-        console.error("Socket error:", error.message);
-        setConnectionError(error.message);
-      });
-
-      newSocket.on("Disconnect", (reason) => {
-        console.log("Disconnected from notification server:", reason);
-      });
-
-      newSocket.on("notification", (newNotification) => {
-        console.log("New notification recieved:", newNotification);
-        setNotifications((prev) => [newNotification, ...prev]);
-        setUnreadCount((prev) => prev + 1);
-      });
-
-      newSocket.on("notification_read", (notificationId) => {
-        setNotifications((prev) =>
-          prev.map((notif) =>
-            notif._id === notificationId ? { ...notif, read: true } : notif
-          )
-        );
-        setUnreadCount((prev) => Math.max(0, prev - 1));
-      });
-
-      newSocket.on("notifications_cleared", () => {
-        setNotifications([]);
-        setUnreadCount(0);
-      });
+      newSocket.on("notification", handleNewNotification);
+      newSocket.on("notification_read", handleNotificationRead);
+      newSocket.on("notifications_cleared", handleNotificationsCleared);
 
       setSocket(newSocket);
 
@@ -104,33 +104,38 @@ export const NotificationProvider = ({ children }) => {
 
       return () => {
         if (newSocket) {
-          newSocket.off("notification");
-          newSocket.off("notification_read");
-          newSocket.off("notification_cleared");
+          newSocket.off("notification", handleNewNotification);
+          newSocket.off("notification_read", handleNotificationRead);
+          newSocket.off("notifications_cleared", handleNotificationsCleared);
           newSocket.close();
           setSocket(null);
         }
       };
     }
-  }, [user?.token, fetchNotifications]);
+  }, [
+    user?.token,
+    fetchNotifications,
+    handleNewNotification,
+    handleNotificationRead,
+    handleNotificationsCleared,
+  ]);
 
   const markAsRead = async (notificationId) => {
     try {
       const notification = notifications.find((n) => n._id === notificationId);
 
-      if (!notification || notification.read) {
-        return;
-      }
+      if (!notification || notification.read) return;
 
       await api.patch(`/api/notifications/${notificationId}/read`);
       socket?.emit("mark_as_read", notificationId);
 
-      setNotifications((prev) =>
-        prev.map((notif) =>
+      setNotifications((prev) => {
+        const updated = prev.map((notif) =>
           notif._id === notificationId ? { ...notif, read: true } : notif
-        )
-      );
-      setUnreadCount((prev) => Math.max(0, prev - 1));
+        );
+        updateUnreadCount(updated);
+        return updated;
+      });
     } catch (error) {
       console.error("Failed to mark notification as read", error);
       throw error;
@@ -141,10 +146,11 @@ export const NotificationProvider = ({ children }) => {
     try {
       await api.patch("/api/notifications/mark-all-read");
       socket?.emit("mark_all_read");
-      setNotifications((prev) =>
-        prev.map((notif) => ({ ...notif, read: true }))
-      );
-      setUnreadCount(0);
+      setNotifications((prev) => {
+        const updated = prev.map((notif) => ({ ...notif, read: true }));
+        updateUnreadCount(updated);
+        return updated;
+      });
     } catch (error) {
       console.error("Failed to mark all notifications as read:", error);
       throw error;

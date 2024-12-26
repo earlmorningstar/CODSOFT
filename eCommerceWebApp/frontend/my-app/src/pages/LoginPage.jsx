@@ -93,6 +93,29 @@ const LoginPage = () => {
   };
 
   return (
+    <>
+     <Snackbar
+        open={showError}
+        autoHideDuration={5000}
+        onClose={handleCloseError}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Stack sx={{ width: "100%" }} spacing={2}>
+          {error && <Alert severity="error">{error}</Alert>}
+        </Stack>
+      </Snackbar>
+
+      <Snackbar
+        open={showSuccess}
+        autoHideDuration={5000}
+        onClose={handleCloseSuccess}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Stack sx={{ width: "100%" }} spacing={2}>
+          {success && <Alert severity="success">{success}</Alert>}
+        </Stack>
+      </Snackbar>
+    
     <section className="signup-login-Container">
       <span className="signup-login-image-container">
         <img src={images[0].src} alt={images[0].alt} />
@@ -136,29 +159,6 @@ const LoginPage = () => {
                 required
               />
             </FormControl>
-
-            <Snackbar
-              open={showError}
-              autoHideDuration={5000}
-              onClose={handleCloseError}
-              anchorOrigin={{ vertical: "top", horizontal: "center" }}
-            >
-              <Stack sx={{ width: "100%" }} spacing={2}>
-                {error && <Alert severity="error">{error}</Alert>}
-              </Stack>
-            </Snackbar>
-
-            <Snackbar
-              open={showSuccess}
-              autoHideDuration={5000}
-              onClose={handleCloseSuccess}
-              anchorOrigin={{ vertical: "top", horizontal: "center" }}
-            >
-              <Stack sx={{ width: "100%" }} spacing={2}>
-                {success && <Alert severity="success">{success}</Alert>}
-              </Stack>
-            </Snackbar>
-
             <button className="signup-login-btn" type="submit">
               {loading ? (
                 <CircularProgress size={24} color="inherit" />
@@ -180,6 +180,8 @@ const LoginPage = () => {
         </Typography>
       </Box>
     </section>
+    </>
+    
   );
 };
 
