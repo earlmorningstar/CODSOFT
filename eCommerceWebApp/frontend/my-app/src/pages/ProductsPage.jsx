@@ -1,8 +1,9 @@
 import { useState, useEffect, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import CartContext from "../store/CartContext";
+import WishlistContext from "../store/WishlistContext";
 import api from "../utils/api";
-import { CiHeart } from "react-icons/ci";
+import { FiHeart } from "react-icons/fi";
 import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
 import Skeleton from "@mui/material/Skeleton";
@@ -20,6 +21,8 @@ const ProductsPage = () => {
     addItemToCart,
     removeItemFromCart,
   } = useContext(CartContext);
+  const { isInWishlist, addToWishlist, removeFromWishlist } =
+    useContext(WishlistContext);
   const navigate = useNavigate();
   const location = useLocation();
   const productsPerPage = 16;
@@ -36,6 +39,23 @@ const ProductsPage = () => {
       setSkeletonCount(2);
     } else {
       setSkeletonCount(1);
+    }
+  };
+
+  const toggleWishlist = async (product) => {
+    try {
+      if (isInWishlist(product.id)) {
+        await removeFromWishlist(product.id.toString());
+      } else {
+        await addToWishlist({
+          id: product.id,
+          title: product.title,
+          variants: product.variants,
+          images: product.images,
+        });
+      }
+    } catch (error) {
+      console.error("Error toggling wishlist:", error);
     }
   };
 
@@ -153,7 +173,7 @@ const ProductsPage = () => {
         });
       }
     } catch (error) {
-      console.warm("Could not sync product:", error);
+      console.warn("Could not sync product:", error);
     }
   };
 
@@ -200,7 +220,16 @@ const ProductsPage = () => {
                   alt={product.title}
                   className="product-image"
                 />
-                <CiHeart className="heart-icon" size={25} />
+                <FiHeart
+                  className={`heart-icon ${
+                    isInWishlist(product.id) ? "active" : ""
+                  }`}
+                  size={25}
+                  color={
+                    isInWishlist(product.id) ? "rgb(251, 6, 6)" : "#ffffff"
+                  }
+                  onClick={() => toggleWishlist(product)}
+                />
               </div>
 
               <div className="product-details">

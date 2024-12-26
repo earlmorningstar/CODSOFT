@@ -222,7 +222,7 @@ const SavedPaymentDetailsPage = () => {
   }
 
   return (
-    <section lassName="userPages-main-container">
+    <section className="userPages-main-container">
       <div className="usermenuPages-title-container">
         <NavLink to="/user-menu">
           <span>

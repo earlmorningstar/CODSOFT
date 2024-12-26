@@ -4,15 +4,14 @@ const {
   addToWishlist,
   removeFromWishlist,
   getWishlist,
+  clearWishlist,
 } = require("../controllers/wishController");
 
 const router = express.Router();
 
-router
-  .route("/wishlist")
-  .get(protect, getWishlist)
-  .post(protect, addToWishlist);
-
-router.route("/wishlist/remove").post(protect, removeFromWishlist);
+router.post("/add", protect, addToWishlist);
+router.delete("/remove/:productId", protect, removeFromWishlist);
+router.get("/", protect, getWishlist);
+router.delete("/clear", protect, clearWishlist);
 
 module.exports = router;
