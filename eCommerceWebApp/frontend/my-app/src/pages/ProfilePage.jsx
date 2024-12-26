@@ -121,7 +121,6 @@ const ProfilePage = () => {
         message,
         type,
       });
-      console.log("Notification creation response:", response.data)
       return response.data;
     } catch (error) {
       console.error("Full error details:", {

@@ -1,5 +1,5 @@
 import { Outlet, NavLink, useLocation, useNavigate } from "react-router-dom";
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import CartContext from "../store/CartContext";
 import { NotificationContext } from "../context/NotificationContext";
@@ -46,9 +46,6 @@ const RootLayout = () => {
   const location = useLocation();
   const isHomepage = location.pathname === "/homepage";
 
-  useEffect(() => {
-    console.log("RootLayout unreadCount updated:", unreadCount);
-  }, [unreadCount]);
 
   const handleLogoutClick = () => {
     setSidebarOpen(false);
