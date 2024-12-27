@@ -1,9 +1,7 @@
-import { useTheme } from "../context/ThemeContext";
-import {
-  styled,
-  Switch,
-  FormControlLabel,
-} from "@mui/material";
+import { useContext } from "react";
+import ThemeContext from "../context/ThemeContext";
+
+import { styled, Switch, FormControlLabel } from "@mui/material";
 
 const MaterialUISwitch = styled(Switch)(({ theme }) => ({
   width: 62,
@@ -53,7 +51,7 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
 }));
 
 const AppMode = () => {
-  const { isDarkMode, toggleTheme } = useTheme();
+  const { toggleTheme } = useContext(ThemeContext);
 
   return (
     <span className="userMenu-nav-links">
@@ -61,11 +59,11 @@ const AppMode = () => {
         control={
           <MaterialUISwitch
             sx={{ m: 1 }}
-            checked={isDarkMode}
+            checked={toggleTheme}
             onChange={toggleTheme}
           />
         }
-        label={isDarkMode ? "Dark Mode" : "Light Mode"}
+        label={toggleTheme ? "Dark Mode" : "Light Mode"}
       />
     </span>
   );

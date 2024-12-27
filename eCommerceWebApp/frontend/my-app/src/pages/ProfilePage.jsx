@@ -11,7 +11,6 @@ import {
   Stack,
   Avatar,
   Alert,
-  // Backdrop,
   Snackbar,
   CircularProgress,
   Modal,
@@ -318,27 +317,15 @@ const ProfilePage = () => {
     setSuccess("");
   };
 
-  // if (loading) {
-  //   return (
-  //     <div>
-  //       <Backdrop
-  //         sx={(theme) => ({ color: "#6055d8", zIndex: theme.zIndex.drawer + 1 })}
-  //         open={loading}
-  //       >
-  //         <CircularProgress  color="inherit"/>
-  //       </Backdrop>
-  //     </div>
-  //   );
-  // }
-
   return (
     <section className="userPages-main-container">
       <div className="usermenuPages-title-container">
-        <NavLink to="/user-menu">
-          <span>
-            <IoChevronBackOutline size={25} />
-          </span>
-        </NavLink>
+        <span className="backIcon">
+          <NavLink to="/user-menu">
+            <IoChevronBackOutline size={25} color="#121212" />
+            <IoChevronBackOutline size={25} color="#ffffff" />
+          </NavLink>
+        </span>
       </div>
 
       <p id="usermenuPages-title">Profile</p>
@@ -494,7 +481,6 @@ const ProfilePage = () => {
           <Typography
             className="delete-modal-title"
             style={{
-              color: "#000000",
               marginBottom: "16px",
               marginTop: "16px",
               fontSize: "18px",

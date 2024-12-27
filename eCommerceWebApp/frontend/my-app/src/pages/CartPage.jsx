@@ -134,7 +134,6 @@ const CartPage = () => {
           <Typography
             className="delete-modal-title"
             style={{
-              color: "#000000",
               marginBottom: "16px",
               marginTop: "16px",
               fontSize: "18px",

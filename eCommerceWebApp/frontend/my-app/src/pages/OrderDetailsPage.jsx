@@ -92,11 +92,12 @@ const OrderDetailsPage = () => {
   return (
     <section>
       <div className="usermenuPages-title-container">
-        <NavLink to="/order">
-          <span>
-            <IoChevronBackOutline size={25} />
-          </span>
-        </NavLink>
+        <span className="backIcon">
+          <NavLink to="/order">
+            <IoChevronBackOutline size={25} color="#121212" />
+            <IoChevronBackOutline size={25} color="#ffffff" />
+          </NavLink>
+        </span>
       </div>
       <p className="userMenu-header" id="order-txt-cntr">
         Order Details

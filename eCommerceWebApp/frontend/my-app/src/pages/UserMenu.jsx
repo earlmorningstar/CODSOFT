@@ -102,8 +102,7 @@ const UserMenu = () => {
             <Typography
               className="delete-modal-title"
               style={{
-                color: "#000000",
-                marginBottom: "20px",
+                 marginBottom: "20px",
                 marginTop: "16px",
                 fontSize: "18px",
               }}

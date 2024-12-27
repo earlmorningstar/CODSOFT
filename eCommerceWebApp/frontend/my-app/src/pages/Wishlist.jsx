@@ -7,8 +7,6 @@ import { Pagination, Stack } from "@mui/material";
 import { IoChevronBackOutline } from "react-icons/io5";
 
 const Wishlist = () => {
-
-
   const {
     items: cartItems,
     addItemToCart,
@@ -16,10 +14,9 @@ const Wishlist = () => {
   } = useContext(CartContext);
   const {
     items: wishlistItems,
-   
+
     removeFromWishlist,
     clearWishlist,
-   
   } = useContext(WishlistContext);
   const navigate = useNavigate();
   const location = useLocation();
@@ -28,7 +25,6 @@ const Wishlist = () => {
   const query = new URLSearchParams(location.search);
   const currentPage = parseInt(query.get("page") || "1", 10);
 
- 
   const alreadyInCart = (shopifyProductId) => {
     return cartItems.some(
       (item) =>
@@ -82,11 +78,12 @@ const Wishlist = () => {
   return (
     <section>
       <div className="usermenuPages-title-container">
-        <NavLink to="/user-menu">
-          <span>
-            <IoChevronBackOutline size={25} />
-          </span>
-        </NavLink>
+        <span className="backIcon">
+          <NavLink to="/user-menu">
+            <IoChevronBackOutline size={25} color="#121212" />
+            <IoChevronBackOutline size={25} color="#ffffff" />
+          </NavLink>
+        </span>
       </div>
 
       <section>
@@ -115,7 +112,11 @@ const Wishlist = () => {
                   size={25}
                   fill="rgb(251, 6, 6)"
                   stroke="rgb(251, 6, 6)"
-                  onClick={() => removeFromWishlist(item.product.shopifyProductId || item.product._id)}
+                  onClick={() =>
+                    removeFromWishlist(
+                      item.product.shopifyProductId || item.product._id
+                    )
+                  }
                 />
               </div>
 
@@ -126,7 +127,13 @@ const Wishlist = () => {
                 </p>
                 <div className="product-actions">
                   <button
-                    onClick={() => navigate(`/products/${item.product.shopifyProductId || item.product._id}`)}
+                    onClick={() =>
+                      navigate(
+                        `/products/${
+                          item.product.shopifyProductId || item.product._id
+                        }`
+                      )
+                    }
                   >
                     View Details
                   </button>

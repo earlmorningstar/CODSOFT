@@ -1,41 +1,29 @@
-import { createContext, useState, useContext, useEffect } from "react";
+import { createContext, useMemo, useState } from "react";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { CssBaseline } from "@mui/material";
+import { darkTheme } from "../utils/theme";
 
 const ThemeContext = createContext();
 
-export const ThemeProvider = ({ children }) => {
-  const [isDarkMode, setIsDarkMode] = useState(() => {
-    const savedTheme = localStorage.getItem("theme");
-    if (!savedTheme) {
-      return window.matchMedia("(prefers-color-scheme: dark)").matches;
-    }
-    return savedTheme === "dark";
-  });
+export const ThemeProviderWrapper = ({ children }) => {
+  const [mode, setMode] = useState("light");
 
-  useEffect(() => {
-    localStorage.setItem("theme", isDarkMode ? "dark" : "light");
-    document.documentElement.classList.toggle("dark", isDarkMode);
-  }, [isDarkMode]);
+  const theme = useMemo(() => {
+    return mode === "dark" ? darkTheme : createTheme();
+  }, [mode]);
 
   const toggleTheme = () => {
-    setIsDarkMode((prev) => !prev);
+    setMode((prev) => (prev === "light" ? "dark" : "light"));
   };
 
   return (
-    <ThemeContext.Provider value={{ isDarkMode, toggleTheme }}>
-      {children}
+    <ThemeContext.Provider value={{ toggleTheme }}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        {children}
+      </ThemeProvider>
     </ThemeContext.Provider>
   );
 };
 
-export const useTheme = (respectTheme = true) => {
-    const context = useContext(ThemeContext);
-    if(context === undefined) {
-        throw new Error("useTheme must be used within a ThemeProvider");
-    }
-
-    if(!respectTheme) {
-        return {isDarkMode: false, toggleTheme: () => {}};
-    }
-
-    return context;
-}
+export default ThemeContext;

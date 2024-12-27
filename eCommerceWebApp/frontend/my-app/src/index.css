@@ -57,8 +57,7 @@ body {
   --hover: #e9ecef;
 } */
 
-:root.dark {
-  /* Dark mode variables */
+/* :root.dark {
   --primary: #ffffff;
   --secondary: #ffffff;
   --background: #000000;
@@ -68,14 +67,12 @@ body {
   --hover: #2d3238;
 }
 
-/* Apply variables to elements */
 body {
   background-color: var(--background);
   color: var(--text);
   transition: background-color 0.3s, color 0.3s;
 }
 
-/* Example component styles */
 .card {
   background-color: var(--card-bg);
   border: 1px solid var(--border);
@@ -84,5 +81,5 @@ body {
 .button {
   background-color: var(--primary);
   color: white;
-}
+} */
 

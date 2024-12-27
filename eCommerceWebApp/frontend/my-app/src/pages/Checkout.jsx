@@ -234,7 +234,8 @@ const CheckoutForm = () => {
     <>
       <div className="usermenuPages-title-container">
         <span className="backIcon" onClick={handleBackToCart}>
-          <IoChevronBackOutline size={25}/>
+        <IoChevronBackOutline size={25} color="#121212"/>
+        <IoChevronBackOutline size={25} color="#ffffff"/>
         </span>
       </div>
       <p className="usermenuPages-title-textCenter">Checkout</p>

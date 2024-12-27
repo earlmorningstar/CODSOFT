@@ -52,11 +52,12 @@ const Notification = () => {
   return (
     <section>
       <div className="usermenuPages-title-container">
+          <span className="backIcon">
         <NavLink to="/homepage">
-          <span>
-            <IoChevronBackOutline size={25} />
-          </span>
+        <IoChevronBackOutline size={25} color="#121212" />
+        <IoChevronBackOutline size={25} color="#ffffff" />
         </NavLink>
+          </span>
       </div>
       <p className="usermenuPages-title-textCenter">Notification</p>
       <div className="wishlist-clear-btn-holder">

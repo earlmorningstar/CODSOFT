@@ -198,7 +198,7 @@ const SearchPage = () => {
                 display: "flex",
                 alignItems: "center",
                 cursor: "pointer",
-                fontWeight: "400",
+                fontWeight: "500",
                 color: "#6055d8",
               }}
             >

@@ -6,11 +6,12 @@ const Settings = () => {
   return (
     <section>
       <div className="usermenuPages-title-container">
-        <NavLink to="/user-menu">
-          <span>
-            <IoChevronBackOutline size={25} />
-          </span>
-        </NavLink>
+        <span className="backIcon">
+          <NavLink to="/user-menu">
+            <IoChevronBackOutline size={25} color="#121212" />
+            <IoChevronBackOutline size={25} color="#ffffff" />
+          </NavLink>
+        </span>
       </div>
       <p className="usermenuPages-title-textCenter">Settings</p>
 
