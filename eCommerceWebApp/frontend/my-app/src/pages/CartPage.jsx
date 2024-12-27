@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import CartContext from "../store/CartContext";
 import { HiPlus } from "react-icons/hi2";
 import { RxMinus } from "react-icons/rx";
-import {Box, Modal, Typography} from "@mui/material/";
+import { Box, Modal, Typography } from "@mui/material/";
 
 const style = {
   position: "absolute",
@@ -54,7 +54,9 @@ const CartPage = () => {
 
   return (
     <section className="cart-main-container">
-      <h4 className="prod-header" id="cart-title-header">Bag</h4>
+      <h4 className="prod-header" id="cart-title-header">
+        Bag
+      </h4>
       <div className="cart-prod-checkout-flex">
         <ul className="cart-ul">
           {cartItems.map((item) => (
@@ -67,11 +69,17 @@ const CartPage = () => {
                   <h4>{item.title}</h4>
                   <p>Price: ${item.price.toFixed(2)}</p>
                   <div className="cart-prod-qty-container">
-                    <button onClick={() => decreaseQuantity(item.id)}>
+                    <button
+                      id="minus-btn"
+                      onClick={() => decreaseQuantity(item.id)}
+                    >
                       <RxMinus size={16} />
                     </button>
                     <p>{item.quantity}</p>
-                    <button onClick={() => increaseQuantity(item.id)}>
+                    <button
+                      id="plus-btn"
+                      onClick={() => increaseQuantity(item.id)}
+                    >
                       <HiPlus size={16} />
                     </button>
                   </div>
@@ -129,7 +137,7 @@ const CartPage = () => {
               color: "#000000",
               marginBottom: "16px",
               marginTop: "16px",
-              fontSize: '18px',
+              fontSize: "18px",
             }}
           >
             Selected items will be removed from this list.

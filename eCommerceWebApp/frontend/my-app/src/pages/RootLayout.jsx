@@ -46,7 +46,6 @@ const RootLayout = () => {
   const location = useLocation();
   const isHomepage = location.pathname === "/homepage";
 
-
   const handleLogoutClick = () => {
     setSidebarOpen(false);
     setIsLogoutModalOpen(true);
@@ -66,6 +65,10 @@ const RootLayout = () => {
     }, 1000);
   };
 
+  const handleNotificationPage = () => {
+    navigate("/notification");
+  };
+
   const toggleSidebar = () => {
     setSidebarOpen((prev) => !prev);
   };
@@ -83,16 +86,14 @@ const RootLayout = () => {
               <RiMenu2Fill size={20} />
             </span>
             <h3>TrendVault</h3>
-            <NavLink to="/notification">
-              <span>
-                <GoBell size={20} />
-                {unreadCount > 0 && (
-                  <p className="cartCount" id="notification-Count-id">
-                    {unreadCount}
-                  </p>
-                )}{" "}
-              </span>
-            </NavLink>
+            <span onClick={handleNotificationPage}>
+              <GoBell size={20} />
+              {unreadCount > 0 && (
+                <p className="cartCount" id="notification-Count-id">
+                  {unreadCount}
+                </p>
+              )}{" "}
+            </span>
           </>
         )}
       </section>

@@ -1,6 +1,6 @@
 import { useContext, useState, useEffect } from "react";
 import CartContext from "../store/CartContext";
-import { useNavigate, NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { loadStripe } from "@stripe/stripe-js";
 import api from "../utils/api";
 import {
@@ -226,95 +226,100 @@ const CheckoutForm = () => {
     setSuccessMessage("");
   };
 
+  const handleBackToCart = () => {
+    navigate("/cart");
+  };
+
   return (
     <>
-    <div className="usermenuPages-title-container">
-        <NavLink to="/user-menu">
-          <span>
-            <IoChevronBackOutline size={25} />
-          </span>
-        </NavLink>
+      <div className="usermenuPages-title-container">
+        <span className="backIcon" onClick={handleBackToCart}>
+          <IoChevronBackOutline size={25}/>
+        </span>
       </div>
-      <p className="usermenuPages-title-textCenter">
-        Checkout
-      </p>
-    <form className="checkoutForm-container" onSubmit={handleCheckout}>
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        <TextField
-          label={
-            <div className="auth-label-flex">
-              Email Address <span style={{ color: "red" }}>*</span>
-            </div>
-          }
-          variant="standard"
-          value={userData.email}
-        />
-        <TextField
-          label={
-            <div className="auth-label-flex">
-              Delivery Address <span style={{ color: "red" }}>*</span>
-            </div>
-          }
-          variant="standard"
-          value={userData.deliveryAddress}
-          disabled
-        />
-      </Box>
+      <p className="usermenuPages-title-textCenter">Checkout</p>
+      <form className="checkoutForm-container" onSubmit={handleCheckout}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 2,
+            color: "#a6a5a5",
+          }}
+        >
+          <TextField
+            className="auth-label-flex-ii"
+            label={
+              <div className="auth-label-flex">
+                Email Address <span style={{ color: "red" }}>*</span>
+              </div>
+            }
+            variant="standard"
+            value={userData.email}
+          />
+          <TextField
+            label={
+              <div className="auth-label-flex">
+                Delivery Address <span style={{ color: "red" }}>*</span>
+              </div>
+            }
+            variant="standard"
+            value={userData.deliveryAddress}
+            disabled
+          />
+        </Box>
 
-      <CardElement options={cardElementOptions} />
-      <button
-        className="signup-login-btn"
-        type="button"
-        onClick={saveCardDetails}
-        disabled={isSavingCard}
-      >
-        {isSavingCard ? (
-          <CircularProgress size={17} color="#ffffff" />
-        ) : (
-          "Save Card Details"
-        )}
-      </button>
-      <button
-        className="signup-login-btn"
-        type="submit"
-        disabled={!stripe || isProcessing}
-      >
-        {isProcessing ? (
-          <CircularProgress size={17} color="#ffffff" />
-        ) : (
-          "Confirm Payment & Place Order"
-        )}
-      </button>
+        <CardElement options={cardElementOptions} />
+        <button
+          className="signup-login-btn"
+          type="button"
+          onClick={saveCardDetails}
+          disabled={isSavingCard}
+        >
+          {isSavingCard ? (
+            <CircularProgress size={17} color="#ffffff" />
+          ) : (
+            "Save Card Details"
+          )}
+        </button>
+        <button
+          className="signup-login-btn"
+          type="submit"
+          disabled={!stripe || isProcessing}
+        >
+          {isProcessing ? (
+            <CircularProgress size={17} color="#ffffff" />
+          ) : (
+            "Confirm Payment & Place Order"
+          )}
+        </button>
 
-      <Snackbar
-        open={showError}
-        autoHideDuration={3000}
-        onClose={handleCloseError}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-        {errorMessage && (
-        <Stack sx={{ width: "100%" }} spacing={2}>
-          <Alert severity="error">{errorMessage}</Alert>
-        </Stack>
-      )}
-        
-      </Snackbar>
+        <Snackbar
+          open={showError}
+          autoHideDuration={3000}
+          onClose={handleCloseError}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        >
+          {errorMessage && (
+            <Stack sx={{ width: "100%" }} spacing={2}>
+              <Alert severity="error">{errorMessage}</Alert>
+            </Stack>
+          )}
+        </Snackbar>
 
-      <Snackbar
-        open={showSuccess}
-        autoHideDuration={3000}
-        onClose={handleCloseSuccess}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-         {successMessage && (
-        <Stack sx={{ width: "100%" }} spacing={2}>
-          <Alert severity="success">{successMessage}</Alert>
-        </Stack>
-      )}
-      </Snackbar>
-      
-     
-    </form>
+        <Snackbar
+          open={showSuccess}
+          autoHideDuration={3000}
+          onClose={handleCloseSuccess}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        >
+          {successMessage && (
+            <Stack sx={{ width: "100%" }} spacing={2}>
+              <Alert severity="success">{successMessage}</Alert>
+            </Stack>
+          )}
+        </Snackbar>
+      </form>
     </>
   );
 };

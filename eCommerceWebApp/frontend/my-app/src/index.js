@@ -6,6 +6,7 @@ import reportWebVitals from "./reportWebVitals";
 import AuthProvider from "./context/AuthContext";
 import { CartProvider } from "./store/CartContext";
 import { NotificationProvider } from "./context/NotificationContext";
+import { ThemeProvider } from "./context/ThemeContext";
 import { WishlistProvider } from "./store/WishlistContext";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
@@ -17,17 +18,19 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     {/* <ScrollPosition> */}
-    <Elements stripe={stripePromise}>
-      <AuthProvider>
-        <WishlistProvider>
-          <NotificationProvider>
-            <CartProvider>
-              <App />
-            </CartProvider>
-          </NotificationProvider>
-        </WishlistProvider>
-      </AuthProvider>
-    </Elements>
+    <ThemeProvider>
+      <Elements stripe={stripePromise}>
+        <AuthProvider>
+          <WishlistProvider>
+            <NotificationProvider>
+              <CartProvider>
+                <App />
+              </CartProvider>
+            </NotificationProvider>
+          </WishlistProvider>
+        </AuthProvider>
+      </Elements>
+    </ThemeProvider>
     {/* </ScrollPosition> */}
   </React.StrictMode>
 );

@@ -1,10 +1,22 @@
 import { NavLink } from "react-router-dom";
+import { IoChevronBackOutline } from "react-icons/io5";
+import AppMode from "./AppMode";
 
 const Settings = () => {
   return (
     <section>
-      <NavLink to="/user-menu">Back</NavLink>
-      <h1>Settings Page</h1>
+      <div className="usermenuPages-title-container">
+        <NavLink to="/user-menu">
+          <span>
+            <IoChevronBackOutline size={25} />
+          </span>
+        </NavLink>
+      </div>
+      <p className="usermenuPages-title-textCenter">Settings</p>
+
+      <div className="userMenu-links-main-container">
+        <AppMode />
+      </div>
     </section>
   );
 };

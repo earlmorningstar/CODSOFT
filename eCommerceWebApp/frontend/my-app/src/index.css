@@ -31,3 +31,58 @@ code {
 /* #welcome-page-background {
   background-image: url('./images/new-2.webp');
 } */
+
+/* :root {
+  --background-color: #ffffff;
+  --text-color: #000000;
+}
+
+:root.dark {
+  --background-color: #1a1a1a;
+  --text-color: #ffffff;
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+} */
+
+/* :root {
+  --primary: #007bff;
+  --secondary: #6c757d;
+  --background: #ffffff;
+  --text: #000000;
+  --border: #dee2e6;
+  --card-bg: #f8f9fa;
+  --hover: #e9ecef;
+} */
+
+:root.dark {
+  /* Dark mode variables */
+  --primary: #ffffff;
+  --secondary: #ffffff;
+  --background: #000000;
+  --text: #ffffff;
+  --border: #ffffff;
+  --card-bg: #1e1e1e;
+  --hover: #2d3238;
+}
+
+/* Apply variables to elements */
+body {
+  background-color: var(--background);
+  color: var(--text);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Example component styles */
+.card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+}
+
+.button {
+  background-color: var(--primary);
+  color: white;
+}
+
