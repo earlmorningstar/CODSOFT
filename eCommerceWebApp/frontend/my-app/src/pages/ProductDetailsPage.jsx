@@ -1,8 +1,9 @@
 import { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate, NavLink } from "react-router-dom";
 import CartContext from "../store/CartContext";
+import WishlistContext from "../store/WishlistContext";
 import api from "../utils/api";
-import { CiHeart } from "react-icons/ci";
+import { FiHeart } from "react-icons/fi";
 import { MdKeyboardBackspace } from "react-icons/md";
 import Skeleton from "@mui/material/Skeleton";
 import Box from "@mui/material/Box";
@@ -19,10 +20,29 @@ const ProductDetailsPage = () => {
     addItemToCart,
     removeItemFromCart,
   } = useContext(CartContext);
+  const { isInWishlist, addToWishlist, removeFromWishlist } =
+    useContext(WishlistContext);
   const navigate = useNavigate();
 
   const handleSizeClick = (size) => {
     setSelectedSize(size);
+  };
+
+  const toggleWishlist = async (product) => {
+    try {
+      if (isInWishlist(product.id)) {
+        await removeFromWishlist(product.id.toString());
+      } else {
+        await addToWishlist({
+          id: product.id,
+          title: product.title,
+          variants: product.variants,
+          images: product.images,
+        });
+      }
+    } catch (error) {
+      console.error("Error toggling wishlist:", error);
+    }
   };
 
   useEffect(() => {
@@ -109,7 +129,14 @@ const ProductDetailsPage = () => {
               <NavLink className="prod-detail-back-arrow" to="/homepage">
                 <MdKeyboardBackspace color="#111111" size={25} />
               </NavLink>
-              <CiHeart className="prod-detail-heart-icon" size={30} />
+              <FiHeart
+                className={`heart-icon ${
+                  isInWishlist(product.id) ? "active" : ""
+                }`}
+                size={30}
+                color={isInWishlist(product.id) ? "rgb(251, 6, 6)" : "#ffffff"}
+                onClick={() => toggleWishlist(product)}
+              />
             </div>
           </div>
 
@@ -170,9 +197,7 @@ const ProductDetailsPage = () => {
                 }}
                 onClick={() => toggleCartButton(product)}
               >
-                {alreadyInCart(product.id)
-                      ? "Remove from Bag"
-                      : "Add to Bag"}
+                {alreadyInCart(product.id) ? "Remove from Bag" : "Add to Bag"}
               </button>
               <button onClick={handleCartPage}>View Cart</button>
             </div>

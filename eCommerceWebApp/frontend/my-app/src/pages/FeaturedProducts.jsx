@@ -1,20 +1,40 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
+import WishlistContext from "../store/WishlistContext";
+import HomepageBanner from "./HomepageBanner";
 import Glide from "@glidejs/glide";
-import { CiHeart } from "react-icons/ci";
+import { FiHeart } from "react-icons/fi";
 import { IoIosArrowRoundDown } from "react-icons/io";
 import "@glidejs/glide/dist/css/glide.core.min.css";
 import "@glidejs/glide/dist/css/glide.theme.min.css";
-import HomepageBanner from "./HomepageBanner";
 import Skeleton from "@mui/material/Skeleton";
 import Box from "@mui/material/Box";
 
 const FeaturedProducts = ({ products }) => {
+  const { isInWishlist, addToWishlist, removeFromWishlist } =
+    useContext(WishlistContext);
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [skeletonCount, setSkeletonCount] = useState(4);
   const glideRef = useRef(null);
   const navigate = useNavigate();
+
+  const toggleWishlist = async (product) => {
+    try {
+      if (isInWishlist(product.id)) {
+        await removeFromWishlist(product.id.toString());
+      } else {
+        await addToWishlist({
+          id: product.id,
+          title: product.title,
+          variants: product.variants,
+          images: product.images,
+        });
+      }
+    } catch (error) {
+      console.error("Error toggling wishlist:", error);
+    }
+  };
 
   const updateSkeletonCount = () => {
     const width = window.innerWidth;
@@ -126,12 +146,17 @@ const FeaturedProducts = ({ products }) => {
                         src={product.image?.src}
                         alt={product.title}
                       />
-                      <CiHeart
-                        className="heart-icon"
+                      <FiHeart
+                        className={`heart-icon ${
+                          isInWishlist(product.id) ? "active" : ""
+                        }`}
                         size={25}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                        }}
+                        color={
+                          isInWishlist(product.id)
+                            ? "rgb(251, 6, 6)"
+                            : "#ffffff"
+                        }
+                        onClick={() => toggleWishlist(product)}
                       />
                     </div>
                     <div className="product-info">

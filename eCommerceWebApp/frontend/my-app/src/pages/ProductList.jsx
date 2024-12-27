@@ -1,6 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
-import { CiHeart } from "react-icons/ci";
+import WishlistContext from "../store/WishlistContext";
+import { FiHeart } from "react-icons/fi";
 import { IoIosArrowRoundDown } from "react-icons/io";
 import CartContext from "../store/CartContext";
 import Skeleton from "@mui/material/Skeleton"; 
@@ -15,7 +16,26 @@ const ProductList = ({ products }) => {
     addItemToCart,
     removeItemFromCart,
   } = useContext(CartContext);
+  const { isInWishlist, addToWishlist, removeFromWishlist } =
+    useContext(WishlistContext);
   const navigate = useNavigate();
+
+  const toggleWishlist = async (product) => {
+    try {
+      if (isInWishlist(product.id)) {
+        await removeFromWishlist(product.id.toString());
+      } else {
+        await addToWishlist({
+          id: product.id,
+          title: product.title,
+          variants: product.variants,
+          images: product.images,
+        });
+      }
+    } catch (error) {
+      console.error("Error toggling wishlist:", error);
+    }
+  };
 
   const updateSkeletonCount = () => {
     const width = window.innerWidth;
@@ -112,7 +132,18 @@ const ProductList = ({ products }) => {
                   alt={product.title}
                   className="product-image"
                 />
-                <CiHeart className="heart-icon" size={25} />
+                <FiHeart
+                        className={`heart-icon ${
+                          isInWishlist(product.id) ? "active" : ""
+                        }`}
+                        size={25}
+                        color={
+                          isInWishlist(product.id)
+                            ? "rgb(251, 6, 6)"
+                            : "#ffffff"
+                        }
+                        onClick={() => toggleWishlist(product)}
+                      />
               </div>
 
               <div className="product-details">

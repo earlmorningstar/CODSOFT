@@ -11,11 +11,11 @@ import {
   Modal,
   Box,
   TextField,
-  Button,
   Stack,
   Snackbar,
   Backdrop,
   CircularProgress,
+  Typography,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { IoChevronBackOutline } from "react-icons/io5";
@@ -27,9 +27,8 @@ const modalStyle = {
   transform: "translate(-50%, -50%)",
   bgcolor: "background.paper",
   boxShadow: 24,
-  p: 4,
-  width: 320,
-  borderRadius: 2,
+  p: 2,
+  width: 350,
 };
 
 const SavedPaymentDetailsPage = () => {
@@ -237,7 +236,7 @@ const SavedPaymentDetailsPage = () => {
 
       <Snackbar
         open={showError}
-        autoHideDuration={4000}
+        autoHideDuration={3000}
         onClose={handleCloseError}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
@@ -256,7 +255,7 @@ const SavedPaymentDetailsPage = () => {
 
       <Snackbar
         open={showSuccess}
-        autoHideDuration={4000}
+        autoHideDuration={3000}
         onClose={handleCloseSuccess}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
@@ -326,7 +325,7 @@ const SavedPaymentDetailsPage = () => {
         <Box sx={modalStyle}>
           <div className="modal-width">
             <span className="verify-password-title">
-              <h2>Verify Password</h2>
+              <h2 className="delete-modal-title">Verify Password</h2>
             </span>
             <TextField
               type="password"
@@ -336,18 +335,16 @@ const SavedPaymentDetailsPage = () => {
               onChange={(e) => setPassword(e.target.value)}
               margin="normal"
             />
-            {error && (
-              <p style={{ color: "red" }} className="error-message">
-                {error}
-              </p>
-            )}
-            <Button
-              variant="contained"
+            <span className="cart-modal-del-btnHolder">
+              <button
+              className="cart-modal-button"
               onClick={handlePasswordVerification}
-              sx={{ mt: 2 }}
+              
             >
               Verify
-            </Button>
+            </button>
+            </span>
+            
           </div>
         </Box>
       </Modal>
@@ -355,21 +352,28 @@ const SavedPaymentDetailsPage = () => {
       <Modal open={isDeleteModalOpen} onClose={closeDeleteModal}>
         <Box sx={modalStyle}>
           <span className="verify-password-title">
-            <h2>Remove Saved Card</h2>
-            <p>This action will remove this saved card. Are you sure?</p>
+            <h2 className="delete-modal-title">Remove Saved Card</h2>
+            <Typography
+              className="delete-modal-title"
+              style={{
+                color: "#000000",
+                marginBottom: "16px",
+                marginTop: "16px",
+                fontSize: "18px",
+              }}
+            >
+              This action will remove this saved card. Are you sure?
+            </Typography>
           </span>
 
-          <Button
-            variant="contained"
-            color="error"
-            onClick={handleDeleteCard}
-            sx={{ mr: 2 }}
-          >
-            Okay
-          </Button>
-          <Button variant="outlined" onClick={closeDeleteModal}>
-            Cancel
-          </Button>
+          <span className="cart-modal-del-btnHolder">
+            <button className="cart-modal-button" onClick={handleDeleteCard}>
+              Okay
+            </button>
+            <button className="cart-modal-button" onClick={closeDeleteModal}>
+              Cancel
+            </button>
+          </span>
         </Box>
       </Modal>
     </section>

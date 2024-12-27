@@ -1,9 +1,10 @@
 import { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import CartContext from "../store/CartContext";
+import WishlistContext from "../store/WishlistContext";
 import api from "../utils/api";
 import Search from "./Search";
-import { CiHeart } from "react-icons/ci";
+import { FiHeart } from "react-icons/fi";
 import Skeleton from "@mui/material/Skeleton";
 import Box from "@mui/material/Box";
 import { IoChevronBackOutline } from "react-icons/io5";
@@ -16,6 +17,8 @@ const SearchPage = () => {
   const [skeleton, setSkeleton] = useState(true);
   const [isSearching, setIsSearching] = useState(false);
   const [activeCollection, setActiveCollection] = useState(null);
+  const { isInWishlist, addToWishlist, removeFromWishlist } =
+    useContext(WishlistContext);
   const {
     items: cartItems,
     addItemToCart,
@@ -23,6 +26,23 @@ const SearchPage = () => {
   } = useContext(CartContext);
 
   const navigate = useNavigate();
+
+  const toggleWishlist = async (product) => {
+    try {
+      if (isInWishlist(product.id)) {
+        await removeFromWishlist(product.id.toString());
+      } else {
+        await addToWishlist({
+          id: product.id,
+          title: product.title,
+          variants: product.variants,
+          images: product.images,
+        });
+      }
+    } catch (error) {
+      console.error("Error toggling wishlist:", error);
+    }
+  };
 
   useEffect(() => {
     setSkeleton(false);
@@ -203,7 +223,16 @@ const SearchPage = () => {
                       alt={product.title}
                       className="product-image"
                     />
-                    <CiHeart className="heart-icon" size={25} />
+                    <FiHeart
+                      className={`heart-icon ${
+                        isInWishlist(product.id) ? "active" : ""
+                      }`}
+                      size={25}
+                      color={
+                        isInWishlist(product.id) ? "rgb(251, 6, 6)" : "#ffffff"
+                      }
+                      onClick={() => toggleWishlist(product)}
+                    />
                   </div>
 
                   <div className="product-details">

@@ -55,6 +55,27 @@ const markAsRead = async (req, res) => {
   }
 };
 
+const markAllAsRead = async (req, res) => {
+  try {
+    const result = await Notification.updateMany(
+      { userId: req.user._id, read: false },
+      { read: true }
+    );
+
+    if (result.nModified === 0) {
+      return sendError(res, 404, "No unread notification found");
+    }
+
+    sendSuccess(res, 200, "All notifications marked as read", {
+      updated: result.nModified,
+    });
+  } catch (error) {
+    sendError(res, 500, "Failed to mark all notifications as read", {
+      message: error.message,
+    });
+  }
+};
+
 const getUnreadCount = async (req, res) => {
   try {
     const count = await Notification.countDocuments({
@@ -71,5 +92,6 @@ module.exports = {
   createNotification,
   getUserNotification,
   markAsRead,
+  markAllAsRead,
   getUnreadCount,
 };

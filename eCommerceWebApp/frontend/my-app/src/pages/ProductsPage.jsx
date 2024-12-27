@@ -29,19 +29,6 @@ const ProductsPage = () => {
   const query = new URLSearchParams(location.search);
   const currentPage = parseInt(query.get("page") || "1", 10);
 
-  const updateSkeletonCount = () => {
-    const width = window.innerWidth;
-    if (width > 1140) {
-      setSkeletonCount(4);
-    } else if (width > 900) {
-      setSkeletonCount(3);
-    } else if (width > 700) {
-      setSkeletonCount(2);
-    } else {
-      setSkeletonCount(1);
-    }
-  };
-
   const toggleWishlist = async (product) => {
     try {
       if (isInWishlist(product.id)) {
@@ -58,6 +45,21 @@ const ProductsPage = () => {
       console.error("Error toggling wishlist:", error);
     }
   };
+
+  
+  const updateSkeletonCount = () => {
+    const width = window.innerWidth;
+    if (width > 1140) {
+      setSkeletonCount(4);
+    } else if (width > 900) {
+      setSkeletonCount(3);
+    } else if (width > 700) {
+      setSkeletonCount(2);
+    } else {
+      setSkeletonCount(1);
+    }
+  };
+
 
   useEffect(() => {
     updateSkeletonCount();

@@ -37,7 +37,7 @@ export const NotificationProvider = ({ children }) => {
 
   const handleNewNotification = useCallback(
     (newNotification) => {
-     setNotifications((prev) => {
+      setNotifications((prev) => {
         const updated = [newNotification, ...prev];
         updateUnreadCount(updated);
         return updated;
@@ -81,7 +81,7 @@ export const NotificationProvider = ({ children }) => {
       });
 
       newSocket.on("connect", () => {
-      setConnectionError(null);
+        setConnectionError(null);
         fetchNotifications();
       });
 

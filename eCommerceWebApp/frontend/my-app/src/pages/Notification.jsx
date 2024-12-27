@@ -5,7 +5,8 @@ import { IoChevronBackOutline } from "react-icons/io5";
 import { NotificationContext } from "../context/NotificationContext";
 
 const Notification = () => {
-  const { notifications, markAsRead } = useContext(NotificationContext);
+  const { notifications, markAsRead, markAllAsRead } =
+    useContext(NotificationContext);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showError, setShowError] = useState(false);
@@ -14,7 +15,7 @@ const Notification = () => {
     if (notifications) {
       setLoading(false);
     }
-   }, [notifications]);
+  }, [notifications]);
 
   useEffect(() => {
     if (error) {
@@ -34,11 +35,11 @@ const Notification = () => {
     try {
       await markAsRead(notificationId);
     } catch (err) {
-      setError("failed to mark notification as read. Please try again");
+      setError("Failed to mark notification as read. Please try again");
     }
   };
 
-   const formatDate = (dateString) => {
+  const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
@@ -58,6 +59,9 @@ const Notification = () => {
         </NavLink>
       </div>
       <p className="usermenuPages-title-textCenter">Notification</p>
+      <div className="wishlist-clear-btn-holder">
+        <button onClick={markAllAsRead} className="clear-wishlist-btn">Mark All As Read</button>
+      </div>
 
       {loading && (
         <Backdrop
@@ -70,8 +74,6 @@ const Notification = () => {
           <CircularProgress color="inherit" />
         </Backdrop>
       )}
-
-      {/* {error && <p className="error-text">{error}</p>} */}
 
       <Snackbar
         open={showError}

@@ -66,7 +66,7 @@ const Wishlist = () => {
       <div className="empty-cart-alert">
         <h2>Your Wishlist is Empty</h2>
         <p className="usermenuPages-title-textCenter">
-          Add items to your wishlist to keep tracck of products you love!
+          Add items to your wishlist to keep track of products you love!
         </p>
         <button
           onClick={() => navigate("/products")}
@@ -126,7 +126,7 @@ const Wishlist = () => {
                 </p>
                 <div className="product-actions">
                   <button
-                    onClick={() => navigate(`/products/${item.product._id}`)}
+                    onClick={() => navigate(`/products/${item.product.shopifyProductId || item.product._id}`)}
                   >
                     View Details
                   </button>

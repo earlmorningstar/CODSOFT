@@ -116,7 +116,7 @@ const ProfilePage = () => {
 
   const createNotification = async (title, message, type) => {
     try {
-     const response = await api.post("/api/notifications", {
+      const response = await api.post("/api/notifications", {
         title,
         message,
         type,
@@ -126,7 +126,7 @@ const ProfilePage = () => {
       console.error("Full error details:", {
         message: error.message,
         response: error.response?.data,
-        status: error.response?.status
+        status: error.response?.status,
       });
       throw error;
     }
@@ -462,7 +462,11 @@ const ProfilePage = () => {
           disabled={loading || isSaved}
         >
           {loading ? (
-            <CircularProgress className="btn-progress" size={24} />
+            <CircularProgress
+              className="btn-progress"
+              size={15}
+              color="#ffffff"
+            />
           ) : isSaved ? (
             "Saved"
           ) : (
@@ -493,7 +497,7 @@ const ProfilePage = () => {
               color: "#000000",
               marginBottom: "16px",
               marginTop: "16px",
-              fontSize: '18px',
+              fontSize: "18px",
             }}
           >
             {" "}
@@ -510,7 +514,8 @@ const ProfilePage = () => {
             helperText={deleteError}
           />
           <div className="cart-modal-del-btnHolder">
-            <button className="cart-modal-button"
+            <button
+              className="cart-modal-button"
               onClick={() => {
                 if (!deletePassword) {
                   setDeleteError("Please enter your password");
@@ -522,9 +527,7 @@ const ProfilePage = () => {
             >
               Continue
             </button>
-            <button className="cart-modal-button"
-              onClick={handleCloseModals}
-            >
+            <button className="cart-modal-button" onClick={handleCloseModals}>
               Cancel
             </button>
           </div>
@@ -544,7 +547,7 @@ const ProfilePage = () => {
               color: "#dc3545",
               marginBottom: "16px",
               marginTop: "16px",
-              fontSize: '18px',
+              fontSize: "18px",
             }}
           >
             Warning: Deleted accounts cannot be recovered. All your data will be
