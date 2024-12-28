@@ -55,7 +55,7 @@ const router = createBrowserRouter([
             path: "/saved-payment-detail",
             element: <SavedPaymentDetailsPage />,
           },
-          { path: "/Settings", element: <Settings /> },
+          { path: "/settings", element: <Settings /> },
           { path: "/wishlist", element: <Wishlist /> },
           { path: "/notification", element: <Notification /> },
         ],

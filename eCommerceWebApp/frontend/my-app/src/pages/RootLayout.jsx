@@ -16,6 +16,7 @@ import {
   Backdrop,
   Typography,
   CircularProgress,
+  Tooltip,
 } from "@mui/material";
 
 import "./Index.css";
@@ -106,7 +107,8 @@ const RootLayout = () => {
               <RiMenu2Fill size={20} />
             </span>
             <h3>TrendVault</h3>
-            <span onClick={handleNotificationPage}>
+          <Tooltip  title={`Notifications:${unreadCount > 0 ? ` (${unreadCount})` : ''}`} arror placement="top"> 
+              <span onClick={handleNotificationPage}>
               <GoBell size={20} />
               {unreadCount > 0 && (
                 <p className="cartCount" id="notification-Count-id">
@@ -114,6 +116,8 @@ const RootLayout = () => {
                 </p>
               )}{" "}
             </span>
+            </Tooltip>
+            
           </>
         )}
       </section>
@@ -171,14 +175,14 @@ const RootLayout = () => {
           </NavLink>
           <span>OTHERS</span>
           <NavLink
-            to="/profile"
+            to="/settings"
             onClick={closeSidebar}
             className="sidebar-link"
           >
             <RiSettings2Line size={20} /> Settings
           </NavLink>
           <NavLink
-            to="/profile"
+            to="/settings"
             onClick={closeSidebar}
             className="sidebar-link"
           >

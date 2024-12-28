@@ -1,11 +1,10 @@
 import { useContext } from "react";
 import { NavLink, Outlet } from "react-router-dom";
-import { GoHome } from "react-icons/go";
-import { GoSearch } from "react-icons/go";
+import CartContext from "../store/CartContext";
+import { GoHome, GoSearch } from "react-icons/go";
 import { IoCartOutline } from "react-icons/io5";
 import { PiHandbag } from "react-icons/pi";
 import { FaRegUser } from "react-icons/fa";
-import CartContext from "../store/CartContext";
 
 const BottomNavigationLayout = () => {
   const { items: cartItems } = useContext(CartContext);
