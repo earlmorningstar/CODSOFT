@@ -245,11 +245,11 @@
 .sidebar {
   position: fixed;
   top: 0;
-  left: -30%;
-  width: 30%;
+  left: -65%;
+  width: 65%;
   height: 100vh;
-  border-top-right-radius: 1.5rem;
-  border-bottom-right-radius: 1.5rem;
+  border-top-right-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
   box-shadow: 2px 0px 8px rgba(0, 0, 0, 0.2);
   z-index: 9999;
   transition: left 0.7s ease;
@@ -1269,14 +1269,14 @@
   font-family: "Poppins", sans-serif;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   padding: 10px;
   border-left: 3px solid #44b700;
   margin: 15px 0;
 }
 
 .timestamp-container main {
-  font-size: 15px;
+  font-size: 12px;
   font-weight: 400;
 }
 

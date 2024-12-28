@@ -136,6 +136,7 @@ const RootLayout = () => {
               <p>{user?.email || "Nothing to see here"}</p>
             </span>
           </div>
+          <h3>TrendVault</h3>
           <span onClick={closeSidebar} className="close-icon">
             <GoX size={20} />
           </span>
