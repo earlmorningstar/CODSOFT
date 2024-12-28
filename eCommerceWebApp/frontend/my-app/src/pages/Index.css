@@ -245,8 +245,8 @@
 .sidebar {
   position: fixed;
   top: 0;
-  left: -65%;
-  width: 65%;
+  left: -85%;
+  width: 85%;
   height: 100vh;
   border-top-right-radius: 0.5rem;
   border-bottom-right-radius: 0.5rem;
