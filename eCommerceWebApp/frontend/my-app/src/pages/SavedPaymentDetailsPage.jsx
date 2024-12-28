@@ -224,7 +224,7 @@ const SavedPaymentDetailsPage = () => {
     <section className="userPages-main-container">
       <div className="usermenuPages-title-container">
           <span className="backIcon">
-        <NavLink to="/user-menu">
+        <NavLink className="backIcon" to="/user-menu">
         <IoChevronBackOutline size={25} color="#121212" />
         <IoChevronBackOutline size={25} color="#ffffff" />
         </NavLink>
@@ -357,8 +357,7 @@ const SavedPaymentDetailsPage = () => {
             <Typography
               className="delete-modal-title"
               style={{
-                color: "#000000",
-                marginBottom: "16px",
+               marginBottom: "16px",
                 marginTop: "16px",
                 fontSize: "18px",
               }}

@@ -148,7 +148,7 @@
   height: 100vh;
 }
 .btm-root-main-outlet {
-  margin: 3.5rem 0 3.2rem 0;
+  margin: 20px 0 3.2rem 0;
   padding: 2rem;
   flex: 1;
   overflow: auto;
