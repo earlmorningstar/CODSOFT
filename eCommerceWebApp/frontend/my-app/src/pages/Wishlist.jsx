@@ -61,9 +61,7 @@ const Wishlist = () => {
     return (
       <div className="empty-cart-alert">
         <h2>Your Wishlist is Empty</h2>
-        <p className="usermenuPages-title-textCenter">
-          Add items to your wishlist to keep track of products you love!
-        </p>
+        <p>Add items to your wishlist to keep track of products you love!</p>
         <button
           onClick={() => navigate("/products")}
           className="btn-add-to-bag"

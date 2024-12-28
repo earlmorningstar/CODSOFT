@@ -28,7 +28,7 @@ const modalStyle = {
   bgcolor: "background.paper",
   boxShadow: 24,
   p: 2,
-  width: 350,
+  width: 300,
 };
 
 const SavedPaymentDetailsPage = () => {

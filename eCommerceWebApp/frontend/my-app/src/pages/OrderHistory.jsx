@@ -45,7 +45,7 @@ const OrderHistory = () => {
     paid: {
       icon: <CheckIcon sx={{ color: "success.main" }} />,
       text: "Payment completed successfully",
-      color: "success.light",
+      color: "none",
     },
     failed: {
       icon: <CancelIcon sx={{ color: "error.main" }} />,

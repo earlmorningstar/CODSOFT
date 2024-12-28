@@ -51,7 +51,7 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
 }));
 
 const AppMode = () => {
-  const { toggleTheme } = useContext(ThemeContext);
+  const { mode, toggleTheme } = useContext(ThemeContext);
 
   return (
     <span className="userMenu-nav-links">
@@ -59,11 +59,11 @@ const AppMode = () => {
         control={
           <MaterialUISwitch
             sx={{ m: 1 }}
-            checked={toggleTheme}
+            checked={mode === "dark"}
             onChange={toggleTheme}
           />
         }
-        label={toggleTheme ? "Dark Mode" : "Light Mode"}
+        label={mode === "dark" ? "Switch To Light Mode" : "Switch To Dark Mode"}
       />
     </span>
   );

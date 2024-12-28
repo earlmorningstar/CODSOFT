@@ -10,7 +10,7 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 350,
+  width: 300,
   bgcolor: "background.paper",
   boxShadow: 24,
   p: 2,
@@ -47,7 +47,7 @@ const CartPage = () => {
     return (
       <div className="empty-cart-alert">
         <h1>Cart is Empty</h1>
-        <button onClick={handleProductPage}>Add an item</button>
+        <button onClick={handleProductPage}>Browse Products</button>
       </div>
     );
   }

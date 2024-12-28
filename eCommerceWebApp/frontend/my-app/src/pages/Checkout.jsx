@@ -278,7 +278,7 @@ const CheckoutForm = () => {
           disabled={isSavingCard}
         >
           {isSavingCard ? (
-            <CircularProgress size={17} color="#ffffff" />
+            <CircularProgress size={15} color="#ffffff" />
           ) : (
             "Save Card Details"
           )}
@@ -289,7 +289,7 @@ const CheckoutForm = () => {
           disabled={!stripe || isProcessing}
         >
           {isProcessing ? (
-            <CircularProgress size={17} color="#ffffff" />
+            <CircularProgress size={15} color="#ffffff" />
           ) : (
             "Confirm Payment & Place Order"
           )}

@@ -13,7 +13,6 @@ const ProductDetailsPage = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedSize, setSelectedSize] = useState(null);
   const [skeleton, setSkeleton] = useState(true);
   const {
     items: cartItems,
@@ -23,10 +22,6 @@ const ProductDetailsPage = () => {
   const { isInWishlist, addToWishlist, removeFromWishlist } =
     useContext(WishlistContext);
   const navigate = useNavigate();
-
-  const handleSizeClick = (size) => {
-    setSelectedSize(size);
-  };
 
   const toggleWishlist = async (product) => {
     try {
@@ -168,24 +163,6 @@ const ProductDetailsPage = () => {
                 Quantity Available:{" "}
                 {product?.variants?.[0]?.inventory_quantity || "N/A"}
               </p>
-            </div>
-            <div className="product-size-container">
-              <p>Size</p>
-              <span>
-                {["s", "m", "l", "xl", "xxl"].map((size) => (
-                  <button
-                    key={size}
-                    onClick={() => handleSizeClick(size)}
-                    style={{
-                      backgroundColor:
-                        selectedSize === size ? "#6055d8" : "transparent",
-                      color: selectedSize === size ? "#ffffff" : "#000000",
-                    }}
-                  >
-                    {size}
-                  </button>
-                ))}
-              </span>
             </div>
             <div className="product-detail-actions">
               <button

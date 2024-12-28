@@ -1,5 +1,5 @@
 import { Outlet, NavLink, useLocation, useNavigate } from "react-router-dom";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect, useCallback } from "react";
 import { AuthContext } from "../context/AuthContext";
 import CartContext from "../store/CartContext";
 import { NotificationContext } from "../context/NotificationContext";
@@ -45,6 +45,26 @@ const RootLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isHomepage = location.pathname === "/homepage";
+
+  const handleOutsideClick = useCallback(
+    (event) => {
+      const sidebar = document.querySelector(".sidebar");
+      if (sidebarOpen && sidebar && !sidebar.contains(event.target)) {
+        const menuButton = document.querySelector(".root-main-container span");
+        if (!menuButton.contains(event.target)) {
+          setSidebarOpen(false);
+        }
+      }
+    },
+    [sidebarOpen]
+  );
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [handleOutsideClick]);
 
   const handleLogoutClick = () => {
     setSidebarOpen(false);
@@ -127,6 +147,7 @@ const RootLayout = () => {
           <NavLink to="/search" onClick={closeSidebar} className="sidebar-link">
             <GoSearch size={20} /> Search
           </NavLink>
+
           <NavLink to="/cart" onClick={closeSidebar} className="sidebar-link">
             <IoCartOutline size={20} />
             <p id="cartCount-holder-id">

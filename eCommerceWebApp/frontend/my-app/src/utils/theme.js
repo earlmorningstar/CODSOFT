@@ -41,7 +41,7 @@ export const darkTheme = createTheme({
           color: "#ffffff",
         },
         body2: {
-          color: "#b0b0b0",
+          color: "#ffffff",
         },
       },
     },
@@ -63,9 +63,9 @@ export const darkTheme = createTheme({
     MuiIconButton: {
       styleOverrides: {
         root: {
-          color: "#b0b0b0",
+          color: "#ffffff",
           "&:hover": {
-            color: "#90caf9",
+            color: "#ffffff",
           },
         },
       },
