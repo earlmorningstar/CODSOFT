@@ -94,6 +94,12 @@ export const NotificationProvider = ({ children }) => {
       newSocket.on("notification_read", handleNotificationRead);
       newSocket.on("notifications_cleared", handleNotificationsCleared);
 
+      newSocket.on("notification_deleted", (notificationId) => {
+        setNotifications((prev) =>
+          prev.filter((notif) => notif._id !== notificationId)
+        );
+      });
+
       setSocket(newSocket);
 
       fetchNotifications();
@@ -155,12 +161,29 @@ export const NotificationProvider = ({ children }) => {
 
   const clearNotifications = async () => {
     try {
-      await api.delete("/api/notifications/clear-all");
-      socket?.emit("clear_notifications");
-      setNotifications([]);
-      setUnreadCount(0);
+      const response = await api.delete("/api/notifications/clear-all");
+      if (response.data) {
+        socket?.emit("clear_notifications");
+        setNotifications([]);
+        setUnreadCount(0);
+      }
     } catch (error) {
-      console.error("Failed to clear notifications:", error);
+      console.error("Clear notifications error details:", {
+        message: error.message,
+      });
+      throw error;
+    }
+  };
+
+  const deleteNotification = async (notificationId) => {
+    try {
+      await api.delete(`/api/notifications/${notificationId}`);
+      socket?.emit("delete_notification", notificationId);
+      setNotifications((prev) =>
+        prev.filter((notif) => notif._id !== notificationId)
+      );
+    } catch (error) {
+      console.error("Failed to delete notification:", error);
       throw error;
     }
   };
@@ -173,6 +196,7 @@ export const NotificationProvider = ({ children }) => {
         markAsRead,
         markAllAsRead,
         clearNotifications,
+        deleteNotification,
         socket,
         connectionError,
         refreshNotification: fetchNotifications,

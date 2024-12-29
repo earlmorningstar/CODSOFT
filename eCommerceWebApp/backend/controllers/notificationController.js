@@ -88,10 +88,65 @@ const getUnreadCount = async (req, res) => {
   }
 };
 
+const deleteNotification = async (req, res) => {
+  try {
+    const notification = await Notification.findOneAndDelete({
+      _id: req.params.id,
+      userId: req.user._id,
+    });
+
+    if (!notification) {
+      return sendError(res, 404, "Notification not found");
+    }
+
+    req.app
+      .get("io")
+      .to(req.user._id.toString())
+      .emit("notification_deleted", req.params.id);
+
+    sendSuccess(res, 200, "Notification deleted successfully");
+  } catch (error) {
+    sendError(res, 500, "Failed to dlete notification", {
+      message: error.message,
+    });
+  }
+};
+
+const deleteAllNotifications = async (req, res) => {
+  try {
+    if (!req.user || !req.user._id) {
+      return sendError(res, 401, "User not authenticated");
+    }
+
+    const query = { userId: req.user._id };
+
+    const result = await Notification.deleteMany(query);
+
+    if (!result) {
+      return sendError(res, 500, "Failed to delete notifications");
+    }
+
+    if (req.app.get("io")) {
+      req.app
+        .get("io")
+        .to(req.user._id.toString())
+        .emit("notifications_cleared");
+    }
+
+    return sendSuccess(res, 200, "All notifications deleted successfully", {
+      deletedCount: result.deletedCount,
+    });
+  } catch (error) {
+    return sendError(res, 500, "Failed to delete notifications");
+  }
+};
+
 module.exports = {
   createNotification,
   getUserNotification,
   markAsRead,
   markAllAsRead,
   getUnreadCount,
+  deleteNotification,
+  deleteAllNotifications,
 };

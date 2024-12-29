@@ -98,6 +98,25 @@ const RootLayout = () => {
     setSidebarOpen(false);
   };
 
+  const handleProfilePage = () => {
+    navigate("/profile");
+    setSidebarOpen(false);
+  };
+
+  if (loading)
+    return (
+      <div>
+        <Backdrop
+          sx={{
+            color: "#6055d8",
+            zIndex: (theme) => theme.zIndex.drawer + 1,
+          }}
+          open={loading}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
+      </div>
+    );
   return (
     <>
       <section className="root-main-container">
@@ -107,24 +126,32 @@ const RootLayout = () => {
               <RiMenu2Fill size={20} />
             </span>
             <h3>TrendVault</h3>
-          <Tooltip  title={`Notifications:${unreadCount > 0 ? ` (${unreadCount})` : ''}`} arror placement="top"> 
+            <Tooltip
+              title={`Notifications${
+                unreadCount > 0 ? ` (${unreadCount})` : ""
+              }`}
+              arror
+              placement="top"
+            >
               <span onClick={handleNotificationPage}>
-              <GoBell size={20} />
-              {unreadCount > 0 && (
-                <p className="cartCount" id="notification-Count-id">
-                  {unreadCount}
-                </p>
-              )}{" "}
-            </span>
+                <GoBell size={20} />
+                {unreadCount > 0 && (
+                  <p className="cartCount" id="notification-Count-id">
+                    {unreadCount}
+                  </p>
+                )}{" "}
+              </span>
             </Tooltip>
-            
           </>
         )}
       </section>
 
       <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <div className="sidebar-header">
-          <div className="avatar-name-email-container">
+          <div
+            onClick={handleProfilePage}
+            className="avatar-name-email-container"
+          >
             <img
               className="avatar-container"
               src={images[0].src}
@@ -136,6 +163,7 @@ const RootLayout = () => {
               <p>{user?.email || "Nothing to see here"}</p>
             </span>
           </div>
+
           <span onClick={closeSidebar} className="close-icon">
             <GoX size={20} />
           </span>
@@ -220,16 +248,6 @@ const RootLayout = () => {
             </span>
           </Box>
         </Modal>
-
-        <Backdrop
-          sx={{
-            color: "#6055d8",
-            zIndex: (theme) => theme.zIndex.drawer + 1,
-          }}
-          open={loading}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
       </aside>
 
       <main className="root-main-outlet">

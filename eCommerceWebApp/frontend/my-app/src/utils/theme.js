@@ -54,7 +54,7 @@ export const darkTheme = createTheme({
           "&:hover .MuiOutlinedInput-notchedOutline": {
             borderColor: "#90caf9",
           },
-          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+          "&. Mui-focused .MuiOutlinedInput-notchedOutline": {
             borderColor: "#90caf9",
           },
         },

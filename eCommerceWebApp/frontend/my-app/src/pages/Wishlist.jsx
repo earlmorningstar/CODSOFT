@@ -1,9 +1,17 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import CartContext from "../store/CartContext";
 import WishlistContext from "../store/WishlistContext";
 import { FiHeart } from "react-icons/fi";
-import { Pagination, Stack } from "@mui/material";
+import {
+  Pagination,
+  Stack,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
 import { IoChevronBackOutline } from "react-icons/io5";
 
 const Wishlist = () => {
@@ -24,6 +32,7 @@ const Wishlist = () => {
   const itemsPerPage = 16;
   const query = new URLSearchParams(location.search);
   const currentPage = parseInt(query.get("page") || "1", 10);
+  const [showClearWishlistDialog, setShowClearWishlistDialog] = useState(false);
 
   const alreadyInCart = (shopifyProductId) => {
     return cartItems.some(
@@ -88,7 +97,10 @@ const Wishlist = () => {
         <p className="usermenuPages-title-textCenter">My Wishlist</p>
         <div className="wishlist-clear-btn-holder">
           {wishlistItems.length > 0 && (
-            <button onClick={clearWishlist} className="clear-wishlist-btn">
+            <button
+              onClick={() => setShowClearWishlistDialog(true)}
+              className="clear-wishlist-btn"
+            >
               Clear Wishlist
             </button>
           )}
@@ -171,6 +183,22 @@ const Wishlist = () => {
           </Stack>
         )}
       </section>
+      <Dialog
+        open={showClearWishlistDialog}
+        onClose={() => setShowClearWishlistDialog(false)}
+      >
+        <DialogTitle>Clear Wishlist</DialogTitle>
+        <DialogContent>Do you want to clear your wishlist?</DialogContent>
+
+        <DialogActions>
+          <Button onClick={() => setShowClearWishlistDialog(false)}>
+            Go Back
+          </Button>
+          <Button onClick={clearWishlist} color="error">
+            Clear
+          </Button>
+        </DialogActions>
+      </Dialog>
     </section>
   );
 };

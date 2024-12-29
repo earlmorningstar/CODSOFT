@@ -97,6 +97,12 @@ io.on("connection", (socket) => {
     socket.broadcast.to(socket.userId).emit("notifications_cleared");
   });
 
+  socket.on("delete_notification", (notificationId) => {
+    socket.broadcast
+      .to(socket.userId)
+      .emit("notification_deleted", notificationId);
+  });
+
   socket.on("clear_notifications", () => {
     socket.broadcast.to(socket.userId).emit("notifications_cleared");
   });

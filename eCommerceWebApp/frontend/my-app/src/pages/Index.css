@@ -316,6 +316,7 @@
 }
 
 .avatar-name-email-container {
+  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -1428,12 +1429,21 @@
   font-size: 24px;
 }
 
+.delete-btn {
+  margin-left: 10px;
+}
+
+.notification-item {
+  touch-action: none;
+  user-select: none;
+}
+
 /* Wishlist Section--- */
 
 .wishlist-clear-btn-holder {
   display: flex;
   justify-content: flex-end;
-  margin-bottom: 2rem;
+  margin-bottom: 0.8rem;
 }
 
 .wishlist-header h1 {
