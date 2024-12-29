@@ -28,9 +28,14 @@ const Notification = () => {
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showDeleteAllDialog, setShowDeleteAllDialog] = useState(false);
-  const [longPressTimer, setLongPressTimer] = useState(null);
-  const [isLongPress, setIsLongPress] = useState(false);
   const [showHints, setShowHints] = useState(false);
+  const [touchData, setTouchData] = useState({
+    startTime: null,
+    startPostition: null,
+    isTapping: false,
+    isLongPress: false,
+    moved: false,
+  });
 
   useEffect(() => {
     if (notifications) {
@@ -70,41 +75,58 @@ const Notification = () => {
     setError("");
   };
 
-  const handleTouchCountStart = (notification) => {
-    const timer = setTimeout(() => {
-      setIsLongPress(true);
-      setSelectedNotification(notification);
-      setShowDeleteDialog(true);
-    }, 500);
-    setLongPressTimer(timer);
+  const handleTouchStart = (e, notification) => {
+    const touch = e.touches ? e.touches[0] : e;
+    setTouchData({
+      startTime: Date.now(),
+      startPosition: { x: touch.clientX, y: touch.clientY },
+      isTapping: true,
+      isLongPress: false,
+      moved: false,
+    });
   };
 
-  const handleTouchCountEnd = () => {
-    if (longPressTimer) {
-      clearTimeout(longPressTimer);
-      setLongPressTimer(null);
+  const handleTouchMove = (e) => {
+    if (!touchData.startPosition || !touchData.isTapping) return;
+
+    const touch = e.touches?.[0] || e;
+    const deltaX = Math.abs(touch.clientX - touchData.startPosition.x);
+    const deltaY = Math.abs(touch.clientY - touchData.startPosition.y);
+
+    if (deltaX > 5 || deltaY > 5) {
+      setTouchData((prev) => ({
+        ...prev,
+        moved: true,
+        isLongPress: false,
+      }));
+    }
+  };
+
+  const handleTouchEnd = (notification) => {
+    const touchDuration = Date.now() - touchData.startTime;
+
+    if (!touchData.moved) {
+      if (touchDuration > 500) {
+        setSelectedNotification(notification);
+        setShowDeleteDialog(true);
+      } else if (touchDuration < 500 && !notification.read) {
+        handleClick(notification);
+      }
     }
 
-    setTimeout(() => {
-      setIsLongPress(false);
-    }, 100);
+    setTouchData({
+      startTime: null,
+      startPosition: null,
+      isTapping: false,
+      isLongPress: false,
+      moved: false,
+    });
   };
 
   const handleClick = async (notification) => {
-    if (isLongPress) {
-      return;
-    }
     try {
-      await handleMarkAsRead(notification._id);
+      await markAsRead(notification._id);
     } catch (error) {
-      setError("Failed to mark notification as read. Please try again");
-    }
-  };
-
-  const handleMarkAsRead = async (notificationId) => {
-    try {
-      await markAsRead(notificationId);
-    } catch (err) {
       setError("Failed to mark notification as read. Please try again");
     }
   };
@@ -139,7 +161,7 @@ const Notification = () => {
   };
 
   return (
-    <section>
+    <section className="notification-section">
       <div className="usermenuPages-title-container">
         <span className="backIcon">
           <NavLink to="/homepage">
@@ -150,28 +172,11 @@ const Notification = () => {
       </div>
       <p className="usermenuPages-title-textCenter">Notification</p>
 
-      <Snackbar
-        open={showHints}
-        autoHideDuration={4000}
-        onClose={() => setShowHints(false)}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        sx={{ width: "100%" }}
-      >
-        <Alert
-          severity="info"
-          sx={{ width: "100%", "& .MuiAlert-message": { width: "100%" } }}
-        >
-          • Tap and Hold to delete notification
-          <br />• Tap unread notification to mark as read
-        </Alert>
-      </Snackbar>
-
       {notifications.length > 0 && (
         <div className="wishlist-clear-btn-holder">
           <button onClick={markAllAsRead} className="clear-wishlist-btn">
             Mark All As Read
           </button>
-
           <button
             onClick={() => setShowDeleteAllDialog(true)}
             className="clear-wishlist-btn delete-btn"
@@ -181,57 +186,57 @@ const Notification = () => {
         </div>
       )}
 
-      {loading && (
-        <Backdrop
-          sx={{
-            color: "#6055d8",
-            zIndex: (theme) => theme.zIndex.drawer + 1,
-          }}
-          open={loading}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      )}
-
-      <Snackbar
-        open={showError}
-        autoHideDuration={6000}
-        onClose={handleCloseError}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      <div
+        className="notifications-container"
+        style={{
+          WebkitOverflowScrolling: "touch",
+          msOverflowStyle: "-ms-autohiding-scrollbar",
+        }}
       >
-        <Alert
-          onClose={handleCloseError}
-          severity="error"
-          sx={{ width: "100%" }}
-        >
-          {error}
-        </Alert>
-      </Snackbar>
-
-      <div className="notifications-container">
-        {notifications.map((notification) => (
-          <div
-            key={notification._id}
-            className={`notification-item ${notification.type} ${
-              !notification.read ? "unread" : ""
-            }`}
-            // onClick={() => handleMarkAsRead(notification._id)}
-            onClick={() => handleClick(notification)}
-            onTouchStart={() => handleTouchCountStart(notification)}
-            onTouchEnd={handleTouchCountEnd}
-            onMouseDown={() => handleTouchCountStart(notification)}
-            onMouseUp={handleTouchCountEnd}
-            onMouseLeave={handleTouchCountEnd}
+        {loading ? (
+          <Backdrop
+            sx={{
+              color: "#6055d8",
+              zIndex: (theme) => theme.zIndex.drawer + 1,
+            }}
+            open={loading}
           >
-            <h3>{notification.title}</h3>
-            <p>{notification.message}</p>
-            <span className="notification-date">
-              {formatDate(notification.createdAt)}
-            </span>
-            {!notification.read && <span className="unread-indicator">●</span>}
-          </div>
-        ))}
-        {!loading && notifications.length === 0 && (
+            <CircularProgress color="inherit" />
+          </Backdrop>
+        ) : notifications.length > 0 ? (
+          notifications.map((notification) => (
+            <div
+              key={notification._id}
+              className={`notification-item ${notification.type} ${
+                !notification.read ? "unread" : ""
+              }`}
+              onTouchStart={(e) => handleTouchStart(e, notification)}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={() => handleTouchEnd(notification)}
+              onMouseDown={(e) => handleTouchStart(e, notification)}
+              onMouseMove={handleTouchMove}
+              onMouseUp={() => handleTouchEnd(notification)}
+              onMouseLeave={() => {
+                setTouchData({
+                  startTime: null,
+                  startPosition: null,
+                  isTapping: false,
+                  isLongPress: false,
+                  moved: false,
+                });
+              }}
+            >
+              <h3>{notification.title}</h3>
+              <p>{notification.message}</p>
+              <span className="notification-date">
+                {formatDate(notification.createdAt)}
+              </span>
+              {!notification.read && (
+                <span className="unread-indicator">●</span>
+              )}
+            </div>
+          ))
+        ) : (
           <p className="no-notification-text">You have no new notification</p>
         )}
       </div>
@@ -243,7 +248,7 @@ const Notification = () => {
       >
         <DialogTitle id="delete-dialog-title">Delete Notification</DialogTitle>
         <DialogContent>
-          Are you sure you want to delete this notificatiion?
+          Are you sure you want to delete this notification?
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setShowDeleteDialog(false)}>Cancel</Button>
@@ -262,7 +267,7 @@ const Notification = () => {
           Delete All Notifications
         </DialogTitle>
         <DialogContent>
-          Are you sure you want to delete all notificatiion? This action cannot
+          Are you sure you want to delete all notifications? This action cannot
           be undone.
         </DialogContent>
         <DialogActions>
@@ -272,6 +277,36 @@ const Notification = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <Snackbar
+        open={showError}
+        autoHideDuration={6000}
+        onClose={handleCloseError}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseError}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          {error}
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={showHints}
+        autoHideDuration={4000}
+        onClose={() => setShowHints(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        sx={{ width: "100%" }}
+      >
+        <Alert
+          severity="info"
+          sx={{ width: "100%", "& .MuiAlert-message": { width: "100%" } }}
+        >
+          • Tap and Hold to delete notification
+          <br />• Tap unread notification to mark as read
+        </Alert>
+      </Snackbar>
     </section>
   );
 };
