@@ -10,7 +10,6 @@ import {
   InputAdornment,
   IconButton,
   Typography,
-  Stack,
   Alert,
   Snackbar,
   CircularProgress,
@@ -160,9 +159,7 @@ const SignupPage = () => {
         onClose={handleCloseError}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        <Stack sx={{ width: "100%" }} spacing={2}>
-          {error && <Alert severity="error">{error}</Alert>}
-        </Stack>
+        {error && <Alert severity="error">{error}</Alert>}
       </Snackbar>
 
       <Snackbar
@@ -171,9 +168,7 @@ const SignupPage = () => {
         onClose={handleCloseSuccess}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        <Stack sx={{ width: "100%" }} spacing={2}>
-          {success && <Alert severity="success">{success}</Alert>}
-        </Stack>
+        {success && <Alert severity="success">{success}</Alert>}
       </Snackbar>
       <section className="signup-login-Container">
         <span className="signup-login-image-container">

@@ -11,7 +11,6 @@ import {
   Modal,
   Box,
   TextField,
-  Stack,
   Snackbar,
   Backdrop,
   CircularProgress,
@@ -223,53 +222,17 @@ const SavedPaymentDetailsPage = () => {
   return (
     <section className="userPages-main-container">
       <div className="usermenuPages-title-container">
-          <span className="backIcon">
-        <NavLink className="backIcon" to="/user-menu">
-        <IoChevronBackOutline size={25} color="#121212" />
-        <IoChevronBackOutline size={25} color="#ffffff" />
-        </NavLink>
-          </span>
+        <span className="backIcon">
+          <NavLink className="backIcon" to="/user-menu">
+            <IoChevronBackOutline size={25} color="#121212" />
+            <IoChevronBackOutline size={25} color="#ffffff" />
+          </NavLink>
+        </span>
       </div>
 
       <p className="usermenuPages-title-textCenter">
         Saved Payment Card Details
       </p>
-
-      <Snackbar
-        open={showError}
-        autoHideDuration={3000}
-        onClose={handleCloseError}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-        <Stack sx={{ width: "100%" }} spacing={2}>
-          {error && (
-            <Alert
-              className="alert-message-holder"
-              id="alert-message-savedCard-id"
-              severity="error"
-            >
-              {error}
-            </Alert>
-          )}
-        </Stack>
-      </Snackbar>
-
-      <Snackbar
-        open={showSuccess}
-        autoHideDuration={3000}
-        onClose={handleCloseSuccess}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-        {success && (
-          <Alert
-            className="alert-message-holder"
-            id="alert-message-savedCard-id"
-            severity="success"
-          >
-            {success}
-          </Alert>
-        )}
-      </Snackbar>
 
       <div>
         {cardDetails && cardDetails.length > 0 ? (
@@ -338,14 +301,12 @@ const SavedPaymentDetailsPage = () => {
             />
             <span className="cart-modal-del-btnHolder">
               <button
-              className="cart-modal-button"
-              onClick={handlePasswordVerification}
-              
-            >
-              Verify
-            </button>
+                className="cart-modal-button"
+                onClick={handlePasswordVerification}
+              >
+                Verify
+              </button>
             </span>
-            
           </div>
         </Box>
       </Modal>
@@ -357,7 +318,7 @@ const SavedPaymentDetailsPage = () => {
             <Typography
               className="delete-modal-title"
               style={{
-               marginBottom: "16px",
+                marginBottom: "16px",
                 marginTop: "16px",
                 fontSize: "18px",
               }}
@@ -376,6 +337,40 @@ const SavedPaymentDetailsPage = () => {
           </span>
         </Box>
       </Modal>
+      
+      <Snackbar
+        open={showError}
+        autoHideDuration={3000}
+        onClose={handleCloseError}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        {error && (
+          <Alert
+            className="alert-message-holder"
+            id="alert-message-savedCard-id"
+            severity="error"
+          >
+            {error}
+          </Alert>
+        )}
+      </Snackbar>
+
+      <Snackbar
+        open={showSuccess}
+        autoHideDuration={3000}
+        onClose={handleCloseSuccess}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        {success && (
+          <Alert
+            className="alert-message-holder"
+            id="alert-message-savedCard-id"
+            severity="success"
+          >
+            {success}
+          </Alert>
+        )}
+      </Snackbar>
     </section>
   );
 };

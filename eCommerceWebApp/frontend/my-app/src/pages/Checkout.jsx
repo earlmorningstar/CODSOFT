@@ -12,7 +12,6 @@ import {
 import {
   Box,
   TextField,
-  Stack,
   Alert,
   Snackbar,
   CircularProgress,
@@ -302,9 +301,9 @@ const CheckoutForm = () => {
           anchorOrigin={{ vertical: "top", horizontal: "center" }}
         >
           {errorMessage && (
-            <Stack sx={{ width: "100%" }} spacing={2}>
+            
               <Alert severity="error">{errorMessage}</Alert>
-            </Stack>
+           
           )}
         </Snackbar>
 
@@ -315,9 +314,9 @@ const CheckoutForm = () => {
           anchorOrigin={{ vertical: "top", horizontal: "center" }}
         >
           {successMessage && (
-            <Stack sx={{ width: "100%" }} spacing={2}>
+            
               <Alert severity="success">{successMessage}</Alert>
-            </Stack>
+            
           )}
         </Snackbar>
       </form>

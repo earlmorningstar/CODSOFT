@@ -9,7 +9,6 @@ import {
   InputAdornment,
   IconButton,
   Typography,
-  Stack,
   Alert,
   Snackbar,
   CircularProgress,
@@ -94,15 +93,13 @@ const LoginPage = () => {
 
   return (
     <>
-     <Snackbar
+      <Snackbar
         open={showError}
         autoHideDuration={5000}
         onClose={handleCloseError}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        <Stack sx={{ width: "100%" }} spacing={2}>
-          {error && <Alert severity="error">{error}</Alert>}
-        </Stack>
+        {error && <Alert severity="error">{error}</Alert>}
       </Snackbar>
 
       <Snackbar
@@ -111,77 +108,74 @@ const LoginPage = () => {
         onClose={handleCloseSuccess}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        <Stack sx={{ width: "100%" }} spacing={2}>
-          {success && <Alert severity="success">{success}</Alert>}
-        </Stack>
+        {success && <Alert severity="success">{success}</Alert>}
       </Snackbar>
-    
-    <section className="signup-login-Container">
-      <span className="signup-login-image-container">
-        <img src={images[0].src} alt={images[0].alt} />
-      </span>
-      <Box sx={{ maxWidth: "400px", marginTop: "3.5rem", padding: "1rem" }}>
-        <span className="signup-login-typography-container">
-          Log into your account
-        </span>
 
-        <form onSubmit={handleLogin}>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            <TextField
-              label={
-                <div className="auth-label-flex">
-                  Email Address <span style={{ color: "red" }}>*</span>
-                </div>
-              }
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              variant="standard"
-            />
-            <FormControl variant="standard">
-              <InputLabel htmlFor="password">
-                Password <span style={{ color: "red" }}>*</span>
-              </InputLabel>
-              <Input
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                type={showPassword ? "text" : "password"}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
+      <section className="signup-login-Container">
+        <span className="signup-login-image-container">
+          <img src={images[0].src} alt={images[0].alt} />
+        </span>
+        <Box sx={{ maxWidth: "400px", marginTop: "3.5rem", padding: "1rem" }}>
+          <span className="signup-login-typography-container">
+            Log into your account
+          </span>
+
+          <form onSubmit={handleLogin}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+              <TextField
+                label={
+                  <div className="auth-label-flex">
+                    Email Address <span style={{ color: "red" }}>*</span>
+                  </div>
                 }
-                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                variant="standard"
               />
-            </FormControl>
-            <button className="signup-login-btn" type="submit">
-              {loading ? (
-                <CircularProgress size={24} color="inherit" />
-              ) : (
-                "Log in"
-              )}
-            </button>
-          </Box>
-        </form>
-        <Typography
-          className="signup-login-switchLink"
-          variant="body2"
-          sx={{ marginTop: 2 }}
-        >
-          Don't have an account?{" "}
-          <NavLink className="signup-login-navlink" to="/signup">
-            Join Us
-          </NavLink>
-        </Typography>
-      </Box>
-    </section>
+              <FormControl variant="standard">
+                <InputLabel htmlFor="password">
+                  Password <span style={{ color: "red" }}>*</span>
+                </InputLabel>
+                <Input
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  type={showPassword ? "text" : "password"}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  required
+                />
+              </FormControl>
+              <button className="signup-login-btn" type="submit">
+                {loading ? (
+                  <CircularProgress size={24} color="inherit" />
+                ) : (
+                  "Log in"
+                )}
+              </button>
+            </Box>
+          </form>
+          <Typography
+            className="signup-login-switchLink"
+            variant="body2"
+            sx={{ marginTop: 2 }}
+          >
+            Don't have an account?{" "}
+            <NavLink className="signup-login-navlink" to="/signup">
+              Join Us
+            </NavLink>
+          </Typography>
+        </Box>
+      </section>
     </>
-    
   );
 };
 

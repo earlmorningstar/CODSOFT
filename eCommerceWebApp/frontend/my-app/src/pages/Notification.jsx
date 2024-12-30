@@ -150,22 +150,6 @@ const Notification = () => {
       </div>
       <p className="usermenuPages-title-textCenter">Notification</p>
 
-      <Snackbar
-        open={showHints}
-        autoHideDuration={4000}
-        onClose={() => setShowHints(false)}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        sx={{ width: "100%" }}
-      >
-        <Alert
-          severity="info"
-          sx={{ width: "100%", "& .MuiAlert-message": { width: "100%" } }}
-        >
-          • Tap and Hold to delete notification
-          <br />• Tap unread notification to mark as read
-        </Alert>
-      </Snackbar>
-
       {notifications.length > 0 && (
         <div className="wishlist-clear-btn-holder">
           <button onClick={markAllAsRead} className="clear-wishlist-btn">
@@ -192,21 +176,6 @@ const Notification = () => {
           <CircularProgress color="inherit" />
         </Backdrop>
       )}
-
-      <Snackbar
-        open={showError}
-        autoHideDuration={6000}
-        onClose={handleCloseError}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-        <Alert
-          onClose={handleCloseError}
-          severity="error"
-          sx={{ width: "100%" }}
-        >
-          {error}
-        </Alert>
-      </Snackbar>
 
       <div className="notifications-container">
         {notifications.map((notification) => (
@@ -271,6 +240,32 @@ const Notification = () => {
           </Button>
         </DialogActions>
       </Dialog>
+      <Snackbar
+        open={showHints}
+        autoHideDuration={4000}
+        onClose={() => setShowHints(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          severity="info"
+          >
+          • Tap and Hold to delete notification
+          <br />• Tap unread notification to mark as read
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={showError}
+        autoHideDuration={6000}
+        onClose={handleCloseError}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseError}
+          severity="error"
+              >
+          {error}
+        </Alert>
+      </Snackbar>
     </section>
   );
 };

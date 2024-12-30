@@ -358,13 +358,13 @@ const ProfilePage = () => {
         onClose={handleCloseError}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        <Stack sx={{ width: "100%" }} spacing={2}>
+        
           {error && (
             <Alert className="alert-message-holder" severity="error">
               {error}
             </Alert>
           )}
-        </Stack>
+        
       </Snackbar>
 
       <Snackbar
