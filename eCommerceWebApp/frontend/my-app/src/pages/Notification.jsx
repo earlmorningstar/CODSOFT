@@ -28,6 +28,8 @@ const Notification = () => {
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showDeleteAllDialog, setShowDeleteAllDialog] = useState(false);
+  const [longPressTimer, setLongPressTimer] = useState(null);
+  const [isLongPress, setIsLongPress] = useState(false);
   const [showHints, setShowHints] = useState(false);
 
   useEffect(() => {
@@ -50,7 +52,7 @@ const Notification = () => {
 
       setTimeout(() => {
         setShowHints(false);
-      }, 6000);
+      }, 4000);
     }
   };
 
@@ -68,20 +70,43 @@ const Notification = () => {
     setError("");
   };
 
+  const handleTouchCountStart = (notification) => {
+    const timer = setTimeout(() => {
+      setIsLongPress(true);
+      setSelectedNotification(notification);
+      setShowDeleteDialog(true);
+    }, 500);
+    setLongPressTimer(timer);
+  };
+
+  const handleTouchCountEnd = () => {
+    if (longPressTimer) {
+      clearTimeout(longPressTimer);
+      setLongPressTimer(null);
+    }
+
+    setTimeout(() => {
+      setIsLongPress(false);
+    }, 100);
+  };
+
   const handleClick = async (notification) => {
-    if (!notification.read) {
-      try {
-        await markAsRead(notification._id);
-      } catch (error) {
-        setError("Failed to mark notification as read. Please try again");
-      }
+    if (isLongPress) {
+      return;
+    }
+    try {
+      await handleMarkAsRead(notification._id);
+    } catch (error) {
+      setError("Failed to mark notification as read. Please try again");
     }
   };
 
-  const handleDeleteClick = (notification, e) => {
-    e.stopPropagation();
-    setSelectedNotification(notification);
-    setShowDeleteDialog(true);
+  const handleMarkAsRead = async (notificationId) => {
+    try {
+      await markAsRead(notificationId);
+    } catch (err) {
+      setError("Failed to mark notification as read. Please try again");
+    }
   };
 
   const handleDeleteConfirm = async () => {
@@ -114,7 +139,7 @@ const Notification = () => {
   };
 
   return (
-    <section className="notification-section">
+    <section>
       <div className="usermenuPages-title-container">
         <span className="backIcon">
           <NavLink to="/homepage">
@@ -125,11 +150,28 @@ const Notification = () => {
       </div>
       <p className="usermenuPages-title-textCenter">Notification</p>
 
+      <Snackbar
+        open={showHints}
+        autoHideDuration={4000}
+        onClose={() => setShowHints(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        sx={{ width: "100%" }}
+      >
+        <Alert
+          severity="info"
+          sx={{ width: "100%", "& .MuiAlert-message": { width: "100%" } }}
+        >
+          • Tap and Hold to delete notification
+          <br />• Tap unread notification to mark as read
+        </Alert>
+      </Snackbar>
+
       {notifications.length > 0 && (
         <div className="wishlist-clear-btn-holder">
           <button onClick={markAllAsRead} className="clear-wishlist-btn">
             Mark All As Read
           </button>
+
           <button
             onClick={() => setShowDeleteAllDialog(true)}
             className="clear-wishlist-btn delete-btn"
@@ -139,46 +181,56 @@ const Notification = () => {
         </div>
       )}
 
-      <div
-        className="notifications-container">
-        {loading ? (
-          <Backdrop
-            sx={{
-              color: "#6055d8",
-              zIndex: (theme) => theme.zIndex.drawer + 1,
-            }}
-            open={loading}
+      {loading && (
+        <Backdrop
+          sx={{
+            color: "#6055d8",
+            zIndex: (theme) => theme.zIndex.drawer + 1,
+          }}
+          open={loading}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
+      )}
+
+      <Snackbar
+        open={showError}
+        autoHideDuration={6000}
+        onClose={handleCloseError}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseError}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          {error}
+        </Alert>
+      </Snackbar>
+
+      <div className="notifications-container">
+        {notifications.map((notification) => (
+          <div
+            key={notification._id}
+            className={`notification-item ${notification.type} ${
+              !notification.read ? "unread" : ""
+            }`}
+            onClick={() => handleClick(notification)}
+            onTouchStart={() => handleTouchCountStart(notification)}
+            onTouchEnd={handleTouchCountEnd}
+            onMouseDown={() => handleTouchCountStart(notification)}
+            onMouseUp={handleTouchCountEnd}
+            onMouseLeave={handleTouchCountEnd}
           >
-            <CircularProgress color="inherit" />
-          </Backdrop>
-        ) : notifications.length > 0 ? (
-          notifications.map((notification) => (
-            <div
-              key={notification._id}
-              className={`notification-item ${notification.type} ${
-                !notification.read ? "unread" : ""
-              }`}
-              onClick={() => handleClick(notification)}
-            >
-              <h3>{notification.title}</h3>
-              <p>{notification.message}</p>
-              <div className="notification-date-btn-holder">
-                <span className="notification-date">
-                  {formatDate(notification.createdAt)}
-                </span>
-                <button
-                  onClick={(e) => handleDeleteClick(notification, e)}
-                  className="clear-wishlist-btn"
-                >
-                  Delete
-                </button>
-              </div>
-              {!notification.read && (
-                <span className="unread-indicator">●</span>
-              )}
-            </div>
-          ))
-        ) : (
+            <h3>{notification.title}</h3>
+            <p>{notification.message}</p>
+            <span className="notification-date">
+              {formatDate(notification.createdAt)}
+            </span>
+            {!notification.read && <span className="unread-indicator">●</span>}
+          </div>
+        ))}
+        {!loading && notifications.length === 0 && (
           <p className="no-notification-text">You have no new notification</p>
         )}
       </div>
@@ -190,7 +242,7 @@ const Notification = () => {
       >
         <DialogTitle id="delete-dialog-title">Delete Notification</DialogTitle>
         <DialogContent>
-          Are you sure you want to delete this notification?
+          Are you sure you want to delete this notificatiion?
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setShowDeleteDialog(false)}>Cancel</Button>
@@ -209,7 +261,7 @@ const Notification = () => {
           Delete All Notifications
         </DialogTitle>
         <DialogContent>
-          Are you sure you want to delete all notifications? This action cannot
+          Are you sure you want to delete all notificatiion? This action cannot
           be undone.
         </DialogContent>
         <DialogActions>
@@ -219,36 +271,6 @@ const Notification = () => {
           </Button>
         </DialogActions>
       </Dialog>
-
-      <Snackbar
-        open={showError}
-        autoHideDuration={6000}
-        onClose={handleCloseError}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-        <Alert
-          onClose={handleCloseError}
-          severity="error"
-          sx={{ width: "100%" }}
-        >
-          {error}
-        </Alert>
-      </Snackbar>
-
-      <Snackbar
-        open={showHints}
-        autoHideDuration={6000}
-        onClose={() => setShowHints(false)}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        sx={{ width: "100%" }}
-      >
-        <Alert
-          severity="info"
-          sx={{ width: "100%", "& .MuiAlert-message": { width: "100%" } }}
-        >
-          • Tap unread notification to mark as read
-        </Alert>
-      </Snackbar>
     </section>
   );
 };
