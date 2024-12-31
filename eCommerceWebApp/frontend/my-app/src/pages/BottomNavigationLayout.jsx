@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 import CartContext from "../store/CartContext";
+import ScrollToTop from "../hooks/ScrollToTop";
 import { GoHome, GoSearch } from "react-icons/go";
 import { IoCartOutline } from "react-icons/io5";
 import { PiHandbag } from "react-icons/pi";
@@ -12,6 +13,7 @@ const BottomNavigationLayout = () => {
 
   return (
     <section className="btm-main-container">
+      <ScrollToTop />
       <div className="btm-root-main-outlet">
         <Outlet />
       </div>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import HeroCarousel from "./HeroCarousel";
 import FeaturedProducts from "./FeaturedProducts";
 import api from "../utils/api";
@@ -11,36 +11,25 @@ import ProductList from "./ProductList";
 import HomepageBanner from "./HomepageBanner";
 
 function HomePage() {
-  const [products, setProducts] = useState([]);
+  const { data: products = [], isLoading } = useQuery({
+    queryKey: ["products"],
+    queryFn: async () => {
+      const response = await api.get("/api/shopify/products");
+      const shopifyProducts = response?.data?.data?.products || [];
 
-  useEffect(() => {
-    const fetchProducts = async () => {
       try {
-        const response = await api.get("/api/shopify/products");
-        const shopifyProducts = response?.data?.data?.products || [];
-
-        await syncShopifyProducts(shopifyProducts);
-
-        setProducts(shopifyProducts);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      }
-    };
-
-    const syncShopifyProducts = async (shopifyProducts) => {
-      try {
-        const syncResponse = await api.post("/api/products/sync", {
+        await api.post("/api/products/sync", {
           products: shopifyProducts,
         });
-        console.log("Product sync response:", syncResponse.data);
       } catch (error) {
-        console.error("Failes to sync shopify products:", error);
+        console.error("Failed to sync shopify products:", error);
       }
-    };
+      return shopifyProducts;
+    },
+    staleTime: 10 * 60 * 1000,
+  });
 
-    fetchProducts();
-  }, []);
-
+  console.log("Query state:", { isLoading, products });
   return (
     <section className="homepage-main-container">
       <div className="homepage-banner" id="wlcm-banner-id">

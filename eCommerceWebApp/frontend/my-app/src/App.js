@@ -1,4 +1,7 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+// import  {ReactQueryDevtools} from '@tanstack/react-query-devtools'
+
 import RootLayout from "./pages/RootLayout";
 import WelcomePage from "./pages/WelcomePage";
 import LoginPage from "./pages/LoginPage";
@@ -13,7 +16,6 @@ import OrderHistory from "./pages/OrderHistory";
 import ProductDetailsPage from "./pages/ProductDetailsPage";
 import ProductsPage from "./pages/ProductsPage";
 import Checkout from "./pages/Checkout";
-import ScrollPosition from "./hooks/ScrollPosition";
 import ErrorPage from "./pages/ErrorPage";
 import UserMenu from "./pages/UserMenu";
 import SavedPaymentDetailsPage from "./pages/SavedPaymentDetailsPage";
@@ -21,6 +23,8 @@ import Settings from "./pages/Settings";
 import Wishlist from "./pages/Wishlist";
 import OrderDetailsPage from "./pages/OrderDetailsPage";
 import Notification from "./pages/Notification";
+
+const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
   {
@@ -36,7 +40,6 @@ const router = createBrowserRouter([
         path: "/",
         element: (
           <>
-            <ScrollPosition />
             <BottomNavigationLayout />
           </>
         ),
@@ -65,6 +68,11 @@ const router = createBrowserRouter([
 ]);
 
 const App = () => {
-  return <RouterProvider router={router} />;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+      {/* <ReactQueryDevtools /> */}
+    </QueryClientProvider>
+  );
 };
 export default App;

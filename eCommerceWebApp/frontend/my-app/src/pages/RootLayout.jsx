@@ -105,8 +105,7 @@ const RootLayout = () => {
 
   if (loading)
     return (
-      <div>
-        <Backdrop
+          <Backdrop
           sx={{
             color: "#6055d8",
             zIndex: (theme) => theme.zIndex.drawer + 1,
@@ -115,8 +114,7 @@ const RootLayout = () => {
         >
           <CircularProgress color="inherit" />
         </Backdrop>
-      </div>
-    );
+      );
   return (
     <>
       <section className="root-main-container">

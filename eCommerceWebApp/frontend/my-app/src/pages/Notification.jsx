@@ -75,7 +75,7 @@ const Notification = () => {
       setIsLongPress(true);
       setSelectedNotification(notification);
       setShowDeleteDialog(true);
-    }, 500);
+    }, 700);
     setLongPressTimer(timer);
   };
 

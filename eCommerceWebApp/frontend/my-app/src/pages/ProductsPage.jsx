@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import CartContext from "../store/CartContext";
 import WishlistContext from "../store/WishlistContext";
 import api from "../utils/api";
@@ -11,11 +12,8 @@ import Box from "@mui/material/Box";
 import Search from "./Search";
 
 const ProductsPage = () => {
-  const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredproducts] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [skeletonCount, setSkeletonCount] = useState(4);
-  const [error, setError] = useState(null);
   const {
     items: cartItems,
     addItemToCart,
@@ -28,6 +26,34 @@ const ProductsPage = () => {
   const productsPerPage = 16;
   const query = new URLSearchParams(location.search);
   const currentPage = parseInt(query.get("page") || "1", 10);
+
+  const {
+    data: products = [],
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["products"],
+    queryFn: async () => {
+      const response = await api.get("/api/shopify/products");
+      const shopifyProducts = response?.data?.data?.products || [];
+
+      try {
+        await api.post("/api/products/sync", {
+          products: shopifyProducts,
+        });
+      } catch (error) {
+        console.error("Failed to sync shopify products:", error);
+      }
+      return shopifyProducts;
+    },
+    staleTime: 10 * 60 * 1000,
+  });
+
+  console.log("Query state:", { isLoading, products });
+
+  useEffect(() => {
+    setFilteredproducts(products);
+  }, [products]);
 
   const toggleWishlist = async (product) => {
     try {
@@ -46,7 +72,6 @@ const ProductsPage = () => {
     }
   };
 
-  
   const updateSkeletonCount = () => {
     const width = window.innerWidth;
     if (width > 1140) {
@@ -60,47 +85,13 @@ const ProductsPage = () => {
     }
   };
 
-
   useEffect(() => {
     updateSkeletonCount();
     window.addEventListener("resize", updateSkeletonCount);
-
     return () => window.removeEventListener("resize", updateSkeletonCount);
   }, []);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        const response = await api.get("/api/shopify/products");
-        const fetchedProducts = response?.data?.data?.products || [];
-
-        await syncShopifyProducts(fetchedProducts);
-
-        setProducts(fetchedProducts);
-        setFilteredproducts(fetchedProducts);
-      } catch (error) {
-        console.error("Error fetching products.");
-        setError("Failed to fetch products");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProducts();
-  }, []);
-
-  const syncShopifyProducts = async (shopifyProducts) => {
-    try {
-      const response = await api.post("/api/products/sync", {
-        products: shopifyProducts,
-      });
-      console.log("Product sync response:", response.data);
-    } catch (error) {
-      console.error("Failed to sync Shopify products:", error);
-    }
-  };
-
-  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
+ const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
   const currentProducts = filteredProducts.slice(
     (currentPage - 1) * productsPerPage,
@@ -185,7 +176,7 @@ const ProductsPage = () => {
     <section>
       <Search onSearch={handleSearch} />
 
-      {loading ? (
+      {isLoading ? (
         <div
           className="glide__slides"
           id="skeleton-container"

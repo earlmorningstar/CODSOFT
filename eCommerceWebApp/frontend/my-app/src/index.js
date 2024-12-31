@@ -10,14 +10,12 @@ import { ThemeProviderWrapper } from "./context/ThemeContext";
 import { WishlistProvider } from "./store/WishlistContext";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
-// import ScrollPosition from "./hooks/ScrollPosition";
 
 const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    {/* <ScrollPosition> */}
     <ThemeProviderWrapper>
       <Elements stripe={stripePromise}>
         <AuthProvider>
@@ -31,7 +29,6 @@ root.render(
         </AuthProvider>
       </Elements>
     </ThemeProviderWrapper>
-    {/* </ScrollPosition> */}
   </React.StrictMode>
 );
 
