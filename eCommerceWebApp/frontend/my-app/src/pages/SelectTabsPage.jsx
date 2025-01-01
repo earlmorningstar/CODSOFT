@@ -1,56 +1,61 @@
-import { useState, useEffect, useContext } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useContext, useEffect, useState, useCallback } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import CartContext from "../store/CartContext";
 import WishlistContext from "../store/WishlistContext";
-import Search from "./Search";
 import api from "../utils/api";
 import { FiHeart } from "react-icons/fi";
-import { Pagination, Stack, Skeleton, Box } from "@mui/material";
+import { IoChevronBackOutline } from "react-icons/io5";
+import { Skeleton, Box } from "@mui/material";
 
-const ProductsPage = () => {
-  const [filteredProducts, setFilteredproducts] = useState([]);
+const SelectTabsPage = () => {
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [activeCategory, setActiveCategory] = useState("");
   const [skeletonCount, setSkeletonCount] = useState(4);
+
+  const { isInWishlist, addToWishlist, removeFromWishlist } =
+    useContext(WishlistContext);
   const {
     items: cartItems,
     addItemToCart,
     removeItemFromCart,
   } = useContext(CartContext);
-  const { isInWishlist, addToWishlist, removeFromWishlist } =
-    useContext(WishlistContext);
   const navigate = useNavigate();
-  const location = useLocation();
-  const productsPerPage = 16;
-  const query = new URLSearchParams(location.search);
-  const currentPage = parseInt(query.get("page") || "1", 10);
+  const { category } = useParams();
 
-  const {
-    data: products = [],
-    isLoading,
-    error,
-  } = useQuery({
+  const { data: products = [], isLoading } = useQuery({
     queryKey: ["products"],
     queryFn: async () => {
       const response = await api.get("/api/shopify/products");
-      const shopifyProducts = response?.data?.data?.products || [];
-
-      try {
-        await api.post("/api/products/sync", {
-          products: shopifyProducts,
-        });
-      } catch (error) {
-        console.error("Failed to sync shopify products:", error);
-      }
-      return shopifyProducts;
+      return response?.data?.data?.products || [];
     },
     staleTime: 10 * 60 * 1000,
   });
 
-  console.log("Query state:", { isLoading, products });
+  const filterByCategory = useCallback(
+    (category) => {
+      setActiveCategory(category);
+      const filtered = products.filter((product) => {
+        const type = product.product_type?.toLowerCase();
+        const tags = Array.isArray(product.tags)
+          ? product.tags.map((tag) => tag.toLowerCase())
+          : product.tags?.toLowerCase().split(",") || [];
+
+        const regex = new RegExp(`\\b${category}\\b`);
+        return regex.test(type) || tags.some((tag) => regex.test(tag));
+      });
+      setFilteredProducts(filtered);
+    },
+    [products]
+  );
+
+  
 
   useEffect(() => {
-    setFilteredproducts(products);
-  }, [products]);
+    if (category) {
+      filterByCategory(category);
+    }
+  }, [category, filterByCategory]);
 
   const toggleWishlist = async (product) => {
     try {
@@ -62,10 +67,37 @@ const ProductsPage = () => {
           title: product.title,
           variants: product.variants,
           images: product.images,
+          // price: product.variants[0].price,
         });
       }
     } catch (error) {
       console.error("Error toggling wishlist:", error);
+    }
+  };
+
+  const alreadyInCart = (product) => {
+    const productId = product.shopifyProductId || product.id;
+    return cartItems.some(item => 
+      item.shopifyProductId === productId || item.id === productId
+    );
+  };
+  
+  const toggleCartButton = async (product) => {
+    const productId = product.shopifyProductId || product.id;
+    const cartItem = {
+      id: productId,
+      shopifyProductId: productId,
+      shopifyVariantId: product.variants[0]?.id || null,
+      title: product.title,
+      price: parseFloat(product.variants[0]?.price || 0),
+      quantity: 1,
+      image: product.images[0]?.src || "https://via.placeholder.com/150",
+    };
+  
+    if (alreadyInCart(product)) {
+      removeItemFromCart(productId);
+    } else {
+      addItemToCart(cartItem);
     }
   };
 
@@ -88,90 +120,30 @@ const ProductsPage = () => {
     return () => window.removeEventListener("resize", updateSkeletonCount);
   }, []);
 
-  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
-
-  const currentProducts = filteredProducts.slice(
-    (currentPage - 1) * productsPerPage,
-    currentPage * productsPerPage
-  );
-
-  const handleSearch = (searchTerm) => {
-    let filtered = [];
-
-    if (searchTerm) {
-      const lowercasedValue = searchTerm.toLowerCase().trim();
-      filtered = products.filter((product) => {
-        const titleMatch =
-          product.title?.toLowerCase().trim().includes(lowercasedValue) ||
-          false;
-        const typeMatch =
-          product.product_type
-            ?.toLowerCase()
-            .trim()
-            .includes(lowercasedValue) || false;
-
-        const tagsMatch =
-          (typeof product.tags === "string"
-            ? product.tags.toLowerCase().trim().includes(lowercasedValue)
-            : Array.isArray(product.tags) &&
-              product.tags.some((tag) =>
-                tag?.toLowerCase().trim().includes(lowercasedValue)
-              )) || false;
-        return titleMatch || typeMatch || tagsMatch;
-      });
-    } else {
-      filtered = products;
-    }
-    setFilteredproducts(filtered);
-    navigate("?page=1");
-  };
-
-  const alreadyInCart = (shopifyProductId) => {
-    return cartItems.some(
-      (item) =>
-        item.shopifyProductId === shopifyProductId ||
-        item.id === shopifyProductId
-    );
-  };
-
-  const toggleCartButton = async (product) => {
-    const cartItem = {
-      id: product.id,
-      shopifyProductId: product.id,
-      shopifyVariantId: product.variants[0]?.id || null,
-      title: product.title,
-      price: parseFloat(product.variants[0]?.price || 0),
-      quantity: 1,
-      image: product.images[0]?.src || "https://via.placeholder.com/150",
-    };
-
-    if (alreadyInCart(product.id)) {
-      removeItemFromCart(product.id);
-    } else {
-      addItemToCart(cartItem);
-    }
-
-    try {
-      const mongoProductResponse = await api.get(
-        `/api/products/shopify/${product.id}`
-      );
-      const mongoProduct = mongoProductResponse.data.data;
-
-      if (!mongoProduct) {
-        await api.post("/api/products/sync", {
-          products: [product],
-        });
-      }
-    } catch (error) {
-      console.warn("Could not sync product:", error);
-    }
-  };
-
-  if (error) return <p>{error}</p>;
-
   return (
     <section>
-      <Search onSearch={handleSearch} />
+      <div
+        className="back-to-home"
+        onClick={() => navigate("/homepage")}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          cursor: "pointer",
+          fontWeight: "500",
+          color: "#6055d8",
+          marginBottom: "20px",
+        }}
+      >
+        <IoChevronBackOutline size={20} style={{ marginRight: "10px" }} />
+        Back to Home
+      </div>
+
+      <h4
+        className="prod-header"
+        style={{ textAlign: "center", marginBottom: "20px" }}
+      >
+        Everything {activeCategory}
+      </h4>
 
       {isLoading ? (
         <div
@@ -202,7 +174,7 @@ const ProductsPage = () => {
         </div>
       ) : (
         <div className="product-grid">
-          {currentProducts.map((product) => (
+          {filteredProducts.map((product) => (
             <div className="productList-card" key={product.id}>
               <div className="prod-img-container">
                 <img
@@ -241,14 +213,14 @@ const ProductsPage = () => {
                   <button
                     className="btn-add-to-bag"
                     style={{
-                      backgroundColor: alreadyInCart(product.id)
+                      backgroundColor: alreadyInCart(product)
                         ? "#ffffff"
                         : "#6055d8",
-                      color: alreadyInCart(product.id) ? "#6055d8" : "#ffffff",
+                      color: alreadyInCart(product) ? "#6055d8" : "#ffffff",
                     }}
                     onClick={() => toggleCartButton(product)}
                   >
-                    {alreadyInCart(product.id)
+                    {alreadyInCart(product)
                       ? "Remove from Bag"
                       : "Add to Bag"}
                   </button>
@@ -258,19 +230,8 @@ const ProductsPage = () => {
           ))}
         </div>
       )}
-      <Stack spacing={2} sx={{ marginTop: 10, alignItems: "center" }}>
-        <Pagination
-          page={currentPage}
-          count={totalPages}
-          variant="outlined"
-          shape="rounded"
-          onChange={(_, page) => {
-            navigate(`?page=${page}`);
-          }}
-        />
-      </Stack>
     </section>
   );
 };
 
-export default ProductsPage;
+export default SelectTabsPage;

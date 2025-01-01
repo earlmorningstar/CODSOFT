@@ -22,6 +22,7 @@ import Settings from "./pages/Settings";
 import Wishlist from "./pages/Wishlist";
 import OrderDetailsPage from "./pages/OrderDetailsPage";
 import Notification from "./pages/Notification";
+import SelectTabsPage from "./pages/SelectTabsPage";
 
 const queryClient = new QueryClient();
 
@@ -60,6 +61,7 @@ const router = createBrowserRouter([
           { path: "/settings", element: <Settings /> },
           { path: "/wishlist", element: <Wishlist /> },
           { path: "/notification", element: <Notification /> },
+          {path: "/category/:category", element: <SelectTabsPage />},
         ],
       },
     ],
