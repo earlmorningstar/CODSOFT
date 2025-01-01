@@ -123,7 +123,7 @@ const SelectTabsPage = () => {
   return (
     <section>
       <div
-        className="back-to-home"
+         className="back-to-collections"
         onClick={() => navigate("/homepage")}
         style={{
           display: "flex",

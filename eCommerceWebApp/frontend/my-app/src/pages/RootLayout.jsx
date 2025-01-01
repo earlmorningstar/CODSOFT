@@ -103,18 +103,6 @@ const RootLayout = () => {
     setSidebarOpen(false);
   };
 
-  if (loading)
-    return (
-          <Backdrop
-          sx={{
-            color: "#6055d8",
-            zIndex: (theme) => theme.zIndex.drawer + 1,
-          }}
-          open={loading}
-        >
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      );
   return (
     <>
       <section className="root-main-container">
@@ -247,6 +235,15 @@ const RootLayout = () => {
           </Box>
         </Modal>
       </aside>
+      <Backdrop
+        sx={{
+          color: "#6055d8",
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+        }}
+        open={loading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
 
       <main className="root-main-outlet">
         <Outlet />

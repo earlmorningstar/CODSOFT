@@ -52,7 +52,7 @@ const Notification = () => {
 
       setTimeout(() => {
         setShowHints(false);
-      }, 4000);
+      }, 7000);
     }
   };
 
@@ -255,7 +255,7 @@ const Notification = () => {
       </Snackbar>
       <Snackbar
         open={showError}
-        autoHideDuration={6000}
+        autoHideDuration={7000}
         onClose={handleCloseError}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >

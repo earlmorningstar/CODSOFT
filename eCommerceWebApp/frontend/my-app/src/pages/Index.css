@@ -399,6 +399,12 @@
   border: 2px solid #ccc;
   width: 2.5rem;
   height: 2.5rem;
+  transition: all 0.3s ease-in;
+}
+
+.homepage-select-icon:hover {
+  border-color: #6055d8;
+  color: #6055d8;
 }
 .carousel-wrapper {
   width: 28.5rem;
