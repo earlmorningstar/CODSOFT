@@ -22,7 +22,6 @@ const Wishlist = () => {
   } = useContext(CartContext);
   const {
     items: wishlistItems,
-
     removeFromWishlist,
     clearWishlist,
   } = useContext(WishlistContext);
@@ -34,18 +33,18 @@ const Wishlist = () => {
   const currentPage = parseInt(query.get("page") || "1", 10);
   const [showClearWishlistDialog, setShowClearWishlistDialog] = useState(false);
 
-  const alreadyInCart = (shopifyProductId) => {
+  const alreadyInCart = (product) => {
+    const productId = product.shopifyProductId || product._id;
     return cartItems.some(
-      (item) =>
-        item.shopifyProductId === shopifyProductId ||
-        item.id === shopifyProductId
+      (item) => item.shopifyProductId === productId || item.id === productId
     );
   };
 
   const toggleCartButton = async (product) => {
+    const productId = product.shopifyProductId || product._id;
     const cartItem = {
-      id: product.id,
-      shopifyProductId: product.id,
+      id: productId,
+      shopifyProductId: productId,
       shopifyVariantId: product.variants[0]?.id || null,
       title: product.title,
       price: parseFloat(product.variants[0]?.price || 0),
@@ -53,8 +52,8 @@ const Wishlist = () => {
       image: product.images[0]?.src || "https://via.placeholder.com/150",
     };
 
-    if (alreadyInCart(product.id)) {
-      removeItemFromCart(product.id);
+    if (alreadyInCart(product)) {
+      removeItemFromCart(productId);
     } else {
       addItemToCart(cartItem);
     }
@@ -150,16 +149,16 @@ const Wishlist = () => {
                   <button
                     className="btn-add-to-bag"
                     style={{
-                      backgroundColor: alreadyInCart(item.product._id)
+                      backgroundColor: alreadyInCart(item.product)
                         ? "#ffffff"
                         : "#6055d8",
-                      color: alreadyInCart(item.product._id)
+                      color: alreadyInCart(item.product)
                         ? "#6055d8"
                         : "#ffffff",
                     }}
                     onClick={() => toggleCartButton(item.product)}
                   >
-                    {alreadyInCart(item.product._id)
+                    {alreadyInCart(item.product)
                       ? "Remove from Bag"
                       : "Add to Bag"}
                   </button>

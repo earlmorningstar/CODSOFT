@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { NavLink } from "react-router-dom";
 import api from "../utils/api";
 import { format } from "date-fns";
@@ -29,11 +30,7 @@ import {
 } from "@mui/icons-material";
 
 const OrderHistory = () => {
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [filter, setFilter] = useState("all");
 
   const statusInfo = {
@@ -69,17 +66,15 @@ const OrderHistory = () => {
     },
   };
 
-  const fetchOrders = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      let url = `/api/orders/get-orders`;
+  const {
+    data: orderData,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["orders", currentPage, filter],
+    queryFn: async () => {
+      const params = { page: currentPage };
 
-      const params = {
-        page: currentPage,
-      };
-
-      //filter params
       if (filter === "recent") {
         const thirthDaysAgo = new Date();
         thirthDaysAgo.setDate(thirthDaysAgo.getDate() - 30);
@@ -90,23 +85,15 @@ const OrderHistory = () => {
         params.status = "delivered";
       }
 
-      const response = await api.get(url, { params });
-      const { orders, pagination } = response.data.data;
-      setOrders(orders);
-      setTotalPages(pagination.totalPages);
-    } catch (error) {
-      setError(error.response?.data?.message || "failed to fetch orders");
-    } finally {
-      setTimeout(() => {
-        setLoading(false);
-      }, 300);
-    }
-  }, [currentPage, filter]);
+      const response = await api.get("/api/orders/get-orders", { params });
+      return response.data.data;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
 
-  useEffect(() => {
-    fetchOrders();
-  }, [fetchOrders]);
-
+  const orders = orderData?.orders || [];
+  const totalPages = orderData?.pagination?.totalPages || 1;
+  
   const getStatusInfo = (status) => {
     const normalisedStatus = status?.toLowerCase?.();
     if (!normalisedStatus || !statusInfo[normalisedStatus]) {
@@ -121,7 +108,14 @@ const OrderHistory = () => {
   };
 
   const getOrderProgress = (status) => {
-    const stages = ["pending", "processing", "shipped", "delivered"];
+    const stages = [
+      "pending",
+      "paid",
+      "failed",
+      "succeeded",
+      "shipped",
+      "delivered",
+    ];
     const normalisedStatus = status?.toLowerCase();
     if (normalisedStatus === "canceled" || !stages.includes(normalisedStatus)) {
       return 0;
@@ -133,13 +127,13 @@ const OrderHistory = () => {
   const handleFilterChange = (e) => {
     setFilter(e.target.value);
     setCurrentPage(1);
-    setLoading(false);
+    // setLoading(false);
   };
 
-  if (loading)
+  if (isLoading)
     return (
       <Backdrop
-        open={loading}
+        open={true}
         sx={{
           color: "#6055d8",
           zIndex: (theme) => theme.zIndex.drawer + 1,

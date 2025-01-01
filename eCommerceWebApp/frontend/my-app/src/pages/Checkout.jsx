@@ -1,4 +1,5 @@
 import { useContext, useState, useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import CartContext from "../store/CartContext";
 import { useNavigate } from "react-router-dom";
 import { loadStripe } from "@stripe/stripe-js";
@@ -35,6 +36,7 @@ const CheckoutForm = () => {
     deliveryAddress: "",
   });
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     fetchUserProfile();
@@ -158,6 +160,9 @@ const CheckoutForm = () => {
           `Your payment of $${amount} has been processed successfully. You can track your order on the "Order Tab". Thank you for your purchase!`,
           "success"
         );
+
+        queryClient.invalidateQueries(["orders"]);
+        
         setSuccessMessage("Payment successful! Your order has been placed.");
         setTimeout(() => {
           setSuccessMessage("");

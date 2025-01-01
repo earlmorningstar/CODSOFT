@@ -1,5 +1,6 @@
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import CartContext from "../store/CartContext";
 import WishlistContext from "../store/WishlistContext";
 import api from "../utils/api";
@@ -10,13 +11,10 @@ import Box from "@mui/material/Box";
 import { IoChevronBackOutline } from "react-icons/io5";
 
 const SearchPage = () => {
-  const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [skeleton, setSkeleton] = useState(true);
   const [isSearching, setIsSearching] = useState(false);
   const [activeCollection, setActiveCollection] = useState(null);
+
   const { isInWishlist, addToWishlist, removeFromWishlist } =
     useContext(WishlistContext);
   const {
@@ -26,6 +24,29 @@ const SearchPage = () => {
   } = useContext(CartContext);
 
   const navigate = useNavigate();
+  const skeletonCount = 1;
+
+  const {
+    data: products = [],
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["products"],
+    queryFn: async () => {
+      const reponse = await api.get("/api/shopify/products");
+      const shopifyProducts = reponse?.data?.data?.products || [];
+
+      try {
+        await api.post("/api/products/sync", {
+          products: shopifyProducts,
+        });
+      } catch (error) {
+        console.error("Failed to sync shopify products:", error);
+      }
+      return shopifyProducts;
+    },
+    staleTime: 10 * 60 * 1000,
+  });
 
   const toggleWishlist = async (product) => {
     try {
@@ -44,37 +65,7 @@ const SearchPage = () => {
     }
   };
 
-  useEffect(() => {
-    setSkeleton(false);
-    const fetchandSyncProducts = async () => {
-      try {
-        setLoading(true);
-        const response = await api.get("/api/shopify/products");
-        const shopifyProducts = response?.data?.data?.products || [];
-
-        await syncShopifyProducts(shopifyProducts);
-
-        setProducts(shopifyProducts);
-        setFilteredProducts(shopifyProducts);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-        setError("Failed to fetch products.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const syncShopifyProducts = async (shopifyProducts) => {
-      try {
-        await api.post("/api/products/sync", { products: shopifyProducts });
-      } catch (error) {
-        console.error("Failed to sync shopify products:", error);
-      }
-    };
-    fetchandSyncProducts();
-  }, []);
-
-  const handleSearch = (searchTerm) => {
+   const handleSearch = (searchTerm) => {
     setActiveCollection(null);
     const trimmedSearch = searchTerm.trim().toLowerCase();
     setIsSearching(trimmedSearch !== "");
@@ -172,13 +163,13 @@ const SearchPage = () => {
       </h4>
       <Search onSearch={handleSearch} />
 
-      {loading ? (
+      {isLoading ? (
         <div
           className="glide__slides"
           id="skeleton-container"
           sx={{ overflow: "hidden" }}
         >
-          {Array.from(new Array(skeleton)).map((_, index) => (
+          {Array.from(new Array(skeletonCount)).map((_, index) => (
             <Box key={index} sx={{ width: "100%" }}>
               <Skeleton animation="wave" height={70} width="100%" />
               <Skeleton animation="wave" height={70} width="100%" />

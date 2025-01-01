@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useParams, NavLink } from "react-router-dom";
 import api from "../utils/api";
 import {
@@ -23,30 +23,26 @@ import {
 import { format } from "date-fns";
 import { IoChevronBackOutline } from "react-icons/io5";
 
+const fetchOrderDetails = async (orderId) => {
+  const response = await api.get(`api/orders/${orderId}`);
+  return response.data.data;
+};
+
 const OrderDetailsPage = () => {
   const { orderId } = useParams();
-  const [order, setOrders] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchOrderDetails = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await api.get(`api/orders/${orderId}`);
-        setOrders(response.data.data);
-      } catch (error) {
-        setError(
-          error.response?.data?.message || "Failed to fetch order details"
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchOrderDetails();
-  }, [orderId]);
+  const {
+    data: order,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["orderDetails", orderId],
+    queryFn: () => fetchOrderDetails(orderId),
+    staleTime: 10 * 60 * 1000,
+  });
 
+ 
   const getStatusIcon = (status) => {
     switch (status?.toLowerCase()) {
       case "shipped":
@@ -62,7 +58,7 @@ const OrderDetailsPage = () => {
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <Backdrop
         open={true}
@@ -73,10 +69,10 @@ const OrderDetailsPage = () => {
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
       <Alert severity="error" sx={{ m: 2 }}>
-        {error}
+        {error.response?.data?.message || "Failed to fetch order details"}
       </Alert>
     );
   }
