@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef, useContext } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
 import WishlistContext from "../store/WishlistContext";
-import HomepageBanner from "./HomepageBanner";
 import Glide from "@glidejs/glide";
 import { FiHeart } from "react-icons/fi";
 import { IoIosArrowRoundDown } from "react-icons/io";
@@ -172,10 +171,6 @@ const FeaturedProducts = ({ products }) => {
           </div>
         </div>
       )}
-
-      <div className="homepage-banner">
-        <HomepageBanner spanContent="Discover the latest trends in fashion, accessories, electronics, and more at unbeatable prices." />
-      </div>
     </section>
   );
 };

@@ -4,14 +4,13 @@ import HeroCarousel from "./HeroCarousel";
 import FeaturedProducts from "./FeaturedProducts";
 import ProductList from "./ProductList";
 import HomepageBanner from "./HomepageBanner";
+import Footer from "./Footer";
 import api from "../utils/api";
-
+import { Tooltip } from "@mui/material";
 import { RiMenLine, RiWomenLine } from "react-icons/ri";
 import { LuGlasses } from "react-icons/lu";
 import { GiBed } from "react-icons/gi";
 import { IoPhonePortraitOutline } from "react-icons/io5";
-import { Tooltip } from "@mui/material";
-import Footer from "./Footer";
 
 function HomePage() {
   const navigate = useNavigate();
@@ -74,6 +73,18 @@ function HomePage() {
       </div>
       <HeroCarousel />
       <FeaturedProducts products={products} />
+      <div className="homepage-banner">
+        <HomepageBanner spanContent="Discover the latest trends in fashion, accessories, electronics, and more at unbeatable prices." />
+      </div>
+      <ProductList products={products} />
+      <div className="homepage-banner">
+        <HomepageBanner
+          divContent="Unwrap the Joy of Shopping!"
+          spanContent="Find exclusive deals, trending styles, and everything you need—all in one place. Shop now and save big!"
+          divClassName="banner-content-holder"
+          spanClassName="banner-subheading"
+        />
+      </div>
       <ProductList products={products} />
       <Footer />
     </section>

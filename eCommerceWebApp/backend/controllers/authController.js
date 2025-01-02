@@ -177,6 +177,39 @@ const deleteUserAccount = async (req, res) => {
     sendError(res, 500, "Error deleting account", { error: error.message });
   }
 };
+
+const verifySession = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const normalisedEmail = email.trim();
+    const user = await User.findOne({ email: normalisedEmail });
+
+    if (!user) {
+      return sendError(res, 404, "User not found");
+    }
+
+    const isMatch = await user.matchPassword(password, user.password);
+
+    if (!isMatch) {
+      return sendError(res, 400, "Invalid password");
+    }
+
+    const token = generateToken(user._id);
+
+    sendSuccess(res, 200, "Session verified", {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      token,
+    });
+  } catch (error) {
+    console.error("Error during session verification:", error);
+    sendError(res, 500, "An error occured during session verification", {
+      error: error.message,
+    });
+  }
+};
 module.exports = {
   generateToken,
   registerUser,
@@ -184,4 +217,5 @@ module.exports = {
   getProfile,
   updateUserProfile,
   deleteUserAccount,
+  verifySession,
 };

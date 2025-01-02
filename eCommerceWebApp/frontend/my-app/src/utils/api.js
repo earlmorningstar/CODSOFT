@@ -1,6 +1,6 @@
 import { createRoot } from "react-dom/client";
 import axios from "axios";
-import SessionExpiredModal from "../pages/SessionExpiredModal";
+import SessionModalPortal from "../components/SessionModalPortal";
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_URL,
@@ -8,26 +8,37 @@ const api = axios.create({
 });
 
 let showModal = false;
+let modalContainer = null;
+let modalRoot;
 
 const displayModal = () => {
   if (!showModal) {
     showModal = true;
-    const modalDiv = document.createElement("div");
-    document.body.appendChild(modalDiv);
+    modalContainer = document.createElement("div");
+    document.body.appendChild(modalContainer);
 
     const handleClose = () => {
       showModal = false;
-      localStorage.removeItem("user");
-      const root = createRoot(modalDiv);
-      root.unmount();
-      document.body.removeChild(modalDiv);
+      if (modalRoot) {
+        modalRoot.unmount();
+      }
+
+      if (modalContainer && modalContainer.parentNode) {
+        modalContainer.parentNode.removeChild(modalContainer);
+      }
+
+      modalContainer = null;
+      modalRoot = null;
     };
-    const root = createRoot(modalDiv);
-    root.render(<SessionExpiredModal open={true} onClose={handleClose} />);
+
+    modalRoot = createRoot(modalContainer);
+    modalRoot.render(<SessionModalPortal onClose={handleClose} />);
+   
   }
+
+  
 };
 
-console.log(displayModal);
 
 api.interceptors.request.use((config) => {
   const user = JSON.parse(localStorage.getItem("user"));
@@ -43,8 +54,11 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401 && error.response?.data?.isAuthError) {
-      localStorage.renoveItem("user");
-      window.location.href = "/login";
+      // localStorage.renoveItem("user");
+      // window.location.href = "/login";
+
+      displayModal();
+      return new Promise(() => {});
     }
     return Promise.reject(error);
   }

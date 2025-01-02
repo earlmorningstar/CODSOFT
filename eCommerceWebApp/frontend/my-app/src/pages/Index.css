@@ -438,7 +438,8 @@
   flex-direction: column;
   gap: 5px;
   font-size: 17px;
-  font-weight: 400;
+  font-weight: 500;
+  text-align: center;
 }
 
 #wlcm-banner-id {
@@ -1487,6 +1488,12 @@
 
 /* Footer Section---- */
 
+.footer-main-container {
+  border: 1px solid #dfdddd;
+  border-radius: 4px;
+  padding: 15px;
+}
+
 .footer-main-container h1 {
   font-family: "Signika Negative", sans-serif;
 }
@@ -1580,6 +1587,8 @@
     font-size: 17px;
     font-weight: 400;
     gap: 12px;
+    align-items: left;
+    text-align: left;
   }
 
   .prod-header {
