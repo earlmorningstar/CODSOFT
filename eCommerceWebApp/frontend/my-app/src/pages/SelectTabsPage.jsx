@@ -49,8 +49,6 @@ const SelectTabsPage = () => {
     [products]
   );
 
-  
-
   useEffect(() => {
     if (category) {
       filterByCategory(category);
@@ -77,11 +75,11 @@ const SelectTabsPage = () => {
 
   const alreadyInCart = (product) => {
     const productId = product.shopifyProductId || product.id;
-    return cartItems.some(item => 
-      item.shopifyProductId === productId || item.id === productId
+    return cartItems.some(
+      (item) => item.shopifyProductId === productId || item.id === productId
     );
   };
-  
+
   const toggleCartButton = async (product) => {
     const productId = product.shopifyProductId || product.id;
     const cartItem = {
@@ -93,7 +91,7 @@ const SelectTabsPage = () => {
       quantity: 1,
       image: product.images[0]?.src || "https://via.placeholder.com/150",
     };
-  
+
     if (alreadyInCart(product)) {
       removeItemFromCart(productId);
     } else {
@@ -123,7 +121,7 @@ const SelectTabsPage = () => {
   return (
     <section>
       <div
-         className="back-to-collections"
+        className="back-to-collections"
         onClick={() => navigate("/homepage")}
         style={{
           display: "flex",
@@ -220,9 +218,7 @@ const SelectTabsPage = () => {
                     }}
                     onClick={() => toggleCartButton(product)}
                   >
-                    {alreadyInCart(product)
-                      ? "Remove from Bag"
-                      : "Add to Bag"}
+                    {alreadyInCart(product) ? "Remove from Bag" : "Add to Bag"}
                   </button>
                 </div>
               </div>

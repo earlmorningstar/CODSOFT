@@ -461,7 +461,6 @@
 }
 
 .glide__slide {
-  /* background-color: rgb(237, 236, 236); */
   border: 1px solid #ddd;
   border-radius: 15px;
 }
@@ -881,6 +880,8 @@
 
 .recent-tag button {
   background-color: transparent;
+  color: #7c7b7b;
+  font-size: 18px;
   border: none;
 }
 
@@ -1354,12 +1355,6 @@
 
 /* Notification Section--- */
 
-/* .notifications-container {
-  -webkit-overflow-scrolling: touch;
-  position: relative;
-  will-change: transform;
-} */
-
 .notification-item {
   cursor: pointer;
   position: relative;
@@ -1490,7 +1485,50 @@
   margin-bottom: 2rem;
 }
 
+/* Footer Section---- */
+
+.footer-main-container h1 {
+  font-family: "Signika Negative", sans-serif;
+}
+
+.footer-main-container h5 {
+  text-align: center;
+  font-weight: 400;
+  font-size: 18px;
+  margin: 50px 0 10px 0;
+}
+
+.footer-main-container section {
+  font-family: "Manrope", sans-serif;
+  margin: 2rem 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-row-gap: 15px;
+}
+
+.footer-main-container section div {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.footer-main-container section div span h3 {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.footer-main-container section div span p {
+  font-size: 15px;
+  font-weight: 400;
+}
+
 /* Screen Sizes--- */
+
+@media screen and (max-width: 1160px) {
+  .footer-main-container section {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
 
 @media screen and (max-width: 1000px) {
   .product-grid {
@@ -1561,6 +1599,10 @@
 
   .searchPage-collection-container span {
     text-align: right;
+  }
+
+  .footer-main-container section {
+    grid-template-columns: repeat(1, 1fr);
   }
 }
 

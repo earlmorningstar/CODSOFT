@@ -107,6 +107,7 @@ const Search = ({ onSearch }) => {
                     onClick={() => removeSuggestion(term)}
                     className="remove-icon"
                     size={20}
+                    style={{ cursor: "pointer" }}
                   />
                 </span>
               ))}

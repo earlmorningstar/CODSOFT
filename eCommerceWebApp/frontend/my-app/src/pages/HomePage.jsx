@@ -11,6 +11,7 @@ import { LuGlasses } from "react-icons/lu";
 import { GiBed } from "react-icons/gi";
 import { IoPhonePortraitOutline } from "react-icons/io5";
 import { Tooltip } from "@mui/material";
+import Footer from "./Footer";
 
 function HomePage() {
   const navigate = useNavigate();
@@ -74,6 +75,7 @@ function HomePage() {
       <HeroCarousel />
       <FeaturedProducts products={products} />
       <ProductList products={products} />
+      <Footer />
     </section>
   );
 }
