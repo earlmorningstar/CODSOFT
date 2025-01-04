@@ -14,7 +14,7 @@ const BottomNavigationLayout = () => {
   const [showInactivityModal, setShowInactivityModal] = useState(false);
 
   useEffect(() => {
-    const INACTIVITY_TIMEOUT = 15 * 60 * 1000;
+    const INACTIVITY_TIMEOUT = 30 * 60 * 1000;
     let inactivityTimer;
 
     const resetInactivityTimer = () => {

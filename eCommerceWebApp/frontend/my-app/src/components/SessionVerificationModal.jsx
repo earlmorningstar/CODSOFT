@@ -5,10 +5,21 @@ import {
   Modal,
   Box,
   Typography,
-  Button,
   TextField,
   CircularProgress,
 } from "@mui/material";
+import api from "../utils/api";
+
+const modalStyle = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  bgcolor: "background.paper",
+  boxShadow: 24,
+  p: 2,
+  width: 300,
+};
 
 const SessionVerificationModal = ({ open, onClose }) => {
   const [password, setPassword] = useState("");
@@ -28,28 +39,13 @@ const SessionVerificationModal = ({ open, onClose }) => {
     setError("");
 
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/user/verify-session`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: user.email,
-            password: password.trim(),
-          }),
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Verification failed. Please try again.");
-      }
-
-      localStorage.setItem("user", JSON.stringify(data));
-      login(data);
+      const response = await api.post("/api/users/verify-session", {
+        email: user.email,
+        password: password.trim(),
+      });
+      const userData = response.data.data;
+      localStorage.setItem("user", JSON.stringify(userData));
+      login(userData);
 
       setPassword("");
       onClose();
@@ -75,25 +71,20 @@ const SessionVerificationModal = ({ open, onClose }) => {
       }}
       disableEscapeKeyDown
     >
-      <Box
-        sx={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: 400,
-          bgcolor: "background.paper",
-          boxShadow: 24,
-          p: 4,
-          borderRadius: 2,
-        }}
-      >
-        <Typography variant="h6" mb={2} textAlign="center">
-          Session Verification
-        </Typography>
-        <Typography mb={3} textAlign="center">
-          You've been inactive for a while, input your password to continue
-        </Typography>
+      <Box sx={modalStyle}>
+        <span className="verify-password-title">
+          <h2 className="delete-modal-title">Session Verification</h2>
+          <Typography
+            className="delete-modal-title"
+            style={{
+              marginBottom: "16px",
+              marginTop: "16px",
+              fontSize: "18px",
+            }}
+          >
+            You've been inactive for a while, input your password to continue
+          </Typography>
+        </span>
 
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
@@ -112,19 +103,22 @@ const SessionVerificationModal = ({ open, onClose }) => {
           sx={{ mb: 3 }}
         />
 
-        <Box sx={{ display: "flex", gap: 2, justifyContent: "center" }}>
-          <Button variant="contained" onClick={handleVerify} disabled={isLoading}>
-            {isLoading ? <CircularProgress size={24} /> : "Verify"}
-          </Button>
-          <Button
-            variant="outlined"
-            color="error"
+        <span className="cart-modal-del-btnHolder">
+          <button
+            className="cart-modal-button"
+            onClick={handleVerify}
+            disabled={isLoading}
+          >
+            {isLoading ? <CircularProgress size={18} /> : "Verify"}
+          </button>
+          <button
+            className="cart-modal-button"
             onClick={handleLogout}
             disabled={isLoading}
           >
             Logout Instead
-          </Button>
-        </Box>
+          </button>
+        </span>
       </Box>
     </Modal>
   );
