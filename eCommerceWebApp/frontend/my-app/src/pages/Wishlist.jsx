@@ -33,18 +33,21 @@ const Wishlist = () => {
   const currentPage = parseInt(query.get("page") || "1", 10);
   const [showClearWishlistDialog, setShowClearWishlistDialog] = useState(false);
 
-  const alreadyInCart = (product) => {
-    const productId = product.shopifyProductId || product._id;
+  const alreadyInCart = (shopifyProductId) => {
+    const productIdString = shopifyProductId.toString();
+
     return cartItems.some(
-      (item) => item.shopifyProductId === productId || item.id === productId
+      (item) =>
+        item.shopifyProductId.toString() === productIdString ||
+        item.id.toString() === productIdString
     );
   };
 
   const toggleCartButton = async (product) => {
     const productId = product.shopifyProductId || product._id;
     const cartItem = {
-      id: productId,
-      shopifyProductId: productId,
+      id: parseInt(productId, 10),
+      shopifyProductId: parseInt(productId, 10),
       shopifyVariantId: product.variants[0]?.id || null,
       title: product.title,
       price: parseFloat(product.variants[0]?.price || 0),
@@ -52,8 +55,8 @@ const Wishlist = () => {
       image: product.images[0]?.src || "https://via.placeholder.com/150",
     };
 
-    if (alreadyInCart(product)) {
-      removeItemFromCart(productId);
+    if (alreadyInCart(productId)) {
+      removeItemFromCart(parseInt(productId, 10));
     } else {
       addItemToCart(cartItem);
     }
@@ -149,16 +152,22 @@ const Wishlist = () => {
                   <button
                     className="btn-add-to-bag"
                     style={{
-                      backgroundColor: alreadyInCart(item.product)
+                      backgroundColor: alreadyInCart(
+                        item.product.shopifyProductId || item.product._id
+                      )
                         ? "#ffffff"
                         : "#6055d8",
-                      color: alreadyInCart(item.product)
+                      color: alreadyInCart(
+                        item.product.shopifyProductId || item.product._id
+                      )
                         ? "#6055d8"
                         : "#ffffff",
                     }}
                     onClick={() => toggleCartButton(item.product)}
                   >
-                    {alreadyInCart(item.product)
+                    {alreadyInCart(
+                      item.product.shopifyProductId || item.product._id
+                    )
                       ? "Remove from Bag"
                       : "Add to Bag"}
                   </button>
