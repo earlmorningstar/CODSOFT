@@ -234,7 +234,7 @@ const forgetPassword = async (req, res) => {
     });
 
     //sending email
-    const message = `Your password reset code is: ${resetToken}\nThis code will expire in 1 hour.`;
+    const message = `Message from TrendVault - Your password reset code is: ${resetToken}\nThis code will expire in 1 hour. Do not share this code with anybody.`;
     const emailSent = await sendEmail(email, "Password Reset Request", message);
 
     if (!emailSent) {
@@ -251,7 +251,8 @@ const verifyResetToken = async (req, res) => {
   try {
     const { email, token } = req.body;
 
-    const user = User.findOne({ email });
+    const user = await User.findOne({ email });
+
     if (!user) {
       return sendError(res, 404, "User not found");
     }
@@ -274,7 +275,6 @@ const verifyResetToken = async (req, res) => {
 const resetPassword = async (req, res) => {
   try {
     const { email, token, newPassword } = req.body;
-
     const user = await User.findOne({ email });
     if (!user) {
       return sendError(res, 404, "User not found");
@@ -291,19 +291,18 @@ const resetPassword = async (req, res) => {
 
     user.password = newPassword;
     await user.save();
-
     await Token.deleteOne({ _id: resetToken._id });
 
     await Notification.create({
       title: "Password Reset Successful",
-      message: "Your password has been successfullly reset.",
+      message: "Your password has been successfully reset.",
       type: "info",
-      userid: user._id,
+      userId: user._id,
     });
 
-    return sendSuccess(res, 200, "passowrd reset successfully");
+    return sendSuccess(res, 200, "Passowrd reset successfully. Now login.");
   } catch (error) {
-    return sendError(res, 500, "Server error", { error: errror.message });
+    return sendError(res, 500, "Server error", { error: error.message });
   }
 };
 

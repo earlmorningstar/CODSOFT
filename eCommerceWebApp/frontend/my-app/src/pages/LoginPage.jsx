@@ -91,10 +91,6 @@ const LoginPage = () => {
     setSuccess("");
   };
 
-  // const handleForgotPassword = () => {
-  //   navigate("/forgot-password");
-  // };
-
   return (
     <>
       <Snackbar
@@ -169,8 +165,12 @@ const LoginPage = () => {
           </form>
 
           <div>
-            <Typography className="signup-login-switchLink" variant="body2">
-              Forgot Password?{" "}
+            <Typography
+              className="signup-login-switchLink"
+              variant="body2"
+              sx={{ marginTop: 2 }}
+            >
+              Forgotten Password?{" "}
               <NavLink className="signup-login-navlink" to="/forgot-password">
                 Recover
               </NavLink>
