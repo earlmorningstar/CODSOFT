@@ -1,4 +1,7 @@
 const mongoose = require("mongoose");
+const crypto = require("crypto");
+const Token = require("../models/Token");
+const { sendEmail } = require("../utils/emailService");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
@@ -210,6 +213,100 @@ const verifySession = async (req, res) => {
     });
   }
 };
+
+const forgetPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return sendError(res, 400, "User with this email doesn't exist");
+    }
+
+    //delete any existing toke for this user
+    await Token.deleteMany({ userId: user._id });
+
+    const resetToken = crypto.randomBytes(3).toString("hex").toUpperCase();
+
+    await Token.create({
+      userId: user._id,
+      token: resetToken,
+    });
+
+    //sending email
+    const message = `Your password reset code is: ${resetToken}\nThis code will expire in 1 hour.`;
+    const emailSent = await sendEmail(email, "Password Reset Request", message);
+
+    if (!emailSent) {
+      return sendError(res, 500, "Error sending email");
+    }
+
+    return sendSuccess(res, 200, "Password reset code sent to your email");
+  } catch (error) {
+    return sendError(res, 500, "Server error", { error: error.message });
+  }
+};
+
+const verifyResetToken = async (req, res) => {
+  try {
+    const { email, token } = req.body;
+
+    const user = User.findOne({ email });
+    if (!user) {
+      return sendError(res, 404, "User not found");
+    }
+
+    const resetToken = await Token.findOne({
+      userId: user._id,
+      token: token,
+    });
+
+    if (!resetToken) {
+      return sendError(res, 400, "Invalid or expired reset token");
+    }
+
+    return sendSuccess(res, 200, "Token verified successfully");
+  } catch (error) {
+    return sendError(res, 500, "Server error", { error: error.message });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  try {
+    const { email, token, newPassword } = req.body;
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return sendError(res, 404, "User not found");
+    }
+
+    const resetToken = await Token.findOne({
+      userId: user._id,
+      token: token,
+    });
+
+    if (!resetToken) {
+      return sendError(res, 400, "Invalid or expired reset token");
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    await Token.deleteOne({ _id: resetToken._id });
+
+    await Notification.create({
+      title: "Password Reset Successful",
+      message: "Your password has been successfullly reset.",
+      type: "info",
+      userid: user._id,
+    });
+
+    return sendSuccess(res, 200, "passowrd reset successfully");
+  } catch (error) {
+    return sendError(res, 500, "Server error", { error: errror.message });
+  }
+};
+
 module.exports = {
   generateToken,
   registerUser,
@@ -218,4 +315,7 @@ module.exports = {
   updateUserProfile,
   deleteUserAccount,
   verifySession,
+  forgetPassword,
+  verifyResetToken,
+  resetPassword,
 };

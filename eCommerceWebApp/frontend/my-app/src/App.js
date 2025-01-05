@@ -23,6 +23,10 @@ import Wishlist from "./pages/Wishlist";
 import OrderDetailsPage from "./pages/OrderDetailsPage";
 import Notification from "./pages/Notification";
 import SelectTabsPage from "./pages/SelectTabsPage";
+import AboutUs from "./pages/AboutUs";
+import ForgotPasswordForm from "./components/ForgotPassword/ForgotPasswordForm";
+import VerifyResetCode from "./components/ForgotPassword/VerifyResetCode";
+import ResetPassword from "./components/ForgotPassword/ResetPassword";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +39,9 @@ const router = createBrowserRouter([
       { index: true, element: <WelcomePage /> },
       { path: "/login", element: <LoginPage /> },
       { path: "/signup", element: <SignupPage /> },
+      { path: "/forgot-password", element: <ForgotPasswordForm /> },
+      { path: "/verify-reset-code", element: <VerifyResetCode /> },
+      { path: "/reset-password", element: <ResetPassword /> },
       { path: "welcome-note-page", element: <WelcomeNote /> },
       {
         path: "/",
@@ -61,7 +68,8 @@ const router = createBrowserRouter([
           { path: "/settings", element: <Settings /> },
           { path: "/wishlist", element: <Wishlist /> },
           { path: "/notification", element: <Notification /> },
-          {path: "/category/:category", element: <SelectTabsPage />},
+          { path: "/category/:category", element: <SelectTabsPage /> },
+          { path: "/about-us", element: <AboutUs /> },
         ],
       },
     ],

@@ -13,7 +13,9 @@ const WelcomeNote = () => {
   return (
     <section className="signup-login-Container" id="welcome-note-container">
       {/* <div className="background" id="welcome-page-background"></div> */}
-      <span>Hello <b>{user?.name || "there"},</b> Welcome back to TrendVault.</span>
+      <span>
+        Hello <b>{user?.name || "there"},</b> Welcome to TrendVault.
+      </span>
       <span>
         We're thrilled to have you here. Explore the latest trends, discover
         exclusive deals, and shop your favorites effortlessly.

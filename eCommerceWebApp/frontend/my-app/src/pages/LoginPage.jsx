@@ -91,6 +91,10 @@ const LoginPage = () => {
     setSuccess("");
   };
 
+  // const handleForgotPassword = () => {
+  //   navigate("/forgot-password");
+  // };
+
   return (
     <>
       <Snackbar
@@ -163,16 +167,26 @@ const LoginPage = () => {
               </button>
             </Box>
           </form>
-          <Typography
-            className="signup-login-switchLink"
-            variant="body2"
-            sx={{ marginTop: 2 }}
-          >
-            Don't have an account?{" "}
-            <NavLink className="signup-login-navlink" to="/signup">
-              Join Us
-            </NavLink>
-          </Typography>
+
+          <div>
+            <Typography className="signup-login-switchLink" variant="body2">
+              Forgot Password?{" "}
+              <NavLink className="signup-login-navlink" to="/forgot-password">
+                Recover
+              </NavLink>
+            </Typography>
+
+            <Typography
+              className="signup-login-switchLink"
+              variant="body2"
+              sx={{ marginTop: 2 }}
+            >
+              Don't have an account?{" "}
+              <NavLink className="signup-login-navlink" to="/signup">
+                Join Us
+              </NavLink>
+            </Typography>
+          </div>
         </Box>
       </section>
     </>

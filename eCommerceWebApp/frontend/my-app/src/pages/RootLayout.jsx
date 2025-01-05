@@ -196,7 +196,7 @@ const RootLayout = () => {
             <RiSettings2Line size={20} /> Settings
           </NavLink>
           <NavLink
-            to="/settings"
+            to="/about-us"
             onClick={closeSidebar}
             className="sidebar-link"
           >
