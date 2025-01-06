@@ -1529,6 +1529,63 @@
   font-weight: 400;
 }
 
+/* About Section--- */
+.aboutUs-main-info-container {
+  font-family: "Raleway", sans-serif;
+}
+
+.aboutUs-main-info-container h1 {
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.aboutUs-main-info-container p {
+  font-size: 1.2rem;
+  margin: 0.8rem 0;
+}
+
+.aboutUs-main-info-container h2 {
+  font-size: 1.6rem;
+  margin: 1rem 0;
+}
+
+.aboutUs-main-info-container h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0.8rem 0 0.8rem 1rem;
+}
+
+.aboutUs-main-info-container div {
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0.3rem 0;
+  line-height: 1.8rem;
+}
+
+.aboutUs-main-info-container span {
+  line-height: 1.6rem;
+}
+
+.aboutUs-main-info-container span li {
+  font-size: 1rem;
+  font-weight: 400;
+  margin-left: 2rem;
+}
+
+.aboutUs-main-info-container aside {
+  padding: 15px;
+  background-color: #473939;
+  color: #a7b5ca;
+  width: fit-content;
+  border-radius: 8px;
+}
+
+.aboutUs-main-info-container main {
+  text-align: center;
+  margin: 2rem 0;
+}
+
 /* Screen Sizes--- */
 
 @media screen and (max-width: 1160px) {
@@ -1667,6 +1724,26 @@
 
   .empty-cart-alert p {
     font-size: 13px;
+  }
+
+  .aboutUs-main-info-container h1 {
+    font-size: 1.5rem;
+  }
+  .aboutUs-main-info-container p {
+    font-size: 1rem;
+  }
+  .aboutUs-main-info-container h2 {
+    font-size: 1.3rem;
+  }
+  .aboutUs-main-info-container h3 {
+    font-size: 1.2rem;
+  }
+  .aboutUs-main-info-container div {
+    font-size: 0.8rem;
+    line-height: 1.4rem;
+  }
+  .aboutUs-main-info-container span li {
+    font-size: 0.8rem;
   }
 }
 

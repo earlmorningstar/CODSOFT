@@ -276,7 +276,7 @@ const SignupPage = () => {
                 disabled={loading}
               >
                 {loading ? (
-                  <CircularProgress size={24} color="inherit" />
+                  <CircularProgress size={14} color="inherit" />
                 ) : (
                   "Sign up"
                 )}

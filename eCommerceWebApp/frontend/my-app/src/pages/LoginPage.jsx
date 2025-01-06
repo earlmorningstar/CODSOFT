@@ -156,7 +156,7 @@ const LoginPage = () => {
               </FormControl>
               <button className="signup-login-btn" type="submit">
                 {loading ? (
-                  <CircularProgress size={24} color="inherit" />
+                  <CircularProgress size={14} color="inherit" />
                 ) : (
                   "Log in"
                 )}
