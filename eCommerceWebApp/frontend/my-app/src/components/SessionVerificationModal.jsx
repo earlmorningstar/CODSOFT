@@ -116,7 +116,7 @@ const SessionVerificationModal = ({ open, onClose }) => {
             onClick={handleLogout}
             disabled={isLoading}
           >
-            Logout Instead
+            Logout
           </button>
         </span>
       </Box>

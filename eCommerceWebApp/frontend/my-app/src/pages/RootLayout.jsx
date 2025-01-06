@@ -226,7 +226,7 @@ const RootLayout = () => {
 
             <span className="cart-modal-del-btnHolder">
               <button className="cart-modal-button" onClick={handleLogout}>
-                Yes, Logout!
+                Logout
               </button>
               <button className="cart-modal-button" onClick={handleCloseModal}>
                 Cancel
